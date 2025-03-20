@@ -1,4 +1,4 @@
-name: Run Playwright Test
+name: Run Specific Playwright Test
 
 on:
   push:
@@ -17,10 +17,13 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '22'  # 根據需要調整 Node 版本
+        node-version: '22'
 
     - name: Install dependencies
       run: npm install
+
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
 
     - name: Run specific Playwright test
       run: npx playwright test Playson.spec.js
