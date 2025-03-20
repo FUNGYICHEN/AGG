@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: self-hosted
+    runs-on: self-hosted  # 請確保你的自架設 Runner 標籤符合
 
     steps:
     - name: Checkout repository
@@ -20,11 +20,13 @@ jobs:
         node-version: '14'
 
     - name: Install dependencies
-      # 使用預設 cmd 執行（不使用 powershell）
+      shell: cmd
       run: npm install
 
     - name: Install Playwright browsers
+      shell: cmd
       run: npx playwright install --with-deps
 
     - name: Run specific Playwright test
+      shell: cmd
       run: npx playwright test Playson.spec.js
