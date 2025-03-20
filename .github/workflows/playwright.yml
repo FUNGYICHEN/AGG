@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: self-hosted  # 請確保你的自架設 Runner 標籤符合此設定
+    runs-on: self-hosted
 
     steps:
     - name: Checkout repository
@@ -19,8 +19,8 @@ jobs:
       with:
         node-version: '14'
 
-    - name: Set PowerShell Execution Policy to Bypass
-      shell: powershell
+    - name: Set Execution Policy to Bypass (using pwsh)
+      shell: pwsh
       run: Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
 
     - name: Install dependencies
