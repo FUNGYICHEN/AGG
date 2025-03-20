@@ -30,3 +30,13 @@ jobs:
     - name: Run specific Playwright test
       shell: cmd
       run: npx playwright test Rectangle.spec.js
+
+    - name: Run specific Playwright test
+      shell: cmd
+      run: npx playwright test galaxsys.spec.js
+
+    - name: Run specific Playwright test
+      shell: cmd
+      run: npx playwright test Wcasino.spec.js
+
+      

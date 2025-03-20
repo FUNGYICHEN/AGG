@@ -113,7 +113,7 @@ import {ENV_CONFIG, generateGameUrl, depositMoney } from './api-config.js';
                 await page.goto(game_url, { waitUntil: 'load' });
                 await page.waitForLoadState('networkidle');
                 // 等待固定時間，確保頁面載入完成
-                await page.waitForTimeout(7000);
+                await page.waitForTimeout(50000);
       
                 // 使用 iframe 的 name 直接取得 frame（此 iframe 有 name="game"）
                 const frame = page.frame({ name: 'game' });
