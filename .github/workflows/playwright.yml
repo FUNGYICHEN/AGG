@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: self-hosted
+    runs-on: self-hosted  # 或 Windows runner 標籤
 
     steps:
     - name: Checkout repository
@@ -19,10 +19,15 @@ jobs:
       with:
         node-version: '14'
 
+    # 設定 PowerShell 執行政策
+    - name: Set PowerShell Execution Policy to Bypass
+      shell: pwsh
+      run: Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+
     - name: Install dependencies
       run: npm install
 
-    - name: Install Playwright Browsers and System Dependencies
+    - name: Install Playwright browsers
       run: npx playwright install --with-deps
 
     - name: Run specific Playwright test
