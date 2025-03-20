@@ -1,4 +1,4 @@
-name: Run Specific Playwright Test
+name: Run Playwright Test on Self-hosted Runner
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
     - name: Checkout repository
@@ -17,12 +17,12 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '22'
+        node-version: '14'
 
     - name: Install dependencies
       run: npm install
 
-    - name: Install Playwright Browsers
+    - name: Install Playwright Browsers and System Dependencies
       run: npx playwright install --with-deps
 
     - name: Run specific Playwright test
