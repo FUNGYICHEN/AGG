@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: self-hosted  # 請確保你的自架設 Runner 標籤符合
+    runs-on: self-hosted
 
     steps:
     - name: Checkout repository
@@ -17,7 +17,13 @@ jobs:
     - name: Setup Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '22'
+        node-version: '16'
+
+    # 若你希望以 polyfill 確保 global.performance 定義，
+    # 可選擇下列步驟（此處以 CMD shell 生成檔案，然後在測試前執行）
+    - name: Create performance polyfill script
+      shell: cmd
+      run: echo global.performance = require('perf_hooks').performance; > setup-performance.js
 
     - name: Install dependencies
       shell: cmd
@@ -29,4 +35,4 @@ jobs:
 
     - name: Run specific Playwright test
       shell: cmd
-      run: npx playwright test Playson.spec.js
+      run: node setup-performance.js && npx playwright test Playson.spec.js
