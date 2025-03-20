@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: self-hosted
+    runs-on: self-hosted  # 確保你的 Runner 標籤符合
 
     steps:
     - name: Checkout repository
@@ -19,15 +19,20 @@ jobs:
       with:
         node-version: '14'
 
-    - name: Set Execution Policy to Bypass (using pwsh)
-      shell: pwsh
-      run: Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+    - name: Install dependencies with Bypass
+      shell: powershell
+      run: |
+        Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+        npm install
 
-    - name: Install dependencies
-      run: npm install
+    - name: Install Playwright browsers with Bypass
+      shell: powershell
+      run: |
+        Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+        npx playwright install --with-deps
 
-    - name: Install Playwright browsers
-      run: npx playwright install --with-deps
-
-    - name: Run specific Playwright test
-      run: npx playwright test Playson.spec.js
+    - name: Run specific Playwright test with Bypass
+      shell: powershell
+      run: |
+        Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass -Force
+        npx playwright test Playson.spec.js
