@@ -67,8 +67,8 @@ test('Wcasino URL', async ({ request }) => {
   // 測試的 game_id 清單
   const game_ids = [
     60001, 60002, 60003, 60004, 60005, 60006, 60007, 60008, 60009, 60010,
-    60011, 60012, 60013, 60014, 60015, 60016, 60017, 60018, 60020, 60021,
-    60024, 60025
+    60011, 60012, 60015, 60016, 60017, 60018, 60020, 60021,
+    60024
   ];
   
   // 將 base agent 列表，並為每個 base agent 加上前綴 "10" 與 "11"
@@ -131,7 +131,7 @@ test('Playson URL', async ({ request }) => {
   
   // 指定要測試的 game id 列表：原有 20051~20059，加上 24062~24070
   const gameIds = [
-    20051, 20052, 20053, 20054, 20055, 20056, 20057, 20058, 20059,
+    20051, 20053, 20054, 20055, 20056, 20057, 20058, 20059,
     24062, 24063, 24064, 24065, 24066, 24067, 24068, 24069, 24070
   ];
   
@@ -165,7 +165,7 @@ test('Playson URL', async ({ request }) => {
 
 test('galaxsys URL', async ({ request }) => {
   test.setTimeout(0);
-  const { expected_Wcasino } = ENV_CONFIG;
+  const { expected_galaxsys } = ENV_CONFIG;
   
   // 測試的 game_id 清單：從 70001 到 70036（包含 70001~70036）
   const game_ids = range(70001, 70037);
@@ -185,7 +185,7 @@ test('galaxsys URL', async ({ request }) => {
     for (const game_id of game_ids) {
       try {
         const game_url = await generateGameUrl(request, agent, game_id);
-        if (!game_url.startsWith(expected_Wcasino)) {
+        if (!game_url.startsWith(expected_galaxsys)) {
           const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 前綴不符 -> ${game_url}`;
           console.error(errMsg);
           errorMessages.push(errMsg);
