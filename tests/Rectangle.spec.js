@@ -241,7 +241,7 @@ test('Rectangle_上半', async ({ browser, request }) => {
 
 
 
-test.only('Rectangle_下半', async ({ browser, request }) => {
+test('Rectangle_下半', async ({ browser, request }) => {
   test.setTimeout(0);
   const { expected_Rectangle, accountPrefix } = ENV_CONFIG;
 
@@ -293,7 +293,7 @@ test.only('Rectangle_下半', async ({ browser, request }) => {
         const page = await context.newPage();
         await page.goto(game_url, { waitUntil: 'load' });
         // 等待頁面與 iframe 載入完成 (等待 20000 毫秒)
-        await page.waitForTimeout(30000);
+        await page.waitForTimeout(40000);
 
         // 檢查 popup 錯誤訊息
         const popup = await page.$('div.popup-container');

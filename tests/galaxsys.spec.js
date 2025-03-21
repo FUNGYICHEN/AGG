@@ -1580,7 +1580,7 @@ test.only('70009_Penalty: 下注', async ({ browser, request }) => {
 
 
 
-test.only('70009_Penalty: 下注', async ({ browser, request }) => {
+test('70009_Penalty: 下注', async ({ browser, request }) => {
   test.setTimeout(0);
 
   // Helper：取得倒數秒數（只讀取一次）
