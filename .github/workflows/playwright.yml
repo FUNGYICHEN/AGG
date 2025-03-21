@@ -1,18 +1,16 @@
 name: Run Playwright Test on Self-hosted Runner
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+  workflow_dispatch:  # 僅允許手動觸發
 
 jobs:
   test:
-    runs-on: self-hosted  # 請確保你的自架設 Runner 標籤符合
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    # 如果你不需要檢出 Git 倉庫，可以移除這一段
+    #- name: Checkout repository
+    #  uses: actions/checkout@v2
 
     - name: Setup Node.js
       uses: actions/setup-node@v2
@@ -27,16 +25,14 @@ jobs:
       shell: cmd
       run: npx playwright install --with-deps
 
-    - name: Run specific Playwright test
+    - name: Run specific Playwright test - Rectangle
       shell: cmd
       run: npx playwright test Rectangle.spec.js
 
-    - name: Run specific Playwright test
+    - name: Run specific Playwright test - Galaxsys
       shell: cmd
       run: npx playwright test galaxsys.spec.js
 
-    - name: Run specific Playwright test
+    - name: Run specific Playwright test - Wcasino
       shell: cmd
       run: npx playwright test Wcasino.spec.js
-
-      
