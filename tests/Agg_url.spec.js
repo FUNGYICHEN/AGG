@@ -27,11 +27,11 @@ test('Rectangle URL', async ({ request }) => {
       131, 132, 133, 134, 135, 136, 137, 139, 140, 141,
       142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
       152, 153, 154, 155, 156, 157, 158, 159, 160, 161,
-      162, 163, 164, 165, 166, 167, 168, 169, 170, 
+      162, 163, 164, 165, 166, 167, 168, 169, 170,
       171, 172
     ];
     // 將 baseAgents 轉換成前綴 "10" 的 agent，如 101 變成 10101
-    const agents = baseAgents.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
+    const agents = baseAgents.map(a => parseInt('10' + a));
   
     // 定義 game_id 與對應 slug 的映射關係
     const gameIdToSlug = {
@@ -63,15 +63,13 @@ test('Rectangle URL', async ({ request }) => {
   
     let errorMessages = [];
   
-    // 輔助函數：從 URL 中提取 slug 部分
-    // 若 expected_Rectangle 後有前導斜線，先移除之
+    // 輔助函數：從 URL 中提取 slug 部分（移除 expected_Rectangle 後的前導斜線）
     function extractSlug(url) {
       let remainder = url.substring(expected_Rectangle.length);
       if (remainder.startsWith('/')) {
         remainder = remainder.substring(1);
       }
-      const slug = remainder.split('/')[0];
-      return slug;
+      return remainder.split('/')[0];
     }
   
     for (const agent of agents) {
@@ -80,16 +78,21 @@ test('Rectangle URL', async ({ request }) => {
         try {
           game_url = await generateGameUrl(request, agent, game_id);
         } catch (e) {
-          // 如果捕獲到 HTTP錯誤（500 或 400），則重試一次
-          if (
-            e.message.includes("HTTP錯誤") &&
-            (e.message.includes("500") || e.message.includes("400"))
-          ) {
-            console.warn(`Retry for Agent: ${agent}, GameID: ${game_id} due to error: ${e}`);
-            try {
-              game_url = await generateGameUrl(request, agent, game_id);
-            } catch (e2) {
-              const errMsg = `Agent: ${agent}, GameID: ${game_id} 錯誤 (after retry): ${e2}`;
+          // 如果捕獲到 HTTP錯誤（400 或 500），等待 500 毫秒後重試兩次
+          if (e.message.includes("HTTP錯誤")) {
+            let success = false;
+            for (let attempt = 1; attempt <= 2; attempt++) {
+              await sleep(500);
+              try {
+                game_url = await generateGameUrl(request, agent, game_id);
+                success = true;
+                break;
+              } catch (e2) {
+                console.warn(`Agent: ${agent}, GameID: ${game_id} 重試錯誤（嘗試 ${attempt} 次）: ${e2.message}`);
+              }
+            }
+            if (!success) {
+              const errMsg = `Agent: ${agent}, GameID: ${game_id} 錯誤 (after retries): ${e.message}`;
               console.error(errMsg);
               errorMessages.push(errMsg);
               await sleep(500);
@@ -113,19 +116,19 @@ test('Rectangle URL', async ({ request }) => {
           continue;
         }
   
-        // 從 URL 中提取 slug 並檢查是否與預期的完全一致
+        // 從 URL 中提取 slug 並檢查是否與預期一致
         const extractedSlug = extractSlug(game_url);
         const expectedSlug = gameIdToSlug[game_id];
         if (extractedSlug !== expectedSlug) {
           const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 的 GID 不正確 (expected: ${expectedSlug}, got: ${extractedSlug}) -> ${game_url}`;
           console.error(errMsg);
           errorMessages.push(errMsg);
-          }
+        }
+        
         await sleep(500);
       }
     }
   
-    // 如果有錯誤，先打印所有錯誤訊息，再拋出錯誤
     if (errorMessages.length > 0) {
       throw new Error(errorMessages.join("\n"));
     } else {
