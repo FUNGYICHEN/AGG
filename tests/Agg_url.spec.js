@@ -31,7 +31,7 @@ test('Rectangle URL', async ({ request }) => {
       171, 172
     ];
     // 將 baseAgents 轉換成前綴 "10" 的 agent，如 101 變成 10101
-    const agents = baseAgents.map(a => parseInt('10' + a));
+    const agents = baseAgents.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
   
     // 定義 game_id 與對應 slug 的映射關係
     const gameIdToSlug = {
@@ -120,15 +120,13 @@ test('Rectangle URL', async ({ request }) => {
           const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 的 GID 不正確 (expected: ${expectedSlug}, got: ${extractedSlug}) -> ${game_url}`;
           console.error(errMsg);
           errorMessages.push(errMsg);
-        }
-        
+          }
         await sleep(500);
       }
     }
   
     // 如果有錯誤，先打印所有錯誤訊息，再拋出錯誤
     if (errorMessages.length > 0) {
-      console.error("以下錯誤訊息：\n" + errorMessages.join("\n"));
       throw new Error(errorMessages.join("\n"));
     } else {
       console.log("Rectangle URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
@@ -223,13 +221,16 @@ test('Rectangle URL', async ({ request }) => {
             errorMessages.push(errMsg);
             await sleep(500);
             continue;
+            
           }
+
         } catch (parseErr) {
           const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 解析錯誤: ${parseErr} -> ${game_url}`;
           console.error(errMsg);
           errorMessages.push(errMsg);
           await sleep(500);
           continue;
+          
         }
         
         await sleep(500);
@@ -322,7 +323,8 @@ test('Rectangle URL', async ({ request }) => {
             errorMessages.push(errMsg);
             await sleep(500);
             continue;
-          }
+          } 
+          
         } catch (e) {
           // 特殊處理 agent 10117 或 11117 (agent % 1000 === 117)
           // 在 gameId 為 [20051,20053,20054,20055,20056,20057,20058,20059] 且錯誤訊息中包含 "400"
@@ -347,7 +349,6 @@ test('Rectangle URL', async ({ request }) => {
     }
     
     if (errorMessages.length > 0) {
-      console.error("以下錯誤訊息：\n" + errorMessages.join("\n"));
       throw new Error(errorMessages.join("\n"));
     } else {
       console.log("Playson URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
@@ -368,7 +369,8 @@ test('Rectangle URL', async ({ request }) => {
       101, 102, 103, 104, 105, 106, 107, 108, 110, 111, 112, 113, 114, 115, 116,
       117, 118, 119, 120, 121, 122, 124, 125, 126, 127, 128, 130, 132, 133, 134, 
       135, 136, 137, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 
-      151, 152, 153, 154, 155, 156, 157, 158, 159, 161, 162, 165, 167
+      151, 152, 153, 154, 155, 156, 157, 158, 159, 161, 162, 
+      164, 165, 167
     ];
     const agents = baseAgents.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
     
@@ -461,12 +463,11 @@ test('Rectangle URL', async ({ request }) => {
           continue;
         }
         
-        await sleep(500);
+        
       }
     }
     
     if (errorMessages.length > 0) {
-      console.error("以下錯誤訊息：\n" + errorMessages.join("\n"));
       throw new Error(errorMessages.join("\n"));
     } else {
       console.log("galaxsys URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
