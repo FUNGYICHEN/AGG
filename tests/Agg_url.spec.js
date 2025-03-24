@@ -3,8 +3,8 @@ import { ENV_CONFIG, generateGameUrl } from './api-config.js';
 
 // 輔助函數：延遲指定毫秒數
 function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
 // 輔助函數：建立數字範圍（包含起始值，不包含結束值）
 function range(start, end) {
@@ -27,9 +27,10 @@ test('Rectangle URL', async ({ request }) => {
       131, 132, 133, 134, 135, 136, 137, 139, 140, 141,
       142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
       152, 153, 154, 155, 156, 157, 158, 159, 160, 161,
-      162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172
+      162, 163, 164, 165, 166, 167, 168, 169, 170, 
+      171, 172
     ];
-    // 這裡以單一 agent [101] 為例，轉換成 "10" + 101 => 10101
+    // 將 baseAgents 轉換成前綴 "10" 的 agent，如 101 變成 10101
     const agents = baseAgents.map(a => parseInt('10' + a));
   
     // 定義 game_id 與對應 slug 的映射關係
@@ -63,7 +64,7 @@ test('Rectangle URL', async ({ request }) => {
     let errorMessages = [];
   
     // 輔助函數：從 URL 中提取 slug 部分
-    // 如果從 expected_Rectangle 長度開始截取後的字串有前導斜線，先移除它
+    // 若 expected_Rectangle 後有前導斜線，先移除之
     function extractSlug(url) {
       let remainder = url.substring(expected_Rectangle.length);
       if (remainder.startsWith('/')) {
@@ -119,15 +120,13 @@ test('Rectangle URL', async ({ request }) => {
           const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 的 GID 不正確 (expected: ${expectedSlug}, got: ${extractedSlug}) -> ${game_url}`;
           console.error(errMsg);
           errorMessages.push(errMsg);
-          await sleep(500);
-          continue;
         }
-  
+        
         await sleep(500);
       }
     }
   
-    // 如果有錯誤，先將錯誤訊息全部印出，再拋出錯誤
+    // 如果有錯誤，先打印所有錯誤訊息，再拋出錯誤
     if (errorMessages.length > 0) {
       console.error("以下錯誤訊息：\n" + errorMessages.join("\n"));
       throw new Error(errorMessages.join("\n"));
@@ -153,7 +152,8 @@ test('Rectangle URL', async ({ request }) => {
       101, 102, 103, 104, 105, 106, 107, 108, 110, 111, 112, 113, 114, 115, 116,
       117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132,
       133, 134, 135, 136, 137, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149,
-      150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 161, 162, 164, 165, 167
+      150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 161, 162, 164, 
+      165, 167
     ];
 
 
@@ -257,7 +257,8 @@ test('Rectangle URL', async ({ request }) => {
       131, 132, 133, 134, 135, 136, 137, 139, 140, 141, 
       142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
       152, 153, 154, 155, 156, 157, 158, 159, 161, 162, 
-      165, 167, 168, 169, 170, 171, 172
+      165, 167, 168, 169, 170, 
+      171, 172
     ];
     const agents = baseAgents.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
     
@@ -355,119 +356,119 @@ test('Rectangle URL', async ({ request }) => {
   
 
 
-test('galaxsys URL', async ({ request }) => {
-  test.setTimeout(0);
-  const { expected_galaxsys } = ENV_CONFIG;
+  test('galaxsys URL', async ({ request }) => {
+    test.setTimeout(0);
+    const { expected_galaxsys } = ENV_CONFIG;
+    
+    // 測試的 game_id 清單：從 70001 到 70036（包含 70001~70036）
+    const game_ids = range(70001, 70037);
+    
+    // 將 base agent 列表，並為每個 base agent 加上前綴 "10" 與 "11"
+    const baseAgents = [
+      101, 102, 103, 104, 105, 106, 107, 108, 110, 111, 112, 113, 114, 115, 116,
+      117, 118, 119, 120, 121, 122, 124, 125, 126, 127, 128, 130, 132, 133, 134, 
+      135, 136, 137, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 
+      151, 152, 153, 154, 155, 156, 157, 158, 159, 161, 162, 165, 167
+    ];
+    const agents = baseAgents.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
+    
+    // 定義 game_id 與對應的 gid 的映射關係
+    const gameIdToGid = {
+      70001: "12034",
+      70002: "2014",
+      70003: "5935",
+      70004: "2010",
+      70005: "11997",
+      70006: "19",
+      70007: "11996",
+      70008: "8098",
+      70009: "6492",
+      70010: "5339",
+      70011: "5236",
+      70012: "8100",
+      70013: "12081",
+      70014: "12105",
+      70015: "12187",
+      70016: "12184",
+      70017: "12106",
+      70018: "12188",
+      70019: "12166",
+      70020: "12250",
+      70021: "12252",
+      70022: "12253",
+      70023: "12254",
+      70024: "12107",
+      70025: "12281",
+      70026: "12283",
+      70027: "12286",
+      70028: "12285",
+      70029: "12290",
+      70030: "12289",
+      70031: "12293",
+      70032: "12282",
+      70033: "12292",
+      70034: "12309",
+      70035: "12296",
+      70036: "12318"
+    };
   
-  // 測試的 game_id 清單：從 70001 到 70036（包含 70001~70036）
-  const game_ids = range(70001, 70037);
-  
-  // 將 base agent 列表，並為每個 base agent 加上前綴 "10" 與 "11"
-  const baseAgents = [
-    101, 102, 103, 104, 105, 106, 107, 108, 110, 111, 112, 113, 114, 115, 116,
-    117, 118, 119, 120, 121, 122, 124, 125, 126, 127, 128, 130, 132,
-    133, 134, 135, 136, 137, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149,
-    150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 161, 162, 164, 165, 
-    167
-  ];
-  const agents = baseAgents.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
-  
-  // 定義 game_id 與對應的 gid 的映射關係
-  const gameIdToGid = {
-    70001: "12034",
-    70002: "2014",
-    70003: "5935",
-    70004: "2010",
-    70005: "11997",
-    70006: "19",
-    70007: "11996",
-    70008: "8098",
-    70009: "6492",
-    70010: "5339",
-    70011: "5236",
-    70012: "8100",
-    70013: "12081",
-    70014: "12105",
-    70015: "12187",
-    70016: "12184",
-    70017: "12106",
-    70018: "12188",
-    70019: "12166",
-    70020: "12250",
-    70021: "12252",
-    70022: "12253",
-    70023: "12254",
-    70024: "12107",
-    70025: "12281",
-    70026: "12283",
-    70027: "12286",
-    70028: "12285",
-    70029: "12290",
-    70030: "12289",
-    70031: "12293",
-    70032: "12282",
-    70033: "12292",
-    70034: "12309",
-    70035: "12296",
-    70036: "12318"
-  };
-
-  let errorMessages = [];
-  
-  for (const agent of agents) {
-    for (const game_id of game_ids) {
-      let game_url;
-      try {
-        game_url = await generateGameUrl(request, agent, game_id);
-      } catch (e) {
-        let errMsg;
-        if (e.message.includes("HTTP錯誤")) {
-          errMsg = `Agent: ${agent}, GameID: ${game_id} HTTP狀態碼錯誤: ${e.message}`;
-        } else {
-          errMsg = `Agent: ${agent}, GameID: ${game_id} 錯誤: ${e}`;
-        }
-        console.error(errMsg);
-        errorMessages.push(errMsg);
-        await sleep(500);
-        continue;
-      }
-  
-      // 檢查 URL 是否以 expected_galaxsys 為前綴
-      if (!game_url.startsWith(expected_galaxsys)) {
-        const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 前綴不符 -> ${game_url}`;
-        console.error(errMsg);
-        errorMessages.push(errMsg);
-        await sleep(500);
-        continue;
-      }
-      
-      // 解析 URL，檢查查詢參數 gid 是否正確
-      try {
-        const parsedUrl = new URL(game_url);
-        const actualGid = parsedUrl.searchParams.get('gid');
-        const expectedGid = gameIdToGid[game_id];
-        if (actualGid !== expectedGid) {
-          const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 的 gid 不正確 (expected: ${expectedGid}, got: ${actualGid}) -> ${game_url}`;
+    let errorMessages = [];
+    
+    for (const agent of agents) {
+      for (const game_id of game_ids) {
+        let game_url;
+        try {
+          game_url = await generateGameUrl(request, agent, game_id);
+        } catch (e) {
+          let errMsg;
+          if (e.message.includes("HTTP錯誤")) {
+            errMsg = `Agent: ${agent}, GameID: ${game_id} HTTP狀態碼錯誤: ${e.message}`;
+          } else {
+            errMsg = `Agent: ${agent}, GameID: ${game_id} 錯誤: ${e}`;
+          }
           console.error(errMsg);
           errorMessages.push(errMsg);
           await sleep(500);
           continue;
         }
-      } catch (parseErr) {
-        const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 解析錯誤: ${parseErr} -> ${game_url}`;
-        console.error(errMsg);
-        errorMessages.push(errMsg);
+    
+        // 檢查 URL 是否以 expected_galaxsys 為前綴
+        if (!game_url.startsWith(expected_galaxsys)) {
+          const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 前綴不符 -> ${game_url}`;
+          console.error(errMsg);
+          errorMessages.push(errMsg);
+          await sleep(500);
+          continue;
+        }
+        
+        // 解析 URL，檢查查詢參數 gid 是否正確
+        try {
+          const parsedUrl = new URL(game_url);
+          const actualGid = parsedUrl.searchParams.get('gid');
+          const expectedGid = gameIdToGid[game_id];
+          if (actualGid !== expectedGid) {
+            const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 的 gid 不正確 (expected: ${expectedGid}, got: ${actualGid}) -> ${game_url}`;
+            console.error(errMsg);
+            errorMessages.push(errMsg);
+            await sleep(500);
+            continue;
+          }
+        } catch (parseErr) {
+          const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 解析錯誤: ${parseErr} -> ${game_url}`;
+          console.error(errMsg);
+          errorMessages.push(errMsg);
+          await sleep(500);
+          continue;
+        }
+        
         await sleep(500);
-        continue;
       }
-      
-      await sleep(500);
     }
-  }
-  
-  if (errorMessages.length > 0) {
-    throw new Error(errorMessages.join("\n"));
-  } else {
-    console.log("galaxsys URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
-  }
-});
+    
+    if (errorMessages.length > 0) {
+      console.error("以下錯誤訊息：\n" + errorMessages.join("\n"));
+      throw new Error(errorMessages.join("\n"));
+    } else {
+      console.log("galaxsys URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
+    }
+  });
