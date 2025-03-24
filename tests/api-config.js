@@ -4,7 +4,7 @@ export const ENV_CONFIG = {
   // STG 環境參數
   login_url: "https://stagingop.ggyyonline.com/login",
   expected_Wcasino: "https://tst.wcasino9.com/direct/login",
-  expected_prefix: "https://partnerapi-gli.stg-digi.com/Games/Launch/",
+  expected_galaxsys: "https://partnerapi-gli.stg-digi.com/Games/Launch/",
   expected_Rectangle: "https://g.sandbox.rectangle-games.com",
   expected_Playson: "https://static-stage.rowzone.tech/",
   error_image_prefix: "Content/images/failed/",

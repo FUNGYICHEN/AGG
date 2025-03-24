@@ -18,23 +18,22 @@ test('Rectangle URL', async ({ request }) => {
     // 測試的 game_id 範圍：90001 至 90023（不包含90024）
     const game_ids = range(90001, 90024);
   
-    
     // 原始 agent 清單
     const baseAgents = [
-    101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
-    111, 112, 113, 114, 115, 116, 117, 118, 119, 120,
-    121, 122, 123, 124, 125, 126, 127, 128, 129, 130,
-    131, 132, 133, 134, 135, 136, 137, 139, 140, 141,
-    142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
-    152, 153, 154, 155, 156, 157, 158, 159, 160, 161,
-    162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172
-  ];
-  // 這裡以單一 agent [101] 為例，轉換成 "10" + 101 => 10101
+      101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
+      111, 112, 113, 114, 115, 116, 117, 118, 119, 120,
+      121, 122, 123, 124, 125, 126, 127, 128, 129, 130,
+      131, 132, 133, 134, 135, 136, 137, 139, 140, 141,
+      142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
+      152, 153, 154, 155, 156, 157, 158, 159, 160, 161,
+      162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172
+    ];
+    // 這裡以單一 agent [101] 為例，轉換成 "10" + 101 => 10101
     const agents = baseAgents.map(a => parseInt('10' + a));
   
     // 定義 game_id 與對應 slug 的映射關係
     const gameIdToSlug = {
-      90001: "swaggy-caramelo",  
+      90001: "swaggy-caramelo",
       90002: "persian-jewels",
       90003: "lucky-leprechaun-loot",
       90004: "lucky-duck",
@@ -127,13 +126,14 @@ test('Rectangle URL', async ({ request }) => {
       }
     }
   
+    // 如果有錯誤，先將錯誤訊息全部印出，再拋出錯誤
     if (errorMessages.length > 0) {
+      console.error("以下錯誤訊息：\n" + errorMessages.join("\n"));
       throw new Error(errorMessages.join("\n"));
     } else {
       console.log("Rectangle URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
     }
   });
-
 
 
   test('Wcasino URL', async ({ request }) => {
@@ -149,7 +149,7 @@ test('Rectangle URL', async ({ request }) => {
     
     // 將 base agent 列表，並為每個 base agent 加上前綴 "10" 與 "11"
     const baseAgents = [
-      101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116,
+      101, 102, 103, 104, 105, 106, 107, 108, 110, 111, 112, 113, 114, 115, 116,
       117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132,
       133, 134, 135, 136, 137, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149,
       150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 161, 162, 164, 165, 167
@@ -246,17 +246,19 @@ test('Rectangle URL', async ({ request }) => {
   test('Playson URL', async ({ request }) => {
     test.setTimeout(0);
     
-    const { expected_Playson } = ENV_CONFIG; // ENV_CONFIG 中需定義 expected_Playson
+    const { expected_Playson } = ENV_CONFIG; // ENV_CONFIG 中需定義 expected_Playson，例如 "https://static-stage.rowzone.tech/"
+    
     // 原始 agent 列表，並為每個 agent 加上前綴 "10" 與 "11"
     const baseAgents = [
-      101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
-      111, 112, 113, 114, 115, 116, 117, 118, 119, 120,
-      121, 122, 123, 124, 125, 126, 127, 128, 129, 130,
-      131, 132, 133, 134, 135, 136, 137, 139, 140, 141, 142,
-      143, 144, 145, 146, 147, 148, 149, 150, 151, 152,
-      153, 154, 155, 156, 157, 158, 159, 161, 162, 165,
-      167, 168, 169, 170, 171, 172
-    ];
+        //   101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
+        //   111, 112, 113, 114, 115, 116, 117, 118, 119, 120,
+        //   121, 122, 123, 124, 125, 126, 127, 128, 129, 130,
+        //   131, 132, 133, 134, 135, 136, 137, 139, 140, 141, 142,
+        //   143, 144, 145, 146, 147, 148, 149, 150, 151, 152,
+        //   153, 154, 155, 156, 157, 158, 159, 161, 162, 165,
+        //   167, 168, 169, 170, 171,
+             172
+        ];
     const agents = baseAgents.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
     
     // 指定要測試的 game id 列表：原有 20051~20059，加上 24062~24070
@@ -288,15 +290,15 @@ test('Rectangle URL', async ({ request }) => {
   
     let errorMessages = [];
   
-    // 輔助函數：從 URL 中提取 slug 部分
-    // 假設 URL 結構為 expected_Playson + "/" + slug + 其它內容
+    // 修改後的輔助函數：從 URL 中提取 query 參數 gameName 作為 GID
     function extractSlug(url) {
-      let remainder = url.substring(expected_Playson.length);
-      if (remainder.startsWith('/')) {
-        remainder = remainder.substring(1);
+      try {
+        const urlObj = new URL(url);
+        return urlObj.searchParams.get("gameName");
+      } catch (e) {
+        console.error("無法解析 URL:", url);
+        return "";
       }
-      const slug = remainder.split('/')[0];
-      return slug;
     }
     
     for (const agent of agents) {
@@ -310,7 +312,7 @@ test('Rectangle URL', async ({ request }) => {
             await sleep(500);
             continue;
           }
-          // 提取 URL 中的 slug
+          // 從 query string 中取得 gameName 作為 GID
           const extractedSlug = extractSlug(url);
           const expectedSlug = gameIdToSlug[gameId];
           if (extractedSlug !== expectedSlug) {
