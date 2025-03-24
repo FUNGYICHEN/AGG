@@ -82,7 +82,7 @@ test('Rectangle URL', async ({ request }) => {
           if (e.message.includes("HTTP錯誤")) {
             let success = false;
             for (let attempt = 1; attempt <= 2; attempt++) {
-              await sleep(500);
+              await sleep(300);
               try {
                 game_url = await generateGameUrl(request, agent, game_id);
                 success = true;
@@ -95,14 +95,14 @@ test('Rectangle URL', async ({ request }) => {
               const errMsg = `Agent: ${agent}, GameID: ${game_id} 錯誤 (after retries): ${e.message}`;
               console.error(errMsg);
               errorMessages.push(errMsg);
-              await sleep(500);
+              await sleep(300);
               continue;
             }
           } else {
             const errMsg = `Agent: ${agent}, GameID: ${game_id} 錯誤: ${e}`;
             console.error(errMsg);
             errorMessages.push(errMsg);
-            await sleep(500);
+            await sleep(300);
             continue;
           }
         }
@@ -112,7 +112,7 @@ test('Rectangle URL', async ({ request }) => {
           const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 前綴不符 -> ${game_url}`;
           console.error(errMsg);
           errorMessages.push(errMsg);
-          await sleep(500);
+          await sleep(300);
           continue;
         }
   
@@ -125,7 +125,7 @@ test('Rectangle URL', async ({ request }) => {
           errorMessages.push(errMsg);
         }
         
-        await sleep(500);
+        await sleep(300);
       }
     }
   
@@ -224,8 +224,8 @@ test('Rectangle URL', async ({ request }) => {
             errorMessages.push(errMsg);
             await sleep(500);
             continue;
-            
-          }
+        }
+                     
 
         } catch (parseErr) {
           const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 解析錯誤: ${parseErr} -> ${game_url}`;
@@ -258,10 +258,10 @@ test('Rectangle URL', async ({ request }) => {
       101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
       111, 112, 113, 114, 115, 116, 117, 118, 119, 120,
       121, 122, 123, 124, 125, 126, 127, 128, 129, 130,
-      131, 132, 133, 134, 135, 136, 137, 139, 140, 141, 
+      131, 132, 133, 134, 135, 136, 137, 139, 140, 141,
       142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
-      152, 153, 154, 155, 156, 157, 158, 159, 161, 162, 
-      165, 167, 168, 169, 170, 
+      152, 153, 154, 155, 156, 157, 158, 159, 161, 162,
+      165, 167, 168, 169, 170,
       171, 172
     ];
     const agents = baseAgents.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
@@ -301,7 +301,7 @@ test('Rectangle URL', async ({ request }) => {
         const urlObj = new URL(url);
         return urlObj.searchParams.get("gameName");
       } catch (e) {
-        console.error("無法解析 URL:", url);
+        console.error("Playson - 無法解析 URL:", url);
         return "";
       }
     }
@@ -311,7 +311,7 @@ test('Rectangle URL', async ({ request }) => {
         try {
           const url = await generateGameUrl(request, agent, gameId);
           if (!url.startsWith(expected_Playson)) {
-            const errMsg = `Agent: ${agent}, GameID: ${gameId} URL 前綴不符 -> ${url}`;
+            const errMsg = `Playson - Agent: ${agent}, GameID: ${gameId} URL 前綴不符 -> ${url}`;
             console.error(errMsg);
             errorMessages.push(errMsg);
             await sleep(500);
@@ -326,21 +326,18 @@ test('Rectangle URL', async ({ request }) => {
             errorMessages.push(errMsg);
             await sleep(500);
             continue;
-          } 
+          }
           
         } catch (e) {
-          // 特殊處理 agent 10117 或 11117 (agent % 1000 === 117)
-          // 在 gameId 為 [20051,20053,20054,20055,20056,20057,20058,20059] 且錯誤訊息中包含 "400"
-          // 則視為正常，不記錄錯誤訊息
           if (
             (agent % 1000 === 117) &&
-            [20051, 20053, 20054, 20055, 20056, 20057, 20058, 20059].includes(gameId) &&
+            [20051,20053,20054,20055,20056,20057,20058,20059].includes(gameId) &&
             e.message.includes("400")
           ) {
             await sleep(500);
             continue;
           } else {
-            const errMsg = `Agent: ${agent}, GameID: ${gameId} 錯誤: ${e}`;
+            const errMsg = `Playson - Agent: ${agent}, GameID: ${gameId} 錯誤: ${e}`;
             console.error(errMsg);
             errorMessages.push(errMsg);
             await sleep(500);
@@ -352,6 +349,7 @@ test('Rectangle URL', async ({ request }) => {
     }
     
     if (errorMessages.length > 0) {
+      console.error("Playson - 以下錯誤訊息：\n" + errorMessages.join("\n"));
       throw new Error(errorMessages.join("\n"));
     } else {
       console.log("Playson URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
@@ -457,6 +455,9 @@ test('Rectangle URL', async ({ request }) => {
             errorMessages.push(errMsg);
             await sleep(500);
             continue;
+            
+          } else {
+            console.log(`galaxsys - Agent: ${agent}, GameID: ${game_id} 成功 -> ${game_url}`);
           }
         } catch (parseErr) {
           const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 解析錯誤: ${parseErr} -> ${game_url}`;
