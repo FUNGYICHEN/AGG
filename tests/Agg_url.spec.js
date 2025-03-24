@@ -456,8 +456,6 @@ test('Rectangle URL', async ({ request }) => {
             await sleep(500);
             continue;
             
-          } else {
-            console.log(`galaxsys - Agent: ${agent}, GameID: ${game_id} 成功 -> ${game_url}`);
           }
         } catch (parseErr) {
           const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 解析錯誤: ${parseErr} -> ${game_url}`;
