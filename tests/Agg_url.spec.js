@@ -323,14 +323,14 @@ test('Rectangle URL', async ({ request }) => {
             continue;
           }
         } catch (e) {
-          // 特殊處理 agent 107，在 gameId 為 [20051,20053,20054,20055,20056,20057,20058,20059] 時
-          // 如果錯誤訊息中包含 "400"，則視為正常，不記錄錯誤
+          // 特殊處理 agent 10117 或 11117 (agent % 1000 === 117)
+          // 在 gameId 為 [20051,20053,20054,20055,20056,20057,20058,20059] 且錯誤訊息中包含 "400"
+          // 則視為正常，不記錄錯誤訊息
           if (
-            (agent % 1000 === 107) &&
+            (agent % 1000 === 117) &&
             [20051, 20053, 20054, 20055, 20056, 20057, 20058, 20059].includes(gameId) &&
             e.message.includes("400")
           ) {
-            console.log(`Agent: ${agent}, GameID: ${gameId} 返回狀態碼400，視為正常`);
             await sleep(500);
             continue;
           } else {
@@ -352,6 +352,7 @@ test('Rectangle URL', async ({ request }) => {
       console.log("Playson URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
     }
   });
+  
 
 
 test('galaxsys URL', async ({ request }) => {
