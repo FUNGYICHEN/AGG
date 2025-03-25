@@ -363,7 +363,7 @@ if (errorMessages.length > 0) {
     const { expected_galaxsys } = ENV_CONFIG;
     
     // 測試的 game_id 清單：從 70001 到 70036（包含 70001~70036）
-    const game_ids = range(70000, 70002);
+    const game_ids = range(70001, 70002);
     
     // 將 base agent 列表，並為每個 base agent 加上前綴 "10" 與 "11"
     const baseAgents = [
