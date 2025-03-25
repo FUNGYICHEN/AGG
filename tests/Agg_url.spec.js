@@ -129,12 +129,13 @@ test('Rectangle URL', async ({ request }) => {
       }
     }
   
+    const testName = "Rectangle";
     if (errorMessages.length > 0) {
-        throw new Error("Playson URL: " + errorMessages.join("\n"));
-      } else {
-        console.log("Rectangle URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
-      }
-  });
+      throw new Error(testName + ": " + errorMessages.join("\n"));
+    } else {
+      console.log(`${testName} 測試：所有 agent 測試成功，正常取得遊戲 URL`);
+    }
+      });
 
 
   test('Wcasino URL', async ({ request }) => {
@@ -240,11 +241,12 @@ test('Rectangle URL', async ({ request }) => {
       }
     }
     
-    if (errorMessages.length > 0) {
-        throw new Error("Playson URL: " + errorMessages.join("\n"));
-      } else {
-        console.log("Wcasino URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
-      }
+    const testName = "Wcasino";
+if (errorMessages.length > 0) {
+  throw new Error(testName + ": " + errorMessages.join("\n"));
+} else {
+  console.log(`${testName} 測試：所有 agent 測試成功，正常取得遊戲 URL`);
+}
   });
 
 
@@ -348,12 +350,14 @@ test('Rectangle URL', async ({ request }) => {
       }
     }
     
-    if (errorMessages.length > 0) {
-        throw new Error("Playson URL: " + errorMessages.join("\n"));
-      } else {
-        console.log("Playson URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
-      }
+    const testName = "Playson";
+if (errorMessages.length > 0) {
+  throw new Error(testName + ": " + errorMessages.join("\n"));
+} else {
+  console.log(`${testName} 測試：所有 agent 測試成功，正常取得遊戲 URL`);
+}
   });
+
   
 
 
@@ -468,9 +472,11 @@ test('Rectangle URL', async ({ request }) => {
       }
     }
     
-    if (errorMessages.length > 0) {
-        throw new Error("Galaxsys URL: " + errorMessages.join("\n"));
-      } else {
-        console.log("Playson URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
-      }
+   
+    
+if (errorMessages.length > 0) {
+  throw new Error(testName + ": " + errorMessages.join("\n"));
+} else {
+  console.log(`${testName} 測試：所有 agent 測試成功，正常取得遊戲 URL`);
+}
   });
