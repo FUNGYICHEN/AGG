@@ -130,10 +130,10 @@ test('Rectangle URL', async ({ request }) => {
     }
   
     if (errorMessages.length > 0) {
-      throw new Error(errorMessages.join("\n"));
-    } else {
-      console.log("Rectangle URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
-    }
+        throw new Error("Playson URL: " + errorMessages.join("\n"));
+      } else {
+        console.log("Rectangle URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
+      }
   });
 
 
@@ -241,10 +241,10 @@ test('Rectangle URL', async ({ request }) => {
     }
     
     if (errorMessages.length > 0) {
-      throw new Error(errorMessages.join("\n"));
-    } else {
-      console.log("Wcasino URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
-    }
+        throw new Error("Playson URL: " + errorMessages.join("\n"));
+      } else {
+        console.log("Wcasino URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
+      }
   });
 
 
@@ -349,10 +349,10 @@ test('Rectangle URL', async ({ request }) => {
     }
     
     if (errorMessages.length > 0) {
-      throw new Error(errorMessages.join("\n"));
-    } else {
-      console.log("Playson URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
-    }
+        throw new Error("Playson URL: " + errorMessages.join("\n"));
+      } else {
+        console.log("Playson URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
+      }
   });
   
 
@@ -370,7 +370,7 @@ test('Rectangle URL', async ({ request }) => {
     //   117, 118, 119, 120, 121, 122, 124, 125, 126, 127, 128, 130, 132, 133, 134, 
     //   135, 136, 137, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 
     //   151, 152, 153, 154, 155, 156, 157, 158, 159, 161, 162, 
-         164,165, 167
+         164,165,
     ];
     const agents = baseAgents.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
     
@@ -469,8 +469,8 @@ test('Rectangle URL', async ({ request }) => {
     }
     
     if (errorMessages.length > 0) {
-      throw new Error(errorMessages.join("\n"));
-    } else {
-      console.log("galaxsys URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
-    }
+        throw new Error("Galaxsys URL: " + errorMessages.join("\n"));
+      } else {
+        console.log("Playson URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
+      }
   });
