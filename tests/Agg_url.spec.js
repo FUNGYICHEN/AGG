@@ -128,7 +128,7 @@ test('Rectangle URL', async ({ request }) => {
         await sleep(300);
       }
     }
-  
+    const testName = "Rectangle URL";
     if (errorMessages.length > 0) {
       throw new Error(testName + ": " + errorMessages.join("\n"));
     } else {
@@ -239,7 +239,7 @@ test('Rectangle URL', async ({ request }) => {
         await sleep(500);
       }
     }
-
+    const testName = "Wcasino URL";
 if (errorMessages.length > 0) {
   throw new Error(testName + ": " + errorMessages.join("\n"));
 } else {
@@ -347,7 +347,7 @@ if (errorMessages.length > 0) {
         await sleep(500);
       }
     }
-    
+    const testName = "playson URL";
 if (errorMessages.length > 0) {
   throw new Error(testName + ": " + errorMessages.join("\n"));
 } else {
@@ -470,7 +470,7 @@ if (errorMessages.length > 0) {
     }
     
    
-    
+const testName = "galaxsys URL";
 if (errorMessages.length > 0) {
   throw new Error(testName + ": " + errorMessages.join("\n"));
 } else {
