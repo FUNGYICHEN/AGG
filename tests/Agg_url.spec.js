@@ -358,7 +358,7 @@ test('Rectangle URL', async ({ request }) => {
   
 
 
-  test.only('galaxsys URL', async ({ request }) => {
+  test('galaxsys URL', async ({ request }) => {
     test.setTimeout(0);
     const { expected_galaxsys } = ENV_CONFIG;
     
@@ -371,7 +371,7 @@ test('Rectangle URL', async ({ request }) => {
       117, 118, 119, 120, 121, 122, 124, 125, 126, 127, 128, 130, 132, 133, 134, 
       135, 136, 137, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 
       151, 152, 153, 154, 155, 156, 157, 158, 159, 161, 162, 
-      164, 165, 167
+      165, 167
     ];
     const agents = baseAgents.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
     
