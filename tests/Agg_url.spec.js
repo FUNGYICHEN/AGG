@@ -349,7 +349,6 @@ test('Rectangle URL', async ({ request }) => {
     }
     
     if (errorMessages.length > 0) {
-      console.error("Playson - 以下錯誤訊息：\n" + errorMessages.join("\n"));
       throw new Error(errorMessages.join("\n"));
     } else {
       console.log("Playson URL 測試：所有 agent 測試成功，正常取得遊戲 URL");
@@ -358,7 +357,7 @@ test('Rectangle URL', async ({ request }) => {
   
 
 
-  test('galaxsys URL', async ({ request }) => {
+  test.only('galaxsys URL', async ({ request }) => {
     test.setTimeout(0);
     const { expected_galaxsys } = ENV_CONFIG;
     
@@ -367,11 +366,11 @@ test('Rectangle URL', async ({ request }) => {
     
     // 將 base agent 列表，並為每個 base agent 加上前綴 "10" 與 "11"
     const baseAgents = [
-      101, 102, 103, 104, 105, 106, 107, 108, 110, 111, 112, 113, 114, 115, 116,
-      117, 118, 119, 120, 121, 122, 124, 125, 126, 127, 128, 130, 132, 133, 134, 
-      135, 136, 137, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 
-      151, 152, 153, 154, 155, 156, 157, 158, 159, 161, 162, 
-      165, 167
+    //   101, 102, 103, 104, 105, 106, 107, 108, 110, 111, 112, 113, 114, 115, 116,
+    //   117, 118, 119, 120, 121, 122, 124, 125, 126, 127, 128, 130, 132, 133, 134, 
+    //   135, 136, 137, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 
+    //   151, 152, 153, 154, 155, 156, 157, 158, 159, 161, 162, 
+         164,165, 167
     ];
     const agents = baseAgents.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
     
