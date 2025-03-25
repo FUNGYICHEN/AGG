@@ -129,7 +129,6 @@ test('Rectangle URL', async ({ request }) => {
       }
     }
   
-    const testName = "Rectangle";
     if (errorMessages.length > 0) {
       throw new Error(testName + ": " + errorMessages.join("\n"));
     } else {
@@ -240,8 +239,7 @@ test('Rectangle URL', async ({ request }) => {
         await sleep(500);
       }
     }
-    
-    const testName = "Wcasino";
+
 if (errorMessages.length > 0) {
   throw new Error(testName + ": " + errorMessages.join("\n"));
 } else {
@@ -350,7 +348,6 @@ if (errorMessages.length > 0) {
       }
     }
     
-    const testName = "Playson";
 if (errorMessages.length > 0) {
   throw new Error(testName + ": " + errorMessages.join("\n"));
 } else {
@@ -374,13 +371,13 @@ if (errorMessages.length > 0) {
     //   117, 118, 119, 120, 121, 122, 124, 125, 126, 127, 128, 130, 132, 133, 134, 
     //   135, 136, 137, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 
     //   151, 152, 153, 154, 155, 156, 157, 158, 159, 161, 162, 
-         164,165,
+         165
     ];
     const agents = baseAgents.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
     
     // 定義 game_id 與對應的 gid 的映射關係
     const gameIdToGid = {
-      70001: "12034",
+      70001: "fgtey45",
       70002: "2014",
       70003: "5935",
       70004: "2010",
