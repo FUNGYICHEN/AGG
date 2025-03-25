@@ -11,56 +11,6 @@ function range(start, end) {
   return arr;
 }
 
-// test('Rectangle URL/遊戲進入', async ({ request }) => {
-//   test.setTimeout(0);
-//   const { expected_Rectangle } = ENV_CONFIG;
-
-//   // 測試的 game_id 範圍：70001 至 70036（不含70037）
-//   const game_ids = range(90001, 90024);
-
-//   // 原始 agent 清單
-//   const baseAgents = [
-//     101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
-//     111, 112, 113, 114, 115, 116, 117, 118, 119, 120,
-//     121, 122, 123, 124, 125, 126, 127, 128, 129, 130,
-//     131, 132, 133, 134, 135, 136, 137, 139, 140, 141,
-//     142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
-//     152, 153, 154, 155, 156, 157, 158, 159, 160, 161,
-//     162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172
-//   ];
-//   // 前面都加上 "10"，例如 101 會變成 10101
-//   const agents = baseAgents.map(a => parseInt('10' + a));
-
-//   let errorMessages = [];
-
-//   for (const agent of agents) {
-//     for (const game_id of game_ids) {
-//       try {
-//         // 取得遊戲 URL
-//         const game_url = await generateGameUrl(request, agent, game_id);
-//         if (!game_url.startsWith(expected_Rectangle)) {
-//           errorMessages.push(`Agent: ${agent}, GameID: ${game_id} URL 前綴不符 -> ${game_url}`);
-//         } else {
-//           console.log(`Agent: ${agent}, GameID: ${game_id} 取得的 URL 正確: ${game_url}`);
-//         }
-//       } catch (e) {
-//         errorMessages.push(`Agent: ${agent}, GameID: ${game_id} 測試過程發生錯誤: ${e}`);
-//       }
-//       // 延遲以避免連續請求過快
-//       await new Promise(resolve => setTimeout(resolve, 500));
-//     }
-//   }
-
-//   if (errorMessages.length > 0) {
-//     throw new Error(errorMessages.join("\n"));
-//   } else {
-//     console.log("所有 agent 測試成功，正常取得遊戲 URL");
-//   }
-// });
-
-
-
-
 
 test('Rectangle_上半', async ({ browser, request }) => {
   test.setTimeout(0);

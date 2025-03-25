@@ -1,56 +1,6 @@
 import { test, expect } from '@playwright/test';
 import {ENV_CONFIG, generateGameUrl, depositMoney } from './api-config.js';
 
-// test('v URL 測試', async ({ browser, request }) => {
-//     test.setTimeout(0);
-    
-//     const { expected_Playson } = ENV_CONFIG; // ENV_CONFIG 中需定義 expected_Playson:"https://static-stage.rowzone.tech/"
-  
-//     // 原始 agent 列表
-//     const baseAgents = [
-//       101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
-//       111, 112, 113, 114, 115, 116, 118, 119, 120, 121,
-//       122, 123, 124, 125, 126, 127, 128, 129, 130, 131,
-//       132, 133, 134, 135, 136, 137, 139, 140, 141, 142,
-//       143, 144, 145, 146, 147, 148, 149, 150, 151, 152,
-//       153, 154, 155, 156, 157, 158, 159, 161, 162, 165,
-//       167, 168, 169, 170, 171, 172
-//     ];
-//     // 為每個 agent 產生兩個版本：前綴 "10" 與 "11"
-//     const agents = baseAgents.flatMap(a => [parseInt("10" + a.toString()), parseInt("11" + a.toString())]);
-  
-//     // 指定要測試的 game id 列表
-//     const gameIds = [
-//       20051, 20052, 20053, 20054, 20055, 20056, 20057, 20058, 20059
-//     ];
-  
-//     let errorMessages = [];
-  
-//     for (const agent of agents) {
-//       for (const gameId of gameIds) {
-//         try {
-//           const url = await generateGameUrl(request, agent, gameId);
-//           console.log(`Agent: ${agent}, GameID: ${gameId} 取得 URL: ${url}`);
-//           if (!url.startsWith(expected_Playson)) {
-//             errorMessages.push(`Agent: ${agent}, GameID: ${gameId} URL 前綴不符 -> ${url}`);
-//           }
-//         } catch (e) {
-//           errorMessages.push(`Agent: ${agent}, GameID: ${gameId} 測試過程發生錯誤: ${e}`);
-//         }
-//         // 避免連續請求過快，稍微延遲
-//         await new Promise(resolve => setTimeout(resolve, 500));
-//       }
-//     }
-  
-//     if (errorMessages.length > 0) {
-//       throw new Error(errorMessages.join("\n"));
-//     } else {
-//       console.log("所有 Agent 測試成功，正常取得 Playson URL");
-//     }
-//     });
-
-
-
 
     
     test('Playson Spin 測試', async ({ browser, request }) => {

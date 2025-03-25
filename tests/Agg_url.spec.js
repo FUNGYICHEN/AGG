@@ -358,7 +358,7 @@ test('Rectangle URL', async ({ request }) => {
   
 
 
-  test('galaxsys URL', async ({ request }) => {
+  test.only('galaxsys URL', async ({ request }) => {
     test.setTimeout(0);
     const { expected_galaxsys } = ENV_CONFIG;
     
