@@ -17,129 +17,129 @@ function range(start, end) {
 }
 
 
-// test('Rectangle URL', async ({ request }) => {
-//     test.setTimeout(0);
-//     const { expected_Rectangle } = ENV_CONFIG;
+test('Rectangle URL', async ({ request }) => {
+    test.setTimeout(0);
+    const { expected_Rectangle } = ENV_CONFIG;
   
-//     // 測試的 game_id 範圍：90001 至 90023（不包含90024）
-//     const game_ids = range(90001, 90024);
+    // 測試的 game_id 範圍：90001 至 90023（不包含90024）
+    const game_ids = range(90001, 90024);
   
-//     // 原始 agent 清單
-//     const baseAgents = [
-//       101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
-//       111, 112, 113, 114, 115, 116, 117, 118, 119, 120,
-//       121, 122, 123, 124, 125, 126, 127, 128, 129, 130,
-//       131, 132, 133, 134, 135, 136, 137, 139, 140, 141,
-//       142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
-//       152, 153, 154, 155, 156, 157, 158, 159, 160, 161,
-//       162, 163, 164, 165, 166, 167, 168, 169, 170,
-//       171, 172
-//     ];
-//     // 將 baseAgents 轉換成前綴 "10" 的 agent，如 101 變成 10101
-//     const agents = baseAgents.map(a => parseInt('10' + a));
+    // 原始 agent 清單
+    const baseAgents = [
+      101, 102, 103, 104, 105, 106, 107, 108, 109, 110,
+      111, 112, 113, 114, 115, 116, 117, 118, 119, 120,
+      121, 122, 123, 124, 125, 126, 127, 128, 129, 130,
+      131, 132, 133, 134, 135, 136, 137, 139, 140, 141,
+      142, 143, 144, 145, 146, 147, 148, 149, 150, 151,
+      152, 153, 154, 155, 156, 157, 158, 159, 160, 161,
+      162, 163, 164, 165, 166, 167, 168, 169, 170,
+      171, 172
+    ];
+    // 將 baseAgents 轉換成前綴 "10" 的 agent，如 101 變成 10101
+    const agents = baseAgents.map(a => parseInt('10' + a));
   
-//     // 定義 game_id 與對應 slug 的映射關係
-//     const gameIdToSlug = {
-//       90001: "swaggy-caramelo",
-//       90002: "persian-jewels",
-//       90003: "lucky-leprechaun-loot",
-//       90004: "lucky-duck",
-//       90005: "lucky-snake",
-//       90006: "lucky-fox",
-//       90007: "lucky-turtle",
-//       90008: "disco-fever",
-//       90009: "magic-circus",
-//       90010: "the-lone-fireball",
-//       90011: "solar-pong",
-//       90012: "aphrodite-heart",
-//       90013: "mighty-toro",
-//       90014: "firebird-quest",
-//       90015: "golden-year",
-//       90016: "path-of-gods",
-//       90017: "fiesta-blue",
-//       90018: "fiesta-green",
-//       90019: "rudolphs-gift",
-//       90020: "iron-valor",
-//       90021: "realm-of-thunder",
-//       90022: "black-assassin",
-//       90023: "smash-fury",
-//       90024: "the-lucky-year"
-//     };
+    // 定義 game_id 與對應 slug 的映射關係
+    const gameIdToSlug = {
+      90001: "swaggy-caramelo",
+      90002: "persian-jewels",
+      90003: "lucky-leprechaun-loot",
+      90004: "lucky-duck",
+      90005: "lucky-snake",
+      90006: "lucky-fox",
+      90007: "lucky-turtle",
+      90008: "disco-fever",
+      90009: "magic-circus",
+      90010: "the-lone-fireball",
+      90011: "solar-pong",
+      90012: "aphrodite-heart",
+      90013: "mighty-toro",
+      90014: "firebird-quest",
+      90015: "golden-year",
+      90016: "path-of-gods",
+      90017: "fiesta-blue",
+      90018: "fiesta-green",
+      90019: "rudolphs-gift",
+      90020: "iron-valor",
+      90021: "realm-of-thunder",
+      90022: "black-assassin",
+      90023: "smash-fury",
+      90024: "the-lucky-year"
+    };
   
-//     let errorMessages = [];
+    let errorMessages = [];
   
-//     // 輔助函數：從 URL 中提取 slug 部分（移除 expected_Rectangle 後的前導斜線）
-//     function extractSlug(url) {
-//       let remainder = url.substring(expected_Rectangle.length);
-//       if (remainder.startsWith('/')) {
-//         remainder = remainder.substring(1);
-//       }
-//       return remainder.split('/')[0];
-//     }
+    // 輔助函數：從 URL 中提取 slug 部分（移除 expected_Rectangle 後的前導斜線）
+    function extractSlug(url) {
+      let remainder = url.substring(expected_Rectangle.length);
+      if (remainder.startsWith('/')) {
+        remainder = remainder.substring(1);
+      }
+      return remainder.split('/')[0];
+    }
   
-//     for (const agent of agents) {
-//       for (const game_id of game_ids) {
-//         let game_url;
-//         try {
-//           game_url = await generateGameUrl(request, agent, game_id);
-//         } catch (e) {
-//           // 如果捕獲到 HTTP錯誤（400 或 500），等待 500 毫秒後重試兩次
-//           if (e.message.includes("HTTP錯誤")) {
-//             let success = false;
-//             for (let attempt = 1; attempt <= 2; attempt++) {
-//               await sleep(300);
-//               try {
-//                 game_url = await generateGameUrl(request, agent, game_id);
-//                 success = true;
-//                 break;
-//               } catch (e2) {
-//                 console.warn(`Agent: ${agent}, GameID: ${game_id} 重試錯誤（嘗試 ${attempt} 次）: ${e2.message}`);
-//               }
-//             }
-//             if (!success) {
-//               const errMsg = `Agent: ${agent}, GameID: ${game_id} 錯誤 (after retries): ${e.message}`;
-//               console.error(errMsg);
-//               errorMessages.push(errMsg);
-//               await sleep(300);
-//               continue;
-//             }
-//           } else {
-//             const errMsg = `Agent: ${agent}, GameID: ${game_id} 錯誤: ${e}`;
-//             console.error(errMsg);
-//             errorMessages.push(errMsg);
-//             await sleep(300);
-//             continue;
-//           }
-//         }
+    for (const agent of agents) {
+      for (const game_id of game_ids) {
+        let game_url;
+        try {
+          game_url = await generateGameUrl(request, agent, game_id);
+        } catch (e) {
+          // 如果捕獲到 HTTP錯誤（400 或 500），等待 500 毫秒後重試兩次
+          if (e.message.includes("HTTP錯誤")) {
+            let success = false;
+            for (let attempt = 1; attempt <= 2; attempt++) {
+              await sleep(300);
+              try {
+                game_url = await generateGameUrl(request, agent, game_id);
+                success = true;
+                break;
+              } catch (e2) {
+                console.warn(`Agent: ${agent}, GameID: ${game_id} 重試錯誤（嘗試 ${attempt} 次）: ${e2.message}`);
+              }
+            }
+            if (!success) {
+              const errMsg = `Agent: ${agent}, GameID: ${game_id} 錯誤 (after retries): ${e.message}`;
+              console.error(errMsg);
+              errorMessages.push(errMsg);
+              await sleep(300);
+              continue;
+            }
+          } else {
+            const errMsg = `Agent: ${agent}, GameID: ${game_id} 錯誤: ${e}`;
+            console.error(errMsg);
+            errorMessages.push(errMsg);
+            await sleep(300);
+            continue;
+          }
+        }
   
-//         // 檢查 URL 是否以 expected_Rectangle 為前綴
-//         if (!game_url.startsWith(expected_Rectangle)) {
-//           const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 前綴不符 -> ${game_url}`;
-//           console.error(errMsg);
-//           errorMessages.push(errMsg);
-//           await sleep(300);
-//           continue;
-//         }
+        // 檢查 URL 是否以 expected_Rectangle 為前綴
+        if (!game_url.startsWith(expected_Rectangle)) {
+          const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 前綴不符 -> ${game_url}`;
+          console.error(errMsg);
+          errorMessages.push(errMsg);
+          await sleep(300);
+          continue;
+        }
   
-//         // 從 URL 中提取 slug 並檢查是否與預期一致
-//         const extractedSlug = extractSlug(game_url);
-//         const expectedSlug = gameIdToSlug[game_id];
-//         if (extractedSlug !== expectedSlug) {
-//           const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 的 GID 不正確 (expected: ${expectedSlug}, got: ${extractedSlug}) -> ${game_url}`;
-//           console.error(errMsg);
-//           errorMessages.push(errMsg);
-//         }
+        // 從 URL 中提取 slug 並檢查是否與預期一致
+        const extractedSlug = extractSlug(game_url);
+        const expectedSlug = gameIdToSlug[game_id];
+        if (extractedSlug !== expectedSlug) {
+          const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 的 GID 不正確 (expected: ${expectedSlug}, got: ${extractedSlug}) -> ${game_url}`;
+          console.error(errMsg);
+          errorMessages.push(errMsg);
+        }
         
-//         await sleep(300);
-//       }
-//     }
-//     const testName = "Rectangle URL";
-//     if (errorMessages.length > 0) {
-//       throw new Error(testName + ": " + errorMessages.join("\n"));
-//     } else {
-//       console.log(`${testName} 測試：所有 agent 測試成功，正常取得遊戲 URL`);
-//     }
-//       });
+        await sleep(300);
+      }
+    }
+    const testName = "Rectangle URL";
+    if (errorMessages.length > 0) {
+      throw new Error(testName + ": " + errorMessages.join("\n"));
+    } else {
+      console.log(`${testName} 測試：所有 agent 測試成功，正常取得遊戲 URL`);
+    }
+      });
 
 
   test('Wcasino URL', async ({ request }) => {
