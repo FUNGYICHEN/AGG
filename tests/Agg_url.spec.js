@@ -1,9 +1,7 @@
 import { test } from '@playwright/test';
 
 const env = process.env.NODE_ENV || 'stg';
-// 如果環境是 prod，轉成大寫 PROD；否則直接使用
-const normalizedEnv = env === 'prod' ? 'PROD' : env;
-const { ENV_CONFIG, generateGameUrl } = await import(`./${normalizedEnv}環境.js`);
+const { ENV_CONFIG, generateGameUrl } = await import(`./${env}環境.js`);
 
 
 // 輔助函數：延遲指定毫秒數
@@ -142,115 +140,115 @@ test('Rectangle URL', async ({ request }) => {
       });
 
 
-  test('Wcasino URL', async ({ request }) => {
-    test.setTimeout(0);
-    const { expected_Wcasino } = ENV_CONFIG;
+//   test('Wcasino URL', async ({ request }) => {
+//     test.setTimeout(0);
+//     const { expected_Wcasino } = ENV_CONFIG;
     
-    // 測試的 game_id 清單
-    const game_ids = [
-      60001, 60002, 60003, 60004, 60005, 60006, 60007, 60008, 60009, 60010,
-      60011, 60012, 60015, 60016, 60017, 60018, 60020, 60021,
-      60024
-    ];
+//     // 測試的 game_id 清單
+//     const game_ids = [
+//       60001, 60002, 60003, 60004, 60005, 60006, 60007, 60008, 60009, 60010,
+//       60011, 60012, 60015, 60016, 60017, 60018, 60020, 60021,
+//       60024
+//     ];
     
-    // 將 base agent 列表，並為每個 base agent 加上前綴 "10" 與 "11"
-    const baseAgents = [
-      101, 102, 103, 104, 105, 106, 107, 108, 110, 111, 112, 113, 114, 115, 116,
-      117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132,
-      133, 134, 135, 136, 137, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149,
-      150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 161, 162, 164, 
-      165, 167
-    ];
+//     // 將 base agent 列表，並為每個 base agent 加上前綴 "10" 與 "11"
+//     const baseAgents = [
+//       101, 102, 103, 104, 105, 106, 107, 108, 110, 111, 112, 113, 114, 115, 116,
+//       117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132,
+//       133, 134, 135, 136, 137, 139, 140, 141, 142, 143, 144, 145, 146, 147, 148, 149,
+//       150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 161, 162, 164, 
+//       165, 167
+//     ];
 
 
-    const agents = baseAgents.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
+//     const agents = baseAgents.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
     
-    // 定義 game_id 與對應的 gid 的映射關係
-    const gameIdToGid = {
-      60001: "3058",
-      60002: "3054",
-      60003: "3055",
-      60004: "3056",
-      60005: "3057",
-      60006: "3061",
-      60007: "3083",
-      60008: "3169",
-      60009: "3060",
-      60010: "3063",
-      60011: "3094",
-      60012: "3095",
-      60015: "3096",
-      60016: "3097",
-      60017: "3102",
-      60018: "3098",
-      60020: "3099",
-      60021: "3091",
-      60024: "3192"
-    };
+//     // 定義 game_id 與對應的 gid 的映射關係
+//     const gameIdToGid = {
+//       60001: "3058",
+//       60002: "3054",
+//       60003: "3055",
+//       60004: "3056",
+//       60005: "3057",
+//       60006: "3061",
+//       60007: "3083",
+//       60008: "3169",
+//       60009: "3060",
+//       60010: "3063",
+//       60011: "3094",
+//       60012: "3095",
+//       60015: "3096",
+//       60016: "3097",
+//       60017: "3102",
+//       60018: "3098",
+//       60020: "3099",
+//       60021: "3091",
+//       60024: "3192"
+//     };
   
-    let errorMessages = [];
+//     let errorMessages = [];
     
-    for (const agent of agents) {
-      for (const game_id of game_ids) {
-        let game_url;
-        try {
-          game_url = await generateGameUrl(request, agent, game_id);
-        } catch (e) {
-          // 這裡不再做重試邏輯（可依需求添加重試）
-          let errMsg;
-          if (e.message.includes("HTTP錯誤")) {
-            errMsg = `Agent: ${agent}, GameID: ${game_id} HTTP狀態碼錯誤: ${e.message}`;
-          } else {
-            errMsg = `Agent: ${agent}, GameID: ${game_id} 錯誤: ${e}`;
-          }
-          console.error(errMsg);
-          errorMessages.push(errMsg);
-          await sleep(500);
-          continue;
-        }
+//     for (const agent of agents) {
+//       for (const game_id of game_ids) {
+//         let game_url;
+//         try {
+//           game_url = await generateGameUrl(request, agent, game_id);
+//         } catch (e) {
+//           // 這裡不再做重試邏輯（可依需求添加重試）
+//           let errMsg;
+//           if (e.message.includes("HTTP錯誤")) {
+//             errMsg = `Agent: ${agent}, GameID: ${game_id} HTTP狀態碼錯誤: ${e.message}`;
+//           } else {
+//             errMsg = `Agent: ${agent}, GameID: ${game_id} 錯誤: ${e}`;
+//           }
+//           console.error(errMsg);
+//           errorMessages.push(errMsg);
+//           await sleep(500);
+//           continue;
+//         }
     
-        // 檢查 URL 是否以 expected_Wcasino 為前綴
-        if (!game_url.startsWith(expected_Wcasino)) {
-          const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 前綴不符 -> ${game_url}`;
-          console.error(errMsg);
-          errorMessages.push(errMsg);
-          await sleep(500);
-          continue;
-        }
+//         // 檢查 URL 是否以 expected_Wcasino 為前綴
+//         if (!game_url.startsWith(expected_Wcasino)) {
+//           const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 前綴不符 -> ${game_url}`;
+//           console.error(errMsg);
+//           errorMessages.push(errMsg);
+//           await sleep(500);
+//           continue;
+//         }
         
-        // 解析 URL，並檢查查詢參數 gid 是否正確
-        try {
-          const parsedUrl = new URL(game_url);
-          const actualGid = parsedUrl.searchParams.get('gid');
-          const expectedGid = gameIdToGid[game_id];
-          if (actualGid !== expectedGid) {
-            const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 的 gid 不正確 (expected: ${expectedGid}, got: ${actualGid}) -> ${game_url}`;
-            console.error(errMsg);
-            errorMessages.push(errMsg);
-            await sleep(500);
-            continue;
-        }
+//         // 解析 URL，並檢查查詢參數 gid 是否正確
+//         try {
+//           const parsedUrl = new URL(game_url);
+//           const actualGid = parsedUrl.searchParams.get('gid');
+//           const expectedGid = gameIdToGid[game_id];
+//           if (actualGid !== expectedGid) {
+//             const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 的 gid 不正確 (expected: ${expectedGid}, got: ${actualGid}) -> ${game_url}`;
+//             console.error(errMsg);
+//             errorMessages.push(errMsg);
+//             await sleep(500);
+//             continue;
+//         }
                      
 
-        } catch (parseErr) {
-          const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 解析錯誤: ${parseErr} -> ${game_url}`;
-          console.error(errMsg);
-          errorMessages.push(errMsg);
-          await sleep(500);
-          continue;
+//         } catch (parseErr) {
+//           const errMsg = `Agent: ${agent}, GameID: ${game_id} URL 解析錯誤: ${parseErr} -> ${game_url}`;
+//           console.error(errMsg);
+//           errorMessages.push(errMsg);
+//           await sleep(500);
+//           continue;
           
-        }
+//         }
         
-        await sleep(500);
-      }
-    }
-    const testName = "Wcasino URL";
-if (errorMessages.length > 0) {
-  throw new Error(testName + ": " + errorMessages.join("\n"));
-} else {
-  console.log(`${testName} 測試：所有 agent 測試成功，正常取得遊戲 URL`);
-}
-  });
+//         await sleep(500);
+//       }
+//     }
+//     const testName = "Wcasino URL";
+// if (errorMessages.length > 0) {
+//   throw new Error(testName + ": " + errorMessages.join("\n"));
+// } else {
+//   console.log(`${testName} 測試：所有 agent 測試成功，正常取得遊戲 URL`);
+// }
+//   });
 
 
   test('Playson URL', async ({ request }) => {

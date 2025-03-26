@@ -1,10 +1,7 @@
 import { test } from '@playwright/test';
 
 const env = process.env.NODE_ENV || 'stg';
-// 如果環境是 prod，轉成大寫 PROD；否則直接使用
-const normalizedEnv = env === 'prod' ? 'PROD' : env;
-const { ENV_CONFIG, generateGameUrl } = await import(`./${normalizedEnv}環境.js`);
-
+const { ENV_CONFIG, generateGameUrl } = await import(`./${env}環境.js`);
 
 // 定義 range 函式：產生從 start 到 end-1 的數字陣列
 const range = (start, end) => Array.from({ length: end - start }, (_, i) => start + i);
