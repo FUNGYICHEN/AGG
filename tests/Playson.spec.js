@@ -1,5 +1,8 @@
-import { test, expect } from '@playwright/test';
-import {ENV_CONFIG, generateGameUrl, depositMoney } from './STG環境.js';
+import { test } from '@playwright/test';
+
+const env = process.env.NODE_ENV || 'stg';
+const { ENV_CONFIG, generateGameUrl } = await import(`./${env}環境.js`);
+
 
 
     
