@@ -7,20 +7,7 @@ import { defineConfig, devices } from '@playwright/test';
  */
 const HEADLESS = true; // 修改為 false 即為有頭模式 true 為無頭
 
-/**
- * 根據環境變數決定要使用的環境
- * 如果沒有設定 ENV，預設使用 'stg' 環境
- */
-const ENV = process.env.ENV || 'stg';
 
-let baseURL;
-if (ENV === 'prod') {
-  baseURL = 'https://prod.yourdomain.com';
-} else if (ENV === 'uat') {
-  baseURL = 'https://uat.yourdomain.com';
-} else {
-  baseURL = 'https://stagingop.ggyyonline.com';
-}
 
 export default defineConfig({
   timeout: 0, // 全域不設超時
@@ -33,7 +20,6 @@ export default defineConfig({
   
   use: {
     headless: HEADLESS,
-    baseURL, // 根據 ENV 設定 baseURL
     trace: 'on-first-retry',
   },
   projects: [

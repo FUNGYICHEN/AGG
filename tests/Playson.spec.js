@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import {ENV_CONFIG, generateGameUrl, depositMoney } from './api-config.js';
+import {ENV_CONFIG, generateGameUrl, depositMoney } from './STG環境.js';
 
 
     

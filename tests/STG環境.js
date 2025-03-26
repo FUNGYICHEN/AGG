@@ -17,12 +17,10 @@ export const ENV_CONFIG = {
   is_direct: true,
   // 固定錢包類型為單一錢包
   agent_switch: "1",
-  // 下注帳號前綴，由環境變數設定，預設為 "QAtest_1120A8"
+  // 下注帳號前綴，由環境變數設定，預設為 "QAtest_1120A11"
   accountPrefix: process.env.ACCOUNT_PREFIX || 'QAtest_1120A11',
   keys: {
     "1": "fbe5cce9103974817840c5b53575d6c1",
-    "2": "c3bf2511fbd0fc35d5ab2eb989106a92",
-    "3": "9cd8f0b998fb11efb64b02b33ada352b",
   },
 };
 
@@ -42,7 +40,7 @@ export async function generateGameUrl(request, agent, game_id) {
     is_direct,
     agent_switch,
     keys,
-    accountPrefix, // 使用統一管理的下注帳號前綴
+    accountPrefix,
   } = ENV_CONFIG;
   
   // 使用 accountPrefix 組合下注帳號

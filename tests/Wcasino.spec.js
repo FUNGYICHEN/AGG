@@ -1,5 +1,8 @@
-import { test, expect } from '@playwright/test';
-import { ENV_CONFIG, generateGameUrl, depositMoney } from './api-config.js';
+import { test } from '@playwright/test';
+
+const env = process.env.NODE_ENV || 'stg';
+const configModule = await import(`./${env}環境.js`);
+const { ENV_CONFIG, generateGameUrl } = configModule;
 
 // 定義 range 函式：產生從 start 到 end-1 的數字陣列
 const range = (start, end) => Array.from({ length: end - start }, (_, i) => start + i);
