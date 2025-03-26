@@ -1,7 +1,9 @@
 import { test } from '@playwright/test';
 
 const env = process.env.NODE_ENV || 'stg';
-const { ENV_CONFIG, generateGameUrl } = await import(`./${env}環境.js`);
+// 如果環境是 prod，轉成大寫 PROD；否則直接使用
+const normalizedEnv = env === 'prod' ? 'PROD' : env;
+const { ENV_CONFIG, generateGameUrl } = await import(`./${normalizedEnv}環境.js`);
 
 
 // 輔助函數：延遲指定毫秒數
