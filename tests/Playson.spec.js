@@ -141,9 +141,9 @@ test('Playson Spin 測試', async ({ browser, request }) => {
           } else {
             spinAttempts++;
             if (spinAttempts < maxSpinAttempts) {
-              console.log(`Spin API 未回傳 200, 第 ${spinAttempts} 次失敗，等待25秒後重新嘗試...`);
-              // 這裡使用 page.waitForTimeout(25000) 暫停 25 秒後，while 迴圈會再次執行，也就是重新點擊並等待回應
-              await page.waitForTimeout(30000);
+              console.log(`Spin API 未回傳 200, 第 ${spinAttempts} 次失敗，等待60秒後重新嘗試...`);
+              // 這裡使用 page.waitForTimeout(25000) 暫停 60 秒後，while 迴圈會再次執行，也就是重新點擊並等待回應
+              await page.waitForTimeout(60000);
             } else {
               // 若超過最大嘗試次數，累積錯誤訊息
               const errorElement = await page.$('.gr_dialog__message');
@@ -177,7 +177,7 @@ test('Playson Spin 測試', async ({ browser, request }) => {
 
 
 
-test('Booongo Spin 測試', async ({ browser, request }) => {
+test.only('Booongo Spin 測試', async ({ browser, request }) => {
   test.setTimeout(0);
   const { expected_Playson, accountPrefix } = ENV_CONFIG; // 如有需要，可修改為 Booongo 對應的 URL 前綴
 
