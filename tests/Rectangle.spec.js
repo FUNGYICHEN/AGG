@@ -41,7 +41,6 @@ test('Rectangle_上半', async ({ browser, request }) => {
           errorMessages.push(`Agent: ${agent}, GameID: ${game_id} URL 前綴不符 -> ${game_url}`);
           continue;
         }
-        console.log(`Agent: ${agent}, GameID: ${game_id} 取得的 URL: ${game_url}`);
 
         // 產生下注帳號，使用 ENV_CONFIG.accountPrefix
         const ACCOUNT = `${accountPrefix}${agent}${game_id}`;
@@ -55,16 +54,12 @@ test('Rectangle_上半', async ({ browser, request }) => {
         }
         if (depositAmount > 0) {
           await depositMoney(request, ACCOUNT, agent, depositAmount);
-          console.log(`Agent: ${agent}, GameID: ${game_id} 金額：${depositAmount}`);
-        } else {
-          console.log(`Agent: ${agent}, GameID: ${game_id} 不需要打錢包`);
         }
 
         // 建立新的 browser context 與 page，進入遊戲
         context = await browser.newContext();
         const page = await context.newPage();
         await page.goto(game_url, { waitUntil: 'load' });
-        // 等待頁面與 iframe 載入完成 (等待 20000 毫秒)
         await page.waitForTimeout(40000);
 
         // 檢查 popup 錯誤訊息
@@ -72,21 +67,17 @@ test('Rectangle_上半', async ({ browser, request }) => {
         if (popup) {
           const popupText = await popup.innerText();
           if (popupText.includes("Error Code: 3000")) {
-            console.log(`Agent: ${agent}, GameID: ${game_id} 檢測到 Error Code: 3000，跳過測試`);
             await context.close();
             continue;
           } else if (popupText.includes("Error Code: 2202")) {
-            console.log(`Agent: ${agent}, GameID: ${game_id} 檢測到 Error Code: 2202，嘗試重新取得 URL`);
             try {
               const newGameUrl = await generateGameUrl(request, agent, game_id);
               if (!newGameUrl || !newGameUrl.startsWith(expected_Rectangle)) {
-                
+                // 可加入額外處理
               }
-              console.log(`Agent: ${agent}, GameID: ${game_id} 重新取得 URL: ${newGameUrl}`);
               game_url = newGameUrl;
               await page.goto(game_url, { waitUntil: 'load' });
               await page.waitForTimeout(20000);
-              // 再次檢查錯誤訊息
               const retryPopup = await page.$('div.popup-container');
               if (retryPopup) {
                 const retryText = await retryPopup.innerText();
@@ -117,70 +108,61 @@ test('Rectangle_上半', async ({ browser, request }) => {
           await context.close();
           continue;
         }
-        console.log(`Agent: ${agent}, GameID: ${game_id} Canvas bounding box: ${JSON.stringify(box)}`);
-
 
         // 點擊「關閉」按鈕
         const closeRelX = 377.5, closeRelY = 202;
         const closeX = box.x + closeRelX, closeY = box.y + closeRelY;
-        console.log(`Agent: ${agent}, GameID=${game_id} 計算得到的關閉按鈕座標：x=${closeX}, y=${closeY}`);
         await page.mouse.click(closeX, closeY);
-        console.log(`Agent: ${agent}, GameID=${game_id} 已點擊關閉按鈕`);
 
         // 點擊「Spin」按鈕
         const spinRelX = 200.5, spinRelY = 662;
         const spinX = box.x + spinRelX, spinY = box.y + spinRelY;
         await page.waitForTimeout(1000);
         await page.mouse.click(spinX, spinY);
-        console.log(`Agent: ${agent}, GameID=${game_id} 已點擊 Spin 按鈕`);
 
         // 等待 spin API 回應
-let received = false;
-try {
-  const spinApiResponse = await page.waitForResponse(
-    response => /https:\/\/api\.sandbox\.revenge-games\.com\/.*\/spin/.test(response.url()),
-    { timeout: 10000 }
-  );
-  const status = spinApiResponse.status();
-  if (status === 201) {
-    console.log(`Agent: ${agent}, GameID: ${game_id} spin API 回應狀態碼驗證成功 (${status})`);
-    received = true;
-  } else {
-    errorMessages.push(`Agent: ${agent}, GameID: ${game_id} spin API 回應狀態碼為 ${status}`);
-  }
-} catch (err) {
-  console.log(`Agent: ${agent}, GameID: ${game_id} 未在第一次等待到 spin API response`);
-}
+        let received = false;
+        try {
+          const spinApiResponse = await page.waitForResponse(
+            response => /https:\/\/api\.sandbox\.revenge-games\.com\/.*\/spin/.test(response.url()),
+            { timeout: 10000 }
+          );
+          const status = spinApiResponse.status();
+          if (status === 201) {
+            console.log(`Agent: ${agent}, GameID: ${game_id} spin API 回應狀態碼驗證成功 (${status})`);
+            received = true;
+          } else {
+            const responseText = await spinApiResponse.text();
+            errorMessages.push(`Agent: ${agent}, GameID: ${game_id} spin API 回應狀態碼為 ${status}. API 回傳: ${responseText}`);
+          }
+        } catch (err) {
+          console.log(`Agent: ${agent}, GameID: ${game_id} 未在第一次等待到 spin API response`);
+        }
 
-// 若第一次未收到回應，等待 5 秒後再重試
-if (!received) {
-  console.log(`Agent: ${agent}, GameID: ${game_id} 未收到 spin API response，等待 5 秒後開始重新點擊關閉與 Spin 按鈕`);
-  await page.waitForTimeout(5000);
-  await page.mouse.click(closeX, closeY);
-  console.log(`Agent: ${agent}, GameID: ${game_id} 重新點擊關閉按鈕`);
-  await page.waitForTimeout(1000);
-  await page.mouse.click(spinX, spinY);
-  console.log(`Agent: ${agent}, GameID: ${game_id} 重新點擊 Spin 按鈕`);
-  try {
-    const spinApiResponseRetry = await page.waitForResponse(
-      response => /https:\/\/api\.sandbox\.revenge-games\.com\/.*\/spin/.test(response.url()),
-      { timeout: 10000 }
-    );
-    const statusRetry = spinApiResponseRetry.status();
-    if (statusRetry === 201) {
-      console.log(`Agent: ${agent}, GameID: ${game_id} retry spin API 回應狀態碼驗證成功 (${statusRetry})`);
-      received = true;
-    } else {
-      errorMessages.push(`Agent: ${agent}, GameID: ${game_id} retry spin API 回應狀態碼為 ${statusRetry}`);
-    }
-  } catch (err2) {
-    errorMessages.push(`Agent: ${agent}, GameID: ${game_id} 連續兩次未收到 spin API response，遊戲異常`);
-  }
-}
-
+        if (!received) {
+          await page.waitForTimeout(5000);
+          await page.mouse.click(closeX, closeY);
+          await page.waitForTimeout(1000);
+          await page.mouse.click(spinX, spinY);
+          try {
+            const spinApiResponseRetry = await page.waitForResponse(
+              response => /https:\/\/api\.sandbox\.revenge-games\.com\/.*\/spin/.test(response.url()),
+              { timeout: 10000 }
+            );
+            const statusRetry = spinApiResponseRetry.status();
+            if (statusRetry === 201) {
+              console.log(`Agent: ${agent}, GameID: ${game_id} retry spin API 回應狀態碼驗證成功 (${statusRetry})`);
+              received = true;
+            } else {
+              const responseTextRetry = await spinApiResponseRetry.text();
+              errorMessages.push(`Agent: ${agent}, GameID: ${game_id} retry spin API 回應狀態碼為 ${statusRetry}. API 回傳: ${responseTextRetry}`);
+            }
+          } catch (err2) {
+            errorMessages.push(`Agent: ${agent}, GameID: ${game_id} 連續兩次未收到 spin API response，遊戲異常`);
+          }
+        }
 
         await context.close();
-        // 避免連續請求過快，間隔 2 秒
         await new Promise(resolve => setTimeout(resolve, 2000));
       } catch (e) {
         errorMessages.push(`Agent: ${agent}, GameID: ${game_id} 測試過程發生錯誤: ${e}`);
@@ -191,8 +173,6 @@ if (!received) {
 
   if (errorMessages.length > 0) {
     throw new Error(errorMessages.join("\n"));
-  } else {
-    console.log("所有組合測試成功，正常取得遊戲 URL、Spin 測試");
   }
 });
 
@@ -226,9 +206,8 @@ test('Rectangle_下半', async ({ browser, request }) => {
           errorMessages.push(`Agent: ${agent}, GameID: ${game_id} URL 前綴不符 -> ${game_url}`);
           continue;
         }
-        console.log(`Agent: ${agent}, GameID: ${game_id} 取得的 URL: ${game_url}`);
 
-        // 產生下注帳號，使用 ENV_CONFIG.accountPrefix
+        // 產生下注帳號，使用 ENV_CONFIG.accountPrefix (僅保留此 log)
         const ACCOUNT = `${accountPrefix}${agent}${game_id}`;
         console.log(`Agent: ${agent}, GameID: ${game_id} 使用下注帳號: ${ACCOUNT}`);
 
@@ -240,16 +219,12 @@ test('Rectangle_下半', async ({ browser, request }) => {
         }
         if (depositAmount > 0) {
           await depositMoney(request, ACCOUNT, agent, depositAmount);
-          console.log(`Agent: ${agent}, GameID: ${game_id} 金額：${depositAmount}`);
-        } else {
-          console.log(`Agent: ${agent}, GameID: ${game_id} 不需要打錢包`);
         }
 
         // 建立新的 browser context 與 page，進入遊戲
         context = await browser.newContext();
         const page = await context.newPage();
         await page.goto(game_url, { waitUntil: 'load' });
-        // 等待頁面與 iframe 載入完成 (等待 20000 毫秒)
         await page.waitForTimeout(40000);
 
         // 檢查 popup 錯誤訊息
@@ -257,11 +232,9 @@ test('Rectangle_下半', async ({ browser, request }) => {
         if (popup) {
           const popupText = await popup.innerText();
           if (popupText.includes("Error Code: 3000")) {
-            console.log(`Agent: ${agent}, GameID: ${game_id} 檢測到 Error Code: 3000，跳過測試`);
             await context.close();
             continue;
           } else if (popupText.includes("Error Code: 2202")) {
-            console.log(`Agent: ${agent}, GameID: ${game_id} 檢測到 Error Code: 2202，嘗試重新取得 URL`);
             try {
               const newGameUrl = await generateGameUrl(request, agent, game_id);
               if (!newGameUrl || !newGameUrl.startsWith(expected_Rectangle)) {
@@ -269,11 +242,9 @@ test('Rectangle_下半', async ({ browser, request }) => {
                 await context.close();
                 continue;
               }
-              console.log(`Agent: ${agent}, GameID: ${game_id} 重新取得 URL: ${newGameUrl}`);
               game_url = newGameUrl;
               await page.goto(game_url, { waitUntil: 'load' });
               await page.waitForTimeout(20000);
-              // 再次檢查錯誤訊息
               const retryPopup = await page.$('div.popup-container');
               if (retryPopup) {
                 const retryText = await retryPopup.innerText();
@@ -304,30 +275,23 @@ test('Rectangle_下半', async ({ browser, request }) => {
           await context.close();
           continue;
         }
-        console.log(`Agent: ${agent}, GameID: ${game_id} Canvas bounding box: ${JSON.stringify(box)}`);
 
-        // 操作 1：點擊「進入」按鈕 (相對於 Canvas：x=637, y=610)
+        // 操作 1：點擊「進入」按鈕
         const enterRelX = 637, enterRelY = 610;
         const enterX = box.x + enterRelX, enterY = box.y + enterRelY;
-        console.log(`Agent: ${agent}, GameID: ${game_id} 進入按鈕座標：x=${enterX}, y=${enterY}`);
         await page.mouse.click(enterX, enterY);
-        console.log(`Agent: ${agent}, GameID: ${game_id} 已點擊進入按鈕`);
         await page.waitForTimeout(6000);
 
-        // 操作 2：點擊「關閉」按鈕 (相對於 Canvas：x=815, y=216)
+        // 操作 2：點擊「關閉」按鈕
         const closeRelX = 815, closeRelY = 216;
         const closeX = box.x + closeRelX, closeY = box.y + closeRelY;
-        console.log(`Agent: ${agent}, GameID: ${game_id} 計算得到的關閉按鈕座標：x=${closeX}, y=${closeY}`);
         await page.mouse.click(closeX, closeY);
-        console.log(`Agent: ${agent}, GameID: ${game_id} 已點擊關閉按鈕`);
         await page.waitForTimeout(1000);
 
-        // 操作 3：點擊「Spin」按鈕 (相對於 Canvas：x=635, y=649)
+        // 操作 3：點擊「Spin」按鈕
         const spinRelX = 635, spinRelY = 649;
         const spinX = box.x + spinRelX, spinY = box.y + spinRelY;
-        console.log(`Agent: ${agent}, GameID: ${game_id} 計算得到的 Spin 按鈕座標：x=${spinX}, y=${spinY}`);
         await page.mouse.click(spinX, spinY);
-        console.log(`Agent: ${agent}, GameID: ${game_id} 已點擊 Spin 按鈕`);
 
         // 等待 spin API 回應
         let received = false;
@@ -344,18 +308,15 @@ test('Rectangle_下半', async ({ browser, request }) => {
             errorMessages.push(`Agent: ${agent}, GameID: ${game_id} spin API 回應狀態碼為 ${status}`);
           }
         } catch (err) {
-          console.log(`Agent: ${agent}, GameID: ${game_id} 未在第一次等待到 spin API response`);
+          // 不做處理
         }
 
         // 若第一次未收到回應，重試一次
         if (!received) {
-          console.log(`Agent: ${agent}, GameID: ${game_id} 開始重新點擊關閉與 Spin 按鈕`);
           await page.waitForTimeout(5000);
           await page.mouse.click(closeX, closeY);
-          console.log(`Agent: ${agent}, GameID: ${game_id} 重新點擊關閉按鈕`);
           await page.waitForTimeout(2000);
           await page.mouse.click(spinX, spinY);
-          console.log(`Agent: ${agent}, GameID: ${game_id} 重新點擊 Spin 按鈕`);
           try {
             const spinApiResponseRetry = await page.waitForResponse(
               response => /https:\/\/api\.sandbox\.revenge-games\.com\/.*\/spin/.test(response.url()),
@@ -374,7 +335,6 @@ test('Rectangle_下半', async ({ browser, request }) => {
         }
 
         await context.close();
-        // 避免連續請求過快，間隔 2 秒
         await new Promise(resolve => setTimeout(resolve, 2000));
       } catch (e) {
         errorMessages.push(`Agent: ${agent}, GameID: ${game_id} 測試過程發生錯誤: ${e}`);
@@ -385,7 +345,5 @@ test('Rectangle_下半', async ({ browser, request }) => {
 
   if (errorMessages.length > 0) {
     throw new Error(errorMessages.join("\n"));
-  } else {
-    console.log("所有組合測試成功，正常取得遊戲 URL、Spin 測試");
   }
 });
