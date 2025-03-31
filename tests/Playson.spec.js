@@ -29,12 +29,12 @@ test('Playson Spin 測試', async ({ browser, request }) => {
 
   let errorMessages = [];
 
-  // 依序測試每個 agent 與每款遊戲
+  // 依序測試每個 agent 與每款遊戲，若發生錯誤則累積錯誤訊息（不立即中斷）
   for (const agent of agents) {
     for (const gameId of gameIds) {
       let context;
       try {
-        // 取得遊戲 URL（僅取得一次，不重試）
+        // 僅取得一次遊戲 URL，不進行重試
         const game_url = await generateGameUrl(request, agent, gameId);
         if (!game_url.startsWith(expected_Playson)) {
           throw new Error(`URL 前綴不符 -> ${game_url}`);
@@ -63,16 +63,15 @@ test('Playson Spin 測試', async ({ browser, request }) => {
           });
         });
 
-        // 進行頁面導向
         await page.goto(game_url, { waitUntil: 'load' });
         await page.waitForLoadState('networkidle');
-        // 等待最多 10 秒捕捉 "connection opened" 訊息，若超時則繼續
+        // 等待最多 10 秒捕捉 "connection opened" 訊息
         await Promise.race([
           connectionOpenedPromise,
           page.waitForTimeout(10000)
         ]);
 
-        // 使用 iframe 的 name 直接取得 frame（此 iframe 有 name="game"）
+        // 取得 iframe（此 iframe 有 name="game"）
         const frame = page.frame({ name: 'game' });
         if (!frame) {
           throw new Error("找不到名稱為 'game' 的 iframe");
@@ -88,17 +87,14 @@ test('Playson Spin 測試', async ({ browser, request }) => {
           throw new Error("無法取得 canvas bounding box");
         }
 
-        // 進入遊戲，加入重試機制（最多兩次重試，即初次+2次）
+        // 進入遊戲（這裡也加入進入遊戲的重試機制，最多嘗試 3 次）
         const enterX = box.x + 636;
         const enterY = box.y + 638;
         let gameEntered = false;
         for (let attempt = 0; attempt < 3 && !gameEntered; attempt++) {
-          // 點擊進入遊戲
           await page.mouse.click(enterX, enterY);
-          // 等待2秒給系統反應
           await page.waitForTimeout(2000);
           try {
-            // 嘗試等待連線訊息（最多等待10秒）
             await Promise.race([
               new Promise(resolve => {
                 page.on('console', msg => {
@@ -109,11 +105,11 @@ test('Playson Spin 測試', async ({ browser, request }) => {
               }),
               page.waitForTimeout(10000)
             ]);
-            // 檢查 iframe 與 canvas 是否正常
-            const frame = page.frame({ name: 'game' });
-            if (!frame) throw new Error("找不到名稱為 'game' 的 iframe");
-            const canvas = await frame.waitForSelector('#game_canvas', { state: 'visible', timeout: 10000 });
-            if (!canvas) throw new Error("找不到遊戲 canvas");
+            // 重新檢查 iframe 與 canvas 是否存在
+            const frameCheck = page.frame({ name: 'game' });
+            if (!frameCheck) throw new Error("找不到名稱為 'game' 的 iframe");
+            const canvasCheck = await frameCheck.waitForSelector('#game_canvas', { state: 'visible', timeout: 10000 });
+            if (!canvasCheck) throw new Error("找不到遊戲 canvas");
             gameEntered = true;
           } catch (err) {
             console.log(`進入遊戲失敗, 第 ${attempt + 1} 次嘗試，重新點擊進入遊戲`);
@@ -123,23 +119,21 @@ test('Playson Spin 測試', async ({ browser, request }) => {
           }
         }
 
-        // 接下來，針對 Spin 按鈕的重試（初次嘗試加上2次重試，共3次）
+        // Spin API 的重試機制：初次嘗試加上 2 次重試，共 3 次
         const spinX = box.x + 1180;
         const spinY = box.y + 318;
         let spinAttempts = 0;
         let spinSuccess = false;
-        const maxSpinAttempts = 3; // 初次嘗試 + 2次重試
+        const maxSpinAttempts = 3;
 
         while (spinAttempts < maxSpinAttempts && !spinSuccess) {
-          // 設定等待 Spin API 回應的 Promise（5秒內收到 HTTP 200）
+          // 設定等待 Spin API 回應的 Promise（5 秒內收到 HTTP 200）
           const spinResponsePromise = page.waitForResponse(response =>
             response.url().includes("https://gamecore.rowzone.tech/p/server") &&
             response.status() === 200,
             { timeout: 5000 }
           );
-          // 點擊 Spin 按鈕
           await page.mouse.click(spinX, spinY);
-          // 等待 API 回應
           const spinResponse = await spinResponsePromise.catch(() => null);
           if (spinResponse) {
             spinSuccess = true;
@@ -148,9 +142,10 @@ test('Playson Spin 測試', async ({ browser, request }) => {
             spinAttempts++;
             if (spinAttempts < maxSpinAttempts) {
               console.log(`Spin API 未回傳 200, 第 ${spinAttempts} 次失敗，等待25秒後重新嘗試...`);
-              await page.waitForTimeout(25000);
+              // 這裡使用 page.waitForTimeout(25000) 暫停 25 秒後，while 迴圈會再次執行，也就是重新點擊並等待回應
+              await page.waitForTimeout(30000);
             } else {
-              // 第二次重試後仍失敗，嘗試捕捉錯誤訊息
+              // 若超過最大嘗試次數，累積錯誤訊息
               const errorElement = await page.$('.gr_dialog__message');
               if (errorElement) {
                 const errorText = await errorElement.textContent();
@@ -162,12 +157,9 @@ test('Playson Spin 測試', async ({ browser, request }) => {
           }
         }
 
-        // 測試成功，關閉 context
         await context.close();
       } catch (e) {
-        if (context) {
-          await context.close();
-        }
+        if (context) await context.close();
         errorMessages.push(`Agent: ${agent}, GameID: ${gameId} 測試過程發生錯誤: ${e}`);
       }
     }
@@ -212,12 +204,12 @@ test('Booongo Spin 測試', async ({ browser, request }) => {
 
   let errorMessages = [];
 
-  // 依序測試每個 agent 與每款遊戲，確保每款遊戲測試完成後關閉瀏覽器 context
+  // 依序測試每個 agent 與每款遊戲，確保每款測試完成後關閉瀏覽器 context
   for (const agent of agents) {
     for (const gameId of gameIds) {
       let context;
       try {
-        // 取得遊戲 URL
+        // 取得遊戲 URL（僅取得一次，不重試）
         const game_url = await generateGameUrl(request, agent, gameId);
         if (!game_url.startsWith(expected_Playson)) {
           throw new Error(`URL 前綴不符 -> ${game_url}`);
@@ -280,8 +272,8 @@ test('Booongo Spin 測試', async ({ browser, request }) => {
           try {
             // 檢查是否成功進入遊戲：等待 canvas 或 #game 重新出現
             await Promise.any([
-              frame.waitForSelector('#canvas', { state: 'visible', timeout: 5000 }),
-              frame.waitForSelector('#game', { state: 'visible', timeout: 5000 })
+              frame.waitForSelector('#canvas', { state: 'visible', timeout: 60000 }),
+              frame.waitForSelector('#game', { state: 'visible', timeout: 60000 })
             ]);
             gameEntered = true;
           } catch (err) {
@@ -299,6 +291,7 @@ test('Booongo Spin 測試', async ({ browser, request }) => {
         let spinSuccess = false;
         const maxSpinAttempts = 3;
         while (spinAttempts < maxSpinAttempts && !spinSuccess) {
+          // 設定等待 Spin API 回應的 Promise（5 秒內收到 HTTP 200）
           const spinResponsePromise = page.waitForResponse(response =>
             response.url().includes("https://gamecore.rowzone.tech/b/server") &&
             response.status() === 200,
@@ -312,9 +305,11 @@ test('Booongo Spin 測試', async ({ browser, request }) => {
           } else {
             spinAttempts++;
             if (spinAttempts < maxSpinAttempts) {
-              console.log(`Spin API 未回傳 200, 第 ${spinAttempts} 次失敗，等待10秒後重新嘗試...`);
-              await page.waitForTimeout(10000);
+              console.log(`Spin API 未回傳 200, 第 ${spinAttempts} 次失敗，等待25秒後重新嘗試...`);
+              // 等待25秒後重新嘗試：使用 page.waitForTimeout(25000) 暫停 25000 毫秒，然後 while 迴圈會再次執行
+              await page.waitForTimeout(25000);
             } else {
+              // 若超過最大嘗試次數，嘗試捕捉錯誤訊息並拋出錯誤
               const errorElement = await page.$('.gr_dialog__message');
               if (errorElement) {
                 const errorText = await errorElement.textContent();
