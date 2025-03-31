@@ -53,9 +53,6 @@ test('Playson Spin 測試', async ({ browser, request }) => {
           }
           if (depositAmount > 0) {
             await depositMoney(request, ACCOUNT, agent, depositAmount);
-            console.log(`Agent: ${agent}, GameID: ${gameId} 增加錢包餘額：${depositAmount}`);
-          } else {
-            console.log(`Agent: ${agent}, GameID: ${gameId} 不需要打錢包`);
           }
 
           // 建立新的 browser context 與 page
