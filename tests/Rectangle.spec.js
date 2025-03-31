@@ -135,47 +135,49 @@ test('Rectangle_上半', async ({ browser, request }) => {
         console.log(`Agent: ${agent}, GameID=${game_id} 已點擊 Spin 按鈕`);
 
         // 等待 spin API 回應
-        let received = false;
-        try {
-          const spinApiResponse = await page.waitForResponse(
-            response => /https:\/\/api\.sandbox\.revenge-games\.com\/.*\/spin/.test(response.url()),
-            { timeout: 10000 }
-          );
-          const status = spinApiResponse.status();
-          if (status === 201) {
-            console.log(`Agent: ${agent}, GameID: ${game_id} spin API 回應狀態碼驗證成功 (${status})`);
-            received = true;
-          } else {
-            errorMessages.push(`Agent: ${agent}, GameID: ${game_id} spin API 回應狀態碼為 ${status}`);
-          }
-        } catch (err) {
-          console.log(`Agent: ${agent}, GameID: ${game_id} 未在第一次等待到 spin API response`);
-        }
+let received = false;
+try {
+  const spinApiResponse = await page.waitForResponse(
+    response => /https:\/\/api\.sandbox\.revenge-games\.com\/.*\/spin/.test(response.url()),
+    { timeout: 10000 }
+  );
+  const status = spinApiResponse.status();
+  if (status === 201) {
+    console.log(`Agent: ${agent}, GameID: ${game_id} spin API 回應狀態碼驗證成功 (${status})`);
+    received = true;
+  } else {
+    errorMessages.push(`Agent: ${agent}, GameID: ${game_id} spin API 回應狀態碼為 ${status}`);
+  }
+} catch (err) {
+  console.log(`Agent: ${agent}, GameID: ${game_id} 未在第一次等待到 spin API response`);
+}
 
-        // 若第一次未收到回應，重試一次
-        if (!received) {
-          console.log(`Agent: ${agent}, GameID: ${game_id} 開始重新點擊關閉與 Spin 按鈕`);
-          await page.mouse.click(closeX, closeY);
-          console.log(`Agent: ${agent}, GameID: ${game_id} 重新點擊關閉按鈕`);
-          await page.waitForTimeout(1000);
-          await page.mouse.click(spinX, spinY);
-          console.log(`Agent: ${agent}, GameID: ${game_id} 重新點擊 Spin 按鈕`);
-          try {
-            const spinApiResponseRetry = await page.waitForResponse(
-              response => /https:\/\/api\.sandbox\.revenge-games\.com\/.*\/spin/.test(response.url()),
-              { timeout: 10000 }
-            );
-            const statusRetry = spinApiResponseRetry.status();
-            if (statusRetry === 201) {
-              console.log(`Agent: ${agent}, GameID: ${game_id} retry spin API 回應狀態碼驗證成功 (${statusRetry})`);
-              received = true;
-            } else {
-              errorMessages.push(`Agent: ${agent}, GameID: ${game_id} retry spin API 回應狀態碼為 ${statusRetry}`);
-            }
-          } catch (err2) {
-            errorMessages.push(`Agent: ${agent}, GameID: ${game_id} 連續兩次未收到 spin API response，遊戲異常`);
-          }
-        }
+// 若第一次未收到回應，等待 5 秒後再重試
+if (!received) {
+  console.log(`Agent: ${agent}, GameID: ${game_id} 未收到 spin API response，等待 5 秒後開始重新點擊關閉與 Spin 按鈕`);
+  await page.waitForTimeout(5000);
+  await page.mouse.click(closeX, closeY);
+  console.log(`Agent: ${agent}, GameID: ${game_id} 重新點擊關閉按鈕`);
+  await page.waitForTimeout(1000);
+  await page.mouse.click(spinX, spinY);
+  console.log(`Agent: ${agent}, GameID: ${game_id} 重新點擊 Spin 按鈕`);
+  try {
+    const spinApiResponseRetry = await page.waitForResponse(
+      response => /https:\/\/api\.sandbox\.revenge-games\.com\/.*\/spin/.test(response.url()),
+      { timeout: 10000 }
+    );
+    const statusRetry = spinApiResponseRetry.status();
+    if (statusRetry === 201) {
+      console.log(`Agent: ${agent}, GameID: ${game_id} retry spin API 回應狀態碼驗證成功 (${statusRetry})`);
+      received = true;
+    } else {
+      errorMessages.push(`Agent: ${agent}, GameID: ${game_id} retry spin API 回應狀態碼為 ${statusRetry}`);
+    }
+  } catch (err2) {
+    errorMessages.push(`Agent: ${agent}, GameID: ${game_id} 連續兩次未收到 spin API response，遊戲異常`);
+  }
+}
+
 
         await context.close();
         // 避免連續請求過快，間隔 2 秒
@@ -348,9 +350,10 @@ test('Rectangle_下半', async ({ browser, request }) => {
         // 若第一次未收到回應，重試一次
         if (!received) {
           console.log(`Agent: ${agent}, GameID: ${game_id} 開始重新點擊關閉與 Spin 按鈕`);
+          await page.waitForTimeout(5000);
           await page.mouse.click(closeX, closeY);
           console.log(`Agent: ${agent}, GameID: ${game_id} 重新點擊關閉按鈕`);
-          await page.waitForTimeout(1000);
+          await page.waitForTimeout(2000);
           await page.mouse.click(spinX, spinY);
           console.log(`Agent: ${agent}, GameID: ${game_id} 重新點擊 Spin 按鈕`);
           try {
