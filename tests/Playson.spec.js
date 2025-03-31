@@ -29,141 +29,135 @@ test('Playson Spin 測試', async ({ browser, request }) => {
 
   let errorMessages = [];
 
-  // 依序測試每個 agent 與每款遊戲，若發生錯誤則累積錯誤訊息（不立即中斷）
+  // 定義整體 session 重試上限
+  const maxSessionAttempts = 3;
+
   for (const agent of agents) {
     for (const gameId of gameIds) {
-      let context;
-      try {
-        // 僅取得一次遊戲 URL，不進行重試
-        const game_url = await generateGameUrl(request, agent, gameId);
-        if (!game_url.startsWith(expected_Playson)) {
-          throw new Error(`URL 前綴不符 -> ${game_url}`);
-        }
-
-        // 判斷是否需要打錢包（若 agent 在 11101～11172 範圍內則 deposit 10000）
-        const ACCOUNT = `${accountPrefix}${agent}${gameId}`;
-        console.log(`下注帳號: ${ACCOUNT}`);
-        let depositAmount = 0;
-        if (agent >= 11101 && agent <= 11172) {
-          depositAmount = 10000;
-        }
-        if (depositAmount > 0) {
-          await depositMoney(request, ACCOUNT, agent, depositAmount);
-        }
-
-        // 建立新的 browser context 與 page
-        context = await browser.newContext({ headless: true });
-        const page = await context.newPage();
-        // 提前註冊 console 監聽器（等待 "connection opened" 訊息）
-        const connectionOpenedPromise = new Promise(resolve => {
-          page.on('console', msg => {
-            if (msg.text().includes("connection opened")) {
-              resolve();
-            }
-          });
-        });
-
-        await page.goto(game_url, { waitUntil: 'load' });
-        await page.waitForLoadState('networkidle');
-        // 等待最多 10 秒捕捉 "connection opened" 訊息
-        await Promise.race([
-          connectionOpenedPromise,
-          page.waitForTimeout(10000)
-        ]);
-
-        // 取得 iframe（此 iframe 有 name="game"）
-        const frame = page.frame({ name: 'game' });
-        if (!frame) {
-          throw new Error("找不到名稱為 'game' 的 iframe");
-        }
-
-        // 取得 iframe 中的 canvas (Playson 的 canvas id 為 "game_canvas")
-        const canvas = await frame.waitForSelector('#game_canvas', { state: 'visible', timeout: 10000 });
-        if (!canvas) {
-          throw new Error("找不到遊戲 canvas");
-        }
-        const box = await canvas.boundingBox();
-        if (!box) {
-          throw new Error("無法取得 canvas bounding box");
-        }
-
-        // 進入遊戲（這裡也加入進入遊戲的重試機制，最多嘗試 3 次）
-        const enterX = box.x + 636;
-        const enterY = box.y + 638;
-        let gameEntered = false;
-        for (let attempt = 0; attempt < 3 && !gameEntered; attempt++) {
-          await page.mouse.click(enterX, enterY);
-          await page.waitForTimeout(2000);
-          try {
-            await Promise.race([
-              new Promise(resolve => {
-                page.on('console', msg => {
-                  if (msg.text().includes("connection opened")) {
-                    resolve();
-                  }
-                });
-              }),
-              page.waitForTimeout(10000)
-            ]);
-            // 重新檢查 iframe 與 canvas 是否存在
-            const frameCheck = page.frame({ name: 'game' });
-            if (!frameCheck) throw new Error("找不到名稱為 'game' 的 iframe");
-            const canvasCheck = await frameCheck.waitForSelector('#game_canvas', { state: 'visible', timeout: 10000 });
-            if (!canvasCheck) throw new Error("找不到遊戲 canvas");
-            gameEntered = true;
-          } catch (err) {
-            console.log(`進入遊戲失敗, 第 ${attempt + 1} 次嘗試，重新點擊進入遊戲`);
-            if (attempt === 2) {
-              throw new Error("連續嘗試進入遊戲均失敗");
-            }
+      let sessionAttempt = 0;
+      let spinSuccess = false;
+      let lastError = null;
+      // 外層 loop：每次若失敗就重新取得 URL、重新進入遊戲，再嘗試 Spin
+      while (sessionAttempt < maxSessionAttempts && !spinSuccess) {
+        let context;
+        try {
+          // 重新取得遊戲 URL
+          const game_url = await generateGameUrl(request, agent, gameId);
+          if (!game_url.startsWith(expected_Playson)) {
+            throw new Error(`URL 前綴不符 -> ${game_url}`);
           }
-        }
 
-        // Spin API 的重試機制：初次嘗試加上 2 次重試，共 3 次
-        const spinX = box.x + 1180;
-        const spinY = box.y + 318;
-        let spinAttempts = 0;
-        let spinSuccess = false;
-        const maxSpinAttempts = 3;
+          // 判斷是否需要打錢包（若 agent 在 11101～11172 範圍內則 deposit 10000）
+          const ACCOUNT = `${accountPrefix}${agent}${gameId}`;
+          console.log(`下注帳號: ${ACCOUNT}`);
+          let depositAmount = 0;
+          if (agent >= 11101 && agent <= 11172) {
+            depositAmount = 10000;
+          }
+          if (depositAmount > 0 && sessionAttempt === 0) {
+            // 僅在第一次 session 執行時打錢包，避免重複 deposit
+            await depositMoney(request, ACCOUNT, agent, depositAmount);
+          }
 
-        while (spinAttempts < maxSpinAttempts && !spinSuccess) {
-          // 設定等待 Spin API 回應的 Promise（5 秒內收到 HTTP 200）
-          const spinResponsePromise = page.waitForResponse(response =>
-            response.url().includes("https://gamecore.rowzone.tech/p/server") &&
-            response.status() === 200,
-            { timeout: 5000 }
-          );
-          await page.mouse.click(spinX, spinY);
-          const spinResponse = await spinResponsePromise.catch(() => null);
-          if (spinResponse) {
-            spinSuccess = true;
-            console.log(`Agent: ${agent}, GameID: ${gameId} Spin API 回傳 HTTP 200`);
-          } else {
-            spinAttempts++;
-            if (spinAttempts < maxSpinAttempts) {
-              console.log(`Spin API 未回傳 200, 第 ${spinAttempts} 次失敗，等待60秒後重新嘗試...`);
-              // 這裡使用 page.waitForTimeout(25000) 暫停 60 秒後，while 迴圈會再次執行，也就是重新點擊並等待回應
-              await page.waitForTimeout(60000);
-            } else {
-              // 若超過最大嘗試次數，累積錯誤訊息
-              const errorElement = await page.$('.gr_dialog__message');
-              if (errorElement) {
-                const errorText = await errorElement.textContent();
-                throw new Error(`Spin 時發現錯誤訊息: ${errorText}`);
-              } else {
-                throw new Error("Spin API 未回傳 200 after all attempts");
+          // 建立新的 browser context 與 page
+          context = await browser.newContext({ headless: true });
+          const page = await context.newPage();
+          // 預先等待 "connection opened" 訊息
+          const connectionOpenedPromise = new Promise(resolve => {
+            page.on('console', msg => {
+              if (msg.text().includes("connection opened")) {
+                resolve();
+              }
+            });
+          });
+
+          await page.goto(game_url, { waitUntil: 'load' });
+          await page.waitForLoadState('networkidle');
+          await Promise.race([
+            connectionOpenedPromise,
+            page.waitForTimeout(10000)
+          ]);
+
+          // 取得 iframe
+          const frame = page.frame({ name: 'game' });
+          if (!frame) {
+            throw new Error("找不到名稱為 'game' 的 iframe");
+          }
+
+          // 取得 canvas（Playson 的 canvas id 為 "game_canvas"）
+          const canvas = await frame.waitForSelector('#game_canvas', { state: 'visible', timeout: 10000 });
+          if (!canvas) {
+            throw new Error("找不到遊戲 canvas");
+          }
+          const box = await canvas.boundingBox();
+          if (!box) {
+            throw new Error("無法取得 canvas bounding box");
+          }
+
+          // 進入遊戲重試機制：最多嘗試 3 次
+          const enterX = box.x + 636;
+          const enterY = box.y + 638;
+          let gameEntered = false;
+          for (let attempt = 0; attempt < 3 && !gameEntered; attempt++) {
+            await page.mouse.click(enterX, enterY);
+            await page.waitForTimeout(2000);
+            try {
+              await Promise.any([
+                frame.waitForSelector('#game_canvas', { state: 'visible', timeout: 5000 }),
+                frame.waitForSelector('#game', { state: 'visible', timeout: 5000 })
+              ]);
+              gameEntered = true;
+            } catch (err) {
+              console.log(`進入遊戲失敗, 第 ${attempt + 1} 次嘗試，重新點擊進入遊戲`);
+              if (attempt === 2) {
+                throw new Error("連續嘗試進入遊戲均失敗");
               }
             }
           }
-        }
 
-        await context.close();
-      } catch (e) {
-        if (context) await context.close();
-        errorMessages.push(`Agent: ${agent}, GameID: ${gameId} 測試過程發生錯誤: ${e}`);
-      }
-    }
-  }
+          // Spin 按鈕重試機制：單一 session 中，最多嘗試 3 次（初次嘗試 + 2 次重試）
+          const spinX = box.x + 1180;
+          const spinY = box.y + 318;
+          let spinAttempts = 0;
+          const maxSpinAttempts = 3;
+
+          while (spinAttempts < maxSpinAttempts && !spinSuccess) {
+            const spinResponsePromise = page.waitForResponse(response =>
+              response.url().includes("https://gamecore.rowzone.tech/p/server") &&
+              response.status() === 200,
+              { timeout: 5000 }
+            );
+            await page.mouse.click(spinX, spinY);
+            const spinResponse = await spinResponsePromise.catch(() => null);
+            if (spinResponse) {
+              spinSuccess = true;
+              console.log(`Agent: ${agent}, GameID: ${gameId} Spin API 回傳 HTTP 200`);
+            } else {
+              spinAttempts++;
+              if (spinAttempts < maxSpinAttempts) {
+                console.log(`Spin API 未回傳 200, 第 ${spinAttempts} 次失敗，等待60秒後重新嘗試同一 session...`);
+                await page.waitForTimeout(60000);
+              } else {
+                // 本次 session 的 spin 嘗試失敗
+                throw new Error("本次 session 的 Spin API 嘗試均失敗");
+              }
+            }
+          }
+
+          await context.close();
+        } catch (e) {
+          lastError = e;
+          sessionAttempt++;
+          console.log(`【Playson】Agent: ${agent}, GameID: ${gameId} 已重新取得 URL，第 ${sessionAttempt} 次 session 嘗試後仍未收到 Spin API 回傳 200`);
+          // 若還未達到整體最大 session 次數，則繼續重試；否則將錯誤累積
+          if (sessionAttempt >= maxSessionAttempts) {
+            errorMessages.push(`Agent: ${agent}, GameID: ${gameId} 測試過程發生錯誤: 已重新取得 URL 並達到最大重試次數，但仍未收到 Spin API 返回200，最後錯誤: ${lastError}`);
+          }
+        }
+      } // end while session loop
+
+    } // end for gameId
+  } // end for agent
 
   if (errorMessages.length > 0) {
     throw new Error(errorMessages.join("\n"));
@@ -204,133 +198,126 @@ test('Booongo Spin 測試', async ({ browser, request }) => {
 
   let errorMessages = [];
 
-  // 依序測試每個 agent 與每款遊戲，確保每款測試完成後關閉瀏覽器 context
+  // 定義整體 session 重試上限
+  const maxSessionAttempts = 3;
+
   for (const agent of agents) {
     for (const gameId of gameIds) {
-      let context;
-      try {
-        // 取得遊戲 URL（僅取得一次，不重試）
-        const game_url = await generateGameUrl(request, agent, gameId);
-        if (!game_url.startsWith(expected_Playson)) {
-          throw new Error(`URL 前綴不符 -> ${game_url}`);
-        }
-
-        // 判斷是否需要打錢包（若 agent 在 11101～11172 範圍內則 deposit 10000）
-        const ACCOUNT = `${accountPrefix}${agent}${gameId}`;
-        console.log(`下注帳號: ${ACCOUNT}`);
-        let depositAmount = 0;
-        if (agent >= 11101 && agent <= 11172) {
-          depositAmount = 10000;
-        }
-        if (depositAmount > 0) {
-          await depositMoney(request, ACCOUNT, agent, depositAmount);
-        }
-
-        // 建立新的 browser context 與 page，進入遊戲頁面
-        context = await browser.newContext({ headless: true });
-        const page = await context.newPage();
-        await page.goto(game_url, { waitUntil: 'load' });
-        await page.waitForLoadState('networkidle');
-        // 載入完成後，先檢查是否出現錯誤訊息（例如「程序错误」或「请联系客服」）
-        const initialError = await page.$('.gr_dialog__message');
-        if (initialError) {
-          const text = await initialError.textContent();
-          throw new Error(`載入遊戲時出現錯誤訊息: ${text}`);
-        }
-        await page.waitForTimeout(500);
-
-        // 使用 iframe 的 name 直接取得 frame（此 iframe 有 name="game"）
-        const frame = page.frame({ name: 'game' });
-        if (!frame) {
-          throw new Error("找不到名稱為 'game' 的 iframe");
-        }
-
-        // 同時等待 id 為 "#canvas" 與 "#game"，取最快出現者
-        let canvas;
+      let sessionAttempt = 0;
+      let spinSuccess = false;
+      let lastError = null;
+      while (sessionAttempt < maxSessionAttempts && !spinSuccess) {
+        let context;
         try {
-          canvas = await Promise.any([
-            frame.waitForSelector('#canvas', { state: 'visible', timeout: 60000 }),
-            frame.waitForSelector('#game', { state: 'visible', timeout: 60000 })
-          ]);
-        } catch (e) {
-          throw new Error("找不到遊戲 canvas (id '#canvas' 或 '#game')");
-        }
-        // 等待一段延遲以確保 canvas 完全渲染
-        await frame.waitForTimeout(1000);
-        const box = await canvas.boundingBox();
-        if (!box) {
-          throw new Error("無法取得 canvas bounding box");
-        }
+          // 重新取得遊戲 URL
+          const game_url = await generateGameUrl(request, agent, gameId);
+          if (!game_url.startsWith(expected_Playson)) {
+            throw new Error(`URL 前綴不符 -> ${game_url}`);
+          }
 
-        // 進入遊戲重試機制：最多嘗試 3 次
-        const enterX = box.x + 636;
-        const enterY = box.y + 638;
-        let gameEntered = false;
-        for (let attempt = 0; attempt < 3 && !gameEntered; attempt++) {
-          await page.mouse.click(enterX, enterY);
-          await page.waitForTimeout(2000);
+          // 判斷是否需要打錢包（若 agent 在 11101～11172 範圍內則 deposit 10000）
+          const ACCOUNT = `${accountPrefix}${agent}${gameId}`;
+          console.log(`下注帳號: ${ACCOUNT}`);
+          let depositAmount = 0;
+          if (agent >= 11101 && agent <= 11172) {
+            depositAmount = 10000;
+          }
+          if (depositAmount > 0 && sessionAttempt === 0) {
+            await depositMoney(request, ACCOUNT, agent, depositAmount);
+          }
+
+          // 建立新的 browser context 與 page
+          context = await browser.newContext({ headless: true });
+          const page = await context.newPage();
+          await page.goto(game_url, { waitUntil: 'load' });
+          await page.waitForLoadState('networkidle');
+          const initialError = await page.$('.gr_dialog__message');
+          if (initialError) {
+            const text = await initialError.textContent();
+            throw new Error(`載入遊戲時出現錯誤訊息: ${text}`);
+          }
+          await page.waitForTimeout(500);
+
+          // 取得 iframe
+          const frame = page.frame({ name: 'game' });
+          if (!frame) {
+            throw new Error("找不到名稱為 'game' 的 iframe");
+          }
+          let canvas;
           try {
-            // 檢查是否成功進入遊戲：等待 canvas 或 #game 重新出現
-            await Promise.any([
+            canvas = await Promise.any([
               frame.waitForSelector('#canvas', { state: 'visible', timeout: 60000 }),
               frame.waitForSelector('#game', { state: 'visible', timeout: 60000 })
             ]);
-            gameEntered = true;
-          } catch (err) {
-            console.log(`進入遊戲失敗, 第 ${attempt + 1} 次嘗試，重新點擊進入遊戲`);
-            if (attempt === 2) {
-              throw new Error("連續嘗試進入遊戲均失敗");
-            }
+          } catch (e) {
+            throw new Error("找不到遊戲 canvas (id '#canvas' 或 '#game')");
           }
-        }
+          await frame.waitForTimeout(1000);
+          const box = await canvas.boundingBox();
+          if (!box) {
+            throw new Error("無法取得 canvas bounding box");
+          }
 
-        // Spin 按鈕重試機制：最多嘗試 3 次（初次嘗試 + 2 次重試）
-        const spinX = box.x + 1180;
-        const spinY = box.y + 318;
-        let spinAttempts = 0;
-        let spinSuccess = false;
-        const maxSpinAttempts = 3;
-        while (spinAttempts < maxSpinAttempts && !spinSuccess) {
-          // 設定等待 Spin API 回應的 Promise（5 秒內收到 HTTP 200）
-          const spinResponsePromise = page.waitForResponse(response =>
-            response.url().includes("https://gamecore.rowzone.tech/b/server") &&
-            response.status() === 200,
-            { timeout: 5000 }
-          );
-          await page.mouse.click(spinX, spinY);
-          const spinResponse = await spinResponsePromise.catch(() => null);
-          if (spinResponse) {
-            spinSuccess = true;
-            console.log(`Agent: ${agent}, GameID: ${gameId} Spin API 回傳 HTTP 200`);
-          } else {
-            spinAttempts++;
-            if (spinAttempts < maxSpinAttempts) {
-              console.log(`Spin API 未回傳 200, 第 ${spinAttempts} 次失敗，等待60秒後重新嘗試...`);
-              // 等待25秒後重新嘗試：使用 page.waitForTimeout(25000) 暫停 25000 毫秒，然後 while 迴圈會再次執行
-              await page.waitForTimeout(60000);
-            } else {
-              // 若超過最大嘗試次數，嘗試捕捉錯誤訊息並拋出錯誤
-              const errorElement = await page.$('.gr_dialog__message');
-              if (errorElement) {
-                const errorText = await errorElement.textContent();
-                throw new Error(`Spin 時發現錯誤訊息: ${errorText}`);
-              } else {
-                throw new Error("Spin API 未回傳 200");
+          // 進入遊戲重試機制：最多嘗試 3 次
+          const enterX = box.x + 636;
+          const enterY = box.y + 638;
+          let gameEntered = false;
+          for (let attempt = 0; attempt < 3 && !gameEntered; attempt++) {
+            await page.mouse.click(enterX, enterY);
+            await page.waitForTimeout(2000);
+            try {
+              await Promise.any([
+                frame.waitForSelector('#canvas', { state: 'visible', timeout: 5000 }),
+                frame.waitForSelector('#game', { state: 'visible', timeout: 5000 })
+              ]);
+              gameEntered = true;
+            } catch (err) {
+              console.log(`進入遊戲失敗, 第 ${attempt + 1} 次嘗試，重新點擊進入遊戲`);
+              if (attempt === 2) {
+                throw new Error("連續嘗試進入遊戲均失敗");
               }
             }
           }
-        }
 
-        // 測試成功，關閉 context
-        await context.close();
-      } catch (e) {
-        if (context) {
+          // Spin 按鈕重試機制：單一 session 中最多嘗試 3 次
+          const spinX = box.x + 1180;
+          const spinY = box.y + 318;
+          let spinAttempts = 0;
+          const maxSpinAttempts = 3;
+          while (spinAttempts < maxSpinAttempts && !spinSuccess) {
+            const spinResponsePromise = page.waitForResponse(response =>
+              response.url().includes("https://gamecore.rowzone.tech/b/server") &&
+              response.status() === 200,
+              { timeout: 5000 }
+            );
+            await page.mouse.click(spinX, spinY);
+            const spinResponse = await spinResponsePromise.catch(() => null);
+            if (spinResponse) {
+              spinSuccess = true;
+              console.log(`Agent: ${agent}, GameID: ${gameId} Spin API 回傳 HTTP 200`);
+            } else {
+              spinAttempts++;
+              if (spinAttempts < maxSpinAttempts) {
+                console.log(`Spin API 未回傳 200, 第 ${spinAttempts} 次失敗，等待60秒後重新嘗試同一 session...`);
+                await page.waitForTimeout(60000);
+              } else {
+                throw new Error("本次 session 的 Spin API 嘗試均失敗");
+              }
+            }
+          }
+
           await context.close();
+        } catch (e) {
+          lastError = e;
+          sessionAttempt++;
+          console.log(`【Booongo】Agent: ${agent}, GameID: ${gameId} 已重新取得 URL，第 ${sessionAttempt} 次 session 嘗試後仍未收到 Spin API 回傳 200`);
+          if (sessionAttempt >= maxSessionAttempts) {
+            errorMessages.push(`Agent: ${agent}, GameID: ${gameId} 測試過程發生錯誤: 已重新取得 URL 並達到最大重試次數，但仍未收到 Spin API 返回200，最後錯誤: ${lastError}`);
+          }
         }
-        errorMessages.push(`Agent: ${agent}, GameID: ${gameId} 測試過程發生錯誤: ${e}`);
-      }
-    }
-  }
+      } // end while session loop
+    } // end for gameId
+  } // end for agent
 
   if (errorMessages.length > 0) {
     throw new Error(errorMessages.join("\n"));

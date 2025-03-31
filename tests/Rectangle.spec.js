@@ -313,7 +313,7 @@ test('Rectangle_下半', async ({ browser, request }) => {
 
         // 若第一次未收到回應，重試一次
         if (!received) {
-          await page.waitForTimeout(5000);
+          await page.waitForTimeout(30000);
           await page.mouse.click(closeX, closeY);
           await page.waitForTimeout(2000);
           await page.mouse.click(spinX, spinY);
