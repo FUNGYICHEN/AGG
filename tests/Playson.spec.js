@@ -3,8 +3,8 @@ import { test } from '@playwright/test';
 const env = process.env.NODE_ENV || 'stg';
 const { ENV_CONFIG, generateGameUrl, depositMoney } = await import(`./${env}環境.js`);
 
-
 test.describe.configure({ mode: 'serial' });
+
 test('Playson Spin 測試', async ({ browser, request }) => {
   test.setTimeout(0);
   const { expected_Playson, accountPrefix } = ENV_CONFIG; // 例如 "https://static-stage.rowzone.tech/"
@@ -37,7 +37,7 @@ test('Playson Spin 測試', async ({ browser, request }) => {
       let sessionAttempt = 0;
       let spinSuccess = false;
       let lastError = null;
-      // 外層 loop：每次若失敗就重新取得 URL、重新進入遊戲，再嘗試 Spin
+      // 外層 loop：若失敗就重新取得 URL、重新進入遊戲，再嘗試 Spin
       while (sessionAttempt < maxSessionAttempts && !spinSuccess) {
         let context;
         try {
@@ -62,6 +62,7 @@ test('Playson Spin 測試', async ({ browser, request }) => {
           // 建立新的 browser context 與 page
           context = await browser.newContext({ headless: true });
           const page = await context.newPage();
+
           // 預先等待 "connection opened" 訊息
           const connectionOpenedPromise = new Promise(resolve => {
             page.on('console', msg => {
@@ -115,12 +116,11 @@ test('Playson Spin 測試', async ({ browser, request }) => {
             }
           }
 
-          // Spin 按鈕重試機制：單一 session 中，最多嘗試 3 次（初次嘗試 + 2 次重試）
+          // Spin 按鈕重試機制：單一 session 中最多嘗試 3 次（初次嘗試 + 2 次重試）
           const spinX = box.x + 1180;
           const spinY = box.y + 318;
           let spinAttempts = 0;
           const maxSpinAttempts = 3;
-
           while (spinAttempts < maxSpinAttempts && !spinSuccess) {
             const spinResponsePromise = page.waitForResponse(response =>
               response.url().includes("https://gamecore.rowzone.tech/p/server") &&
@@ -135,27 +135,30 @@ test('Playson Spin 測試', async ({ browser, request }) => {
             } else {
               spinAttempts++;
               if (spinAttempts < maxSpinAttempts) {
-                console.log(`Spin API 未回傳 200, 第 ${spinAttempts} 次失敗，等待120秒後重新嘗試同一session`);
+                console.log(`Spin API 未回傳 200, 第 ${spinAttempts} 次失敗，等待120秒後重新嘗試同一 session...`);
                 await page.waitForTimeout(120000);
               } else {
-                // 本次 session 的 spin 嘗試失敗
                 throw new Error("本次 session 的 Spin API 嘗試均失敗");
               }
             }
           }
-
-          await context.close();
         } catch (e) {
           lastError = e;
           sessionAttempt++;
           console.log(`【Playson】Agent: ${agent}, GameID: ${gameId} 已重新取得 URL，第 ${sessionAttempt} 次 session 嘗試後仍未收到 Spin API 回傳 200`);
-          // 若還未達到整體最大 session 次數，則繼續重試；否則將錯誤累積
           if (sessionAttempt >= maxSessionAttempts) {
             errorMessages.push(`Agent: ${agent}, GameID: ${gameId} 測試過程發生錯誤: 已重新取得 URL 並達到最大重試次數，但仍未收到 Spin API 返回200，最後錯誤: ${lastError}`);
           }
+        } finally {
+          if (typeof context !== 'undefined' && context) {
+            try {
+              await context.close();
+            } catch (closeError) {
+              console.log("關閉 context 時發生錯誤:", closeError);
+            }
+          }
         }
       } // end while session loop
-
     } // end for gameId
   } // end for agent
 
@@ -165,11 +168,6 @@ test('Playson Spin 測試', async ({ browser, request }) => {
     console.log("所有 Agent 測試成功，正常取得 Playson URL 並完成 Spin 點擊");
   }
 });
-
-
-
-
-
 
 test('Booongo Spin 測試', async ({ browser, request }) => {
   test.setTimeout(0);
@@ -188,7 +186,6 @@ test('Booongo Spin 測試', async ({ browser, request }) => {
     152, 153, 154, 155, 156, 157, 158, 159, 161, 162,
     165, 167, 168, 169, 170, 171, 172
   ];
-
   // 先產生 "11" 前綴的 agent 清單（例如 11101 ~ 11172）
   const agents11 = baseAgents.map(a => parseInt("11" + a.toString()));
   // 再產生 "10" 前綴的 agent 清單（例如 10101 ~ 10172）
@@ -305,14 +302,20 @@ test('Booongo Spin 測試', async ({ browser, request }) => {
               }
             }
           }
-
-          await context.close();
         } catch (e) {
           lastError = e;
           sessionAttempt++;
           console.log(`【Booongo】Agent: ${agent}, GameID: ${gameId} 已重新取得 URL，第 ${sessionAttempt} 次 session 嘗試後仍未收到 Spin API 回傳 200`);
           if (sessionAttempt >= maxSessionAttempts) {
             errorMessages.push(`Agent: ${agent}, GameID: ${gameId} 測試過程發生錯誤: 已重新取得 URL 並達到最大重試次數，但仍未收到 Spin API 返回200，最後錯誤: ${lastError}`);
+          }
+        } finally {
+          if (typeof context !== 'undefined' && context) {
+            try {
+              await context.close();
+            } catch (closeError) {
+              console.log("關閉 context 時發生錯誤:", closeError);
+            }
           }
         }
       } // end while session loop
