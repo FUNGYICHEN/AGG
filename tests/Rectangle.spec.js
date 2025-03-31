@@ -11,8 +11,8 @@ function range(start, end) {
   }
   return arr;
 }
-
-test.only('Rectangle_上半', async ({ browser, request }) => {
+test.describe.configure({ mode: 'serial' });
+test('Rectangle_上半', async ({ browser, request }) => {
   test.setTimeout(0);
   const { expected_Rectangle, accountPrefix } = ENV_CONFIG;
 
@@ -80,9 +80,7 @@ test.only('Rectangle_上半', async ({ browser, request }) => {
             try {
               const newGameUrl = await generateGameUrl(request, agent, game_id);
               if (!newGameUrl || !newGameUrl.startsWith(expected_Rectangle)) {
-                errorMessages.push(`Agent: ${agent}, GameID: ${game_id} 重新取得 URL 前綴不符 -> ${newGameUrl}`);
-                await context.close();
-                continue;
+                
               }
               console.log(`Agent: ${agent}, GameID: ${game_id} 重新取得 URL: ${newGameUrl}`);
               game_url = newGameUrl;

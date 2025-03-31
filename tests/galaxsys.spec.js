@@ -7,7 +7,7 @@ const { ENV_CONFIG, generateGameUrl } = await import(`./${env}環境.js`);
 const range = (start, end) => Array.from({ length: end - start }, (_, i) => start + i);
 
 
-
+test.describe.configure({ mode: 'serial' });
 test('70001_Cash Show: 下注', async ({ browser, request }) => {
   test.setTimeout(0);
 

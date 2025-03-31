@@ -7,7 +7,7 @@ const { ENV_CONFIG, generateGameUrl,depositMoney } = await import(`./${env}環�
 const range = (start, end) => Array.from({ length: end - start }, (_, i) => start + i);
 
 
-
+test.describe.configure({ mode: 'serial' });
 test('Wcasino下注測試', async ({ browser, request }) => {
   test.setTimeout(0);
   const { expected_Wcasino, accountPrefix } = ENV_CONFIG;
