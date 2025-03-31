@@ -18,7 +18,7 @@ export const ENV_CONFIG = {
   // 固定錢包類型為單一錢包
   agent_switch: "1",
   // 下注帳號前綴，由環境變數設定，預設為 "QAtest_1120A11"
-  accountPrefix: process.env.ACCOUNT_PREFIX || 'QAtest_1120A11',
+  accountPrefix: process.env.ACCOUNT_PREFIX || 'QAtest_1120A13',
   keys: {
     "1": "fbe5cce9103974817840c5b53575d6c1",
   },

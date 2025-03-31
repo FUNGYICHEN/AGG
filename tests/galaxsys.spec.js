@@ -44,7 +44,7 @@ test('70001_Cash Show: 下注', async ({ browser, request }) => {
                     .filter(agent => !excludeAgents.includes(agent));
 
   const game_id = 70001;
-  const { expected_prefix } = ENV_CONFIG;
+  const { expected_galaxsys } = ENV_CONFIG;
   const errors = {}; // 記錄每個 agent 的錯誤訊息
   let successCount = 0;
 
@@ -60,7 +60,7 @@ test('70001_Cash Show: 下注', async ({ browser, request }) => {
 
         // 取得並驗證原始 URL
         const game_url = await generateGameUrl(request, agent, game_id);
-        if (!game_url || !game_url.startsWith(expected_prefix)) {
+        if (!game_url || !game_url.startsWith(expected_galaxsys)) {
           throw new Error("產生的 URL 無效");
         }
         console.log(`Agent: ${agent} 取得的原始 URL: ${game_url}`);
@@ -204,7 +204,7 @@ test('70002_Crash: 下注', async ({ browser, request }) => {
   const agents = Array.from({ length: endAgent - startAgent + 1 }, (_, i) => i + startAgent)
                     .filter(agent => !excludeAgents.includes(agent));
   const game_id = 70002;
-  const { expected_prefix } = ENV_CONFIG;
+  const { expected_galaxsys } = ENV_CONFIG;
   const errors = {};
   let successCount = 0;
 
@@ -220,7 +220,7 @@ test('70002_Crash: 下注', async ({ browser, request }) => {
 
         // 取得並驗證原始 URL
         const game_url = await generateGameUrl(request, agent, game_id);
-        if (!game_url || !game_url.startsWith(expected_prefix)) {
+        if (!game_url || !game_url.startsWith(expected_galaxsys)) {
           throw new Error("產生的 URL 無效");
         }
         console.log(`Agent: ${agent} 取得的原始 URL: ${game_url}`);
@@ -374,7 +374,7 @@ test('70003_Rocketon: 下注', async ({ browser, request }) => {
                       .filter(agent => !excludeAgents.includes(agent));
 
   const game_id = 70003;
-  const { expected_prefix } = ENV_CONFIG;
+  const { expected_galaxsys } = ENV_CONFIG;
   const errors = {};
   let successCount = 0;
 
@@ -389,7 +389,7 @@ test('70003_Rocketon: 下注', async ({ browser, request }) => {
         console.log(`\n========== 開始測試 agent: ${agent}, attempt: ${attempt} ==========`);
 
         const game_url = await generateGameUrl(request, agent, game_id);
-        if (!game_url || !game_url.startsWith(expected_prefix)) {
+        if (!game_url || !game_url.startsWith(expected_galaxsys)) {
           throw new Error("產生的 URL 無效");
         }
         console.log(`Agent: ${agent} 取得的原始 URL: ${game_url}`);
@@ -540,7 +540,7 @@ test('70004_Keno 10 (1 Minute): 下注', async ({ browser, request }) => {
                      .filter(agent => !excludeAgents.includes(agent));
 
   const game_id = 70004;
-  const { expected_prefix } = ENV_CONFIG;
+  const { expected_galaxsys } = ENV_CONFIG;
   const errors = {};
   let successCount = 0;
 
@@ -555,7 +555,7 @@ test('70004_Keno 10 (1 Minute): 下注', async ({ browser, request }) => {
         console.log(`\n========== 開始測試 agent: ${agent}, attempt: ${attempt} ==========`);
 
         const game_url = await generateGameUrl(request, agent, game_id);
-        if (!game_url || !game_url.startsWith(expected_prefix)) {
+        if (!game_url || !game_url.startsWith(expected_galaxsys)) {
           throw new Error("產生的 URL 無效");
         }
         console.log(`Agent: ${agent} 取得的原始 URL: ${game_url}`);
@@ -723,7 +723,7 @@ test('70005_Keno 10 (2 Minute): 下注', async ({ browser, request }) => {
                     .filter(agent => !excludeAgents.includes(agent));
 
   const game_id = 70005;
-  const { expected_prefix } = ENV_CONFIG;
+  const { expected_galaxsys } = ENV_CONFIG;
   const errors = {};
   let successCount = 0;
 
@@ -738,7 +738,7 @@ test('70005_Keno 10 (2 Minute): 下注', async ({ browser, request }) => {
         console.log(`\n========== 開始測試 agent: ${agent}, attempt: ${attempt} ==========`);
 
         const game_url = await generateGameUrl(request, agent, game_id);
-        if (!game_url || !game_url.startsWith(expected_prefix)) {
+        if (!game_url || !game_url.startsWith(expected_galaxsys)) {
           throw new Error("產生的 URL 無效");
         }
         console.log(`Agent: ${agent} 取得的原始 URL: ${game_url}`);
@@ -888,7 +888,7 @@ test('70006_Keno 8 (1 Minute): 下注', async ({ browser, request }) => {
   const agents = Array.from({ length: endAgent - startAgent + 1 }, (_, i) => i + startAgent)
                       .filter(agent => !excludeAgents.includes(agent));
   const game_id = 70006;
-  const { expected_prefix } = ENV_CONFIG;
+  const { expected_galaxsys } = ENV_CONFIG;
   const errors = {};
   let successCount = 0;
 
@@ -903,7 +903,7 @@ test('70006_Keno 8 (1 Minute): 下注', async ({ browser, request }) => {
         console.log(`\n========== 開始測試 agent: ${agent}, attempt: ${attempt} ==========`);
 
         const game_url = await generateGameUrl(request, agent, game_id);
-        if (!game_url || !game_url.startsWith(expected_prefix)) {
+        if (!game_url || !game_url.startsWith(expected_galaxsys)) {
           throw new Error("產生的 URL 無效");
         }
         console.log(`Agent: ${agent} 取得的原始 URL: ${game_url}`);
@@ -1058,7 +1058,7 @@ test('70007_Keno 8 (2 Minute): 下注', async ({ browser, request }) => {
                     .filter(agent => !excludeAgents.includes(agent));
 
   const game_id = 70007;
-  const { expected_prefix } = ENV_CONFIG;
+  const { expected_galaxsys } = ENV_CONFIG;
   const errors = {};
   let successCount = 0;
 
@@ -1073,7 +1073,7 @@ test('70007_Keno 8 (2 Minute): 下注', async ({ browser, request }) => {
         console.log(`\n========== 開始測試 agent: ${agent}, attempt: ${attempt} ==========`);
 
         const game_url = await generateGameUrl(request, agent, game_id);
-        if (!game_url || !game_url.startsWith(expected_prefix)) {
+        if (!game_url || !game_url.startsWith(expected_galaxsys)) {
           throw new Error("產生的 URL 無效");
         }
         console.log(`Agent: ${agent} 取得的原始 URL: ${game_url}`);
@@ -1222,7 +1222,7 @@ test('70008_Keno Express: 下注', async ({ browser, request }) => {
                      .filter(agent => !excludeAgents.includes(agent));
 
   const game_id = 70008;
-  const { expected_prefix } = ENV_CONFIG;
+  const { expected_galaxsys } = ENV_CONFIG;
   const errors = {};
   let successCount = 0;
 
@@ -1237,7 +1237,7 @@ test('70008_Keno Express: 下注', async ({ browser, request }) => {
         console.log(`\n========== 開始測試 agent: ${agent}, attempt: ${attempt} ==========`);
 
         const game_url = await generateGameUrl(request, agent, game_id);
-        if (!game_url || !game_url.startsWith(expected_prefix)) {
+        if (!game_url || !game_url.startsWith(expected_galaxsys)) {
           throw new Error("產生的 URL 無效");
         }
         console.log(`Agent: ${agent} 取得的原始 URL: ${game_url}`);
@@ -1354,7 +1354,7 @@ test('70008_Keno Express: 下注', async ({ browser, request }) => {
   }
 });
 
-test.only('70009_Penalty: 下注', async ({ browser, request }) => {
+test('70009_Penalty: 下注', async ({ browser, request }) => {
   test.setTimeout(0);
 
   // Helper：取得倒數秒數（只讀取一次）
@@ -1385,7 +1385,7 @@ test.only('70009_Penalty: 下注', async ({ browser, request }) => {
                       .filter(agent => !excludeAgents.includes(agent));
 
   const game_id = 70009;
-  const { expected_prefix } = ENV_CONFIG;
+  const { expected_galaxsys } = ENV_CONFIG;
   const errors = {};
   let successCount = 0;
 
@@ -1400,7 +1400,7 @@ test.only('70009_Penalty: 下注', async ({ browser, request }) => {
         console.log(`\n========== 開始測試 agent: ${agent}, attempt: ${attempt} ==========`);
 
         const game_url = await generateGameUrl(request, agent, game_id);
-        if (!game_url || !game_url.startsWith(expected_prefix)) {
+        if (!game_url || !game_url.startsWith(expected_galaxsys)) {
           throw new Error("產生的 URL 無效");
         }
         console.log(`Agent: ${agent} 取得的原始 URL: ${game_url}`);
@@ -1515,7 +1515,7 @@ test.only('70009_Penalty: 下注', async ({ browser, request }) => {
 
 
 
-test('70009_Penalty: 下注', async ({ browser, request }) => {
+test('70010_Penalty: 下注', async ({ browser, request }) => {
   test.setTimeout(0);
 
   // Helper：取得倒數秒數（只讀取一次）
@@ -1545,8 +1545,8 @@ test('70009_Penalty: 下注', async ({ browser, request }) => {
   const agents = Array.from({ length: endAgent - startAgent + 1 }, (_, i) => i + startAgent)
                       .filter(agent => !excludeAgents.includes(agent));
 
-  const game_id = 70009;
-  const { expected_prefix } = ENV_CONFIG;
+  const game_id = 70010;
+  const { expected_galaxsys } = ENV_CONFIG;
   const errors = {};
   let successCount = 0;
 
@@ -1561,7 +1561,7 @@ test('70009_Penalty: 下注', async ({ browser, request }) => {
         console.log(`\n========== 開始測試 agent: ${agent}, attempt: ${attempt} ==========`);
 
         const game_url = await generateGameUrl(request, agent, game_id);
-        if (!game_url || !game_url.startsWith(expected_prefix)) {
+        if (!game_url || !game_url.startsWith(expected_galaxsys)) {
           throw new Error("產生的 URL 無效");
         }
         console.log(`Agent: ${agent} 取得的原始 URL: ${game_url}`);
@@ -1696,7 +1696,7 @@ test('70011_Hilo: 下注', async ({ browser, request }) => {
                       .filter(agent => !excludeAgents.includes(agent));
 
   const game_id = 70011;
-  const { expected_prefix } = ENV_CONFIG;
+  const { expected_galaxsys } = ENV_CONFIG;
   const errors = {};
   let successCount = 0;
 
@@ -1711,7 +1711,7 @@ test('70011_Hilo: 下注', async ({ browser, request }) => {
         console.log(`\n========== 開始測試 agent: ${agent}, attempt: ${attempt} ==========`);
 
         const game_url = await generateGameUrl(request, agent, game_id);
-        if (!game_url || !game_url.startsWith(expected_prefix)) {
+        if (!game_url || !game_url.startsWith(expected_galaxsys)) {
           throw new Error("產生的 URL 無效");
         }
         console.log(`Agent: ${agent} 取得的原始 URL: ${game_url}`);
@@ -1843,7 +1843,7 @@ test('70012_BlackJack: 下注', async ({ browser, request }) => {
                       .filter(agent => !excludeAgents.includes(agent));
 
   const game_id = 70012;
-  const { expected_prefix } = ENV_CONFIG;
+  const { expected_galaxsys } = ENV_CONFIG;
   const errors = {};
   let successCount = 0;
 
@@ -1858,7 +1858,7 @@ test('70012_BlackJack: 下注', async ({ browser, request }) => {
         console.log(`\n========== 開始測試 agent: ${agent}, attempt: ${attempt} ==========`);
 
         const game_url = await generateGameUrl(request, agent, game_id);
-        if (!game_url || !game_url.startsWith(expected_prefix)) {
+        if (!game_url || !game_url.startsWith(expected_galaxsys)) {
           throw new Error("產生的 URL 無效");
         }
         console.log(`Agent: ${agent} 取得的原始 URL: ${game_url}`);
@@ -1992,7 +1992,7 @@ test('70013_GoldenRA: 下注', async ({ browser, request }) => {
                       .filter(agent => !excludeAgents.includes(agent));
 
   const game_id = 70013;
-  const { expected_prefix } = ENV_CONFIG;
+  const { expected_galaxsys } = ENV_CONFIG;
   const errors = {};
   let successCount = 0;
 
@@ -2008,7 +2008,7 @@ test('70013_GoldenRA: 下注', async ({ browser, request }) => {
 
         // 取得並驗證原始 URL
         const game_url = await generateGameUrl(request, agent, game_id);
-        if (!game_url || !game_url.startsWith(expected_prefix)) {
+        if (!game_url || !game_url.startsWith(expected_galaxsys)) {
           throw new Error("產生的 URL 無效");
         }
         console.log(`Agent: ${agent} 取得的原始 URL: ${game_url}`);
