@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
 
-const env = process.env.NODE_ENV || 'stg';
-const { ENV_CONFIG, generateGameUrl } = await import(`./${env}環境.js`);
+const env = (process.env.NODE_ENV || 'stg').toLowerCase().trim();
+const { ENV_CONFIG, generateGameUrl, depositMoney } = await import(`./${env}環境.js`);
 test.describe.configure({ mode: 'serial' });
 
 test('Playson Spin 測試', async ({ browser, request }) => {
