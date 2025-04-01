@@ -1,6 +1,16 @@
 import { test } from '@playwright/test';
 
-const env = (process.env.NODE_ENV || 'stg').toLowerCase().trim();
+// 根據平台決定環境變數的大小寫轉換
+let env;
+if (process.platform === 'win32') {
+  // 在 Windows 上，如果你希望使用小寫（假設 Windows 專案檔案命名是小寫）
+  env = (process.env.NODE_ENV || 'stg').toLowerCase().trim();
+} else {
+  // 在 Linux 上，檔案名稱是大寫的
+  env = (process.env.NODE_ENV || 'STG').toUpperCase().trim();
+}
+
+// 動態載入模組，假設檔案名稱為 "STG環境.js" 或 "stg環境.js" 根據平台而定
 const { ENV_CONFIG, generateGameUrl, depositMoney } = await import(`./${env}環境.js`);
 test.describe.configure({ mode: 'serial' });
 
