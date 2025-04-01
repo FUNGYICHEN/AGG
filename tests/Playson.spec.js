@@ -1,6 +1,7 @@
 import { test } from '@playwright/test';
 
-const env = (process.env.NODE_ENV || 'stg').toUpperCase();
+// 強制轉換環境變數成大寫，以確保如果沒有設定 NODE_ENV，預設為 'STG'
+const env = (process.env.NODE_ENV || 'STG').toUpperCase();
 const { ENV_CONFIG, generateGameUrl, depositMoney } = await import(`./${env}環境.js`);
 
 test.describe.configure({ mode: 'serial' });
