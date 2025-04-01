@@ -5,7 +5,7 @@ import { defineConfig, devices } from '@playwright/test';
  * 設定 headless 模式：
  * true 表示無頭模式，false 表示有頭模式
  */
-const HEADLESS = true; // 修改為 false 即為有頭模式 true 為無頭
+const HEADLESS = false; // 修改為 false 即為有頭模式 true 為無頭
 
 
 
