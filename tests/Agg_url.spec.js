@@ -1,14 +1,7 @@
 import { test } from '@playwright/test';
 
-// 根據平台決定環境變數的大小寫轉換
-let env;
-if (process.platform === 'win32') {
-  // 在 Windows 上，如果你希望使用小寫（假設 Windows 專案檔案命名是小寫）
-  env = (process.env.NODE_ENV || 'stg').toLowerCase().trim();
-} else {
-  // 在 Linux 上，檔案名稱是大寫的
-  env = (process.env.NODE_ENV || 'STG').toUpperCase().trim();
-}
+const env = process.env.NODE_ENV || 'stg';
+const { ENV_CONFIG, generateGameUrl } = await import(`./${env}環境.js`);
 
 // 輔助函數：延遲指定毫秒數
 function sleep(ms) {
