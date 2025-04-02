@@ -4,7 +4,7 @@ export const ENV_CONFIG = {
   // Prod 環境參數
   login_url: "https://op.qbfqgfgzzgf.com/login",
   // 如果 prod 的 Wcasino URL 與 STG 不同，請依需求修改，這裡保留原值
-  expected_Wcasino: "https://tst.wcasino9.com/direct/login",
+  expected_Wcasino: "https://www.wcasino9.com/direct/login",
   // 假設 prod 的 galaxsys 啟動 URL 為如下
   expected_galaxsys: "https://launchdigi.net//Games/Launch/",
   // 如果 rectangle 和 playson 在 prod 環境有不同，請依需求修改
