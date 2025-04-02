@@ -134,8 +134,8 @@ test('Playson Spin 測試', async ({ browser, request }) => {
             } else {
               spinAttempts++;
               if (spinAttempts < maxSpinAttempts) {
-                console.log(`Spin API 未回傳 200, 第 ${spinAttempts} 次失敗，等待120秒後重新嘗試同一 session...`);
-                await page.waitForTimeout(120000);
+                console.log(`Spin API 未回傳 200, 第 ${spinAttempts} 次失敗，等待20秒後重新嘗試同一 session...`);
+                await page.waitForTimeout(20000);
               } else {
                 throw new Error("本次 session 的 Spin API 嘗試均失敗");
               }
@@ -294,8 +294,8 @@ test('Booongo Spin 測試', async ({ browser, request }) => {
             } else {
               spinAttempts++;
               if (spinAttempts < maxSpinAttempts) {
-                console.log(`Spin API 未回傳 200, 第 ${spinAttempts} 次失敗，等待30秒後重新嘗試同一 session...`);
-                await page.waitForTimeout(30000);
+                console.log(`Spin API 未回傳 200, 第 ${spinAttempts} 次失敗，等待20秒後重新嘗試同一 session...`);
+                await page.waitForTimeout(20000);
               } else {
                 throw new Error("本次 session 的 Spin API 嘗試均失敗");
               }
