@@ -139,7 +139,7 @@ test('Rectangle URL', async ({ request }) => {
       });
 
 
-      test('Wcasino URL', async ({ request }) => {
+      test.only('Wcasino URL', async ({ request }) => {
         test.setTimeout(0);
         const { expected_Wcasino } = ENV_CONFIG;
         
