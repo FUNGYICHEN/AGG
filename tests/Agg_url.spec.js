@@ -33,7 +33,7 @@ test('Rectangle URL', async ({ request }) => {
       171, 172,199
     ];
     // 將 baseAgents 轉換成前綴 "10" 的 agent，如 101 變成 10101
-    const agents = baseAgents.map(a => parseInt('10' + a));
+    const agents = baseAgents.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
   
     // 定義 game_id 與對應 slug 的映射關係
     const gameIdToSlug = {
@@ -83,7 +83,7 @@ test('Rectangle URL', async ({ request }) => {
           // 如果捕獲到 HTTP錯誤（400 或 500），等待 500 毫秒後重試兩次
           if (e.message.includes("HTTP錯誤")) {
             let success = false;
-            for (let attempt = 1; attempt <= 2; attempt++) {
+            for (let attempt = 1; attempt <= 0; attempt++) {
               await sleep(300);
               try {
                 game_url = await generateGameUrl(request, agent, game_id);
