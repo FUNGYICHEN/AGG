@@ -1,13 +1,9 @@
-// @ts-check
 import { defineConfig, devices } from '@playwright/test';
 
 /**
- * 設定 headless 模式：
  * true 表示無頭模式，false 表示有頭模式
  */
-const HEADLESS = true; // 修改為 false 即為有頭模式 true 為無頭
-
-
+const HEADLESS = true; // 修改為 false 即為有頭模式，true 為無頭
 
 export default defineConfig({
   timeout: 0, // 全域不設超時
@@ -16,7 +12,7 @@ export default defineConfig({
   forbidOnly: false,
   retries: 0,
   workers: 4,
-  reporter: 'html',
+  reporter: 'html',  // 生成 HTML 測試報告
   
   use: {
     headless: HEADLESS,
