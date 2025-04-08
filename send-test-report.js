@@ -1,5 +1,5 @@
-const fs = require('fs').promises;
-const axios = require('axios');
+import fs from 'fs/promises';
+import axios from 'axios';
 
 /**
  * 解析測試日誌檔，回傳成功訊息與錯誤訊息字串。
