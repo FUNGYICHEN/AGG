@@ -78,8 +78,8 @@ async function main() {
     const filePath = 'C:\\Users\\as268\\jenkins_agent\\workspace\\AGG_URL(PROD)\\test.log';
     const { successMessage, errorMessage } = await parseLogFile(filePath);
 
-    // 直接帶入參數
-    const botToken = 'botW7881684321:AAFGknNFikAsRyb1OVaALUby_xPwdRg4Elw';
+    // 設定 Telegram Bot 憑證
+    const botToken = 'W7881684321:AAFGknNFikAsRyb1OVaALUby_xPwdRg4Elw';
     const chatId = '-4707429750';
 
     // 傳送成功與錯誤摘要訊息
