@@ -1,10 +1,10 @@
-// aggregate.js (改用 ES module 語法)
+// aggregate.js
 import fs from 'fs';
 import path from 'path';
 
-// 因為 Node v16+ 並未內建 __dirname，必須自行處理（例如使用 import.meta.url）
+// ES module 中無內建 __dirname，使用 import.meta.url 取得目前檔案所在目錄
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
-const LOG_FILE = path.join(__dirname, '..', 'test.log');
+const LOG_FILE = path.join(__dirname, 'test.log');
 
 // 讀取 log 檔
 async function readLogFile(filePath) {
@@ -17,19 +17,24 @@ function parseLog(logText) {
   const results = {};
   const successRegex = /^(?<brand>\w+)(\s*(?:-|URL))?\s*測試：所有 agent 測試成功，正常取得遊戲 URL/;
   const errorRegex = /^(?:(?<brand>\w+)(?:\s*-\s*)?)?Agent:\s*(?<agent>\d+),\s*GameID:\s*(?<gameid>\d+).*HTTP錯誤：狀態碼\s*(?<status>\d{3}|5XX)/;
+  
   for (const line of lines) {
     if (!line.trim()) continue;
     let m = line.match(successRegex);
     if (m) {
       let brand = m.groups.brand || '未知品牌';
-      if (!results[brand]) results[brand] = { success: '', errors: {} };
+      if (!results[brand]) {
+        results[brand] = { success: '', errors: {} };
+      }
       results[brand].success = line.trim();
       continue;
     }
     m = line.match(errorRegex);
     if (m) {
       let brand = m.groups.brand || '未知品牌';
-      if (!results[brand]) results[brand] = { success: '', errors: {} };
+      if (!results[brand]) {
+        results[brand] = { success: '', errors: {} };
+      }
       let key = `Agent: ${m.groups.agent}, GameID: ${m.groups.gameid} HTTP錯誤：狀態碼 ${m.groups.status}`;
       if (results[brand].errors[key]) {
         results[brand].errors[key].count++;
@@ -52,7 +57,7 @@ function formatSuccessMessage(results) {
   return msg;
 }
 
-// 格式化錯誤訊息：若同一錯誤數量 < 5 則逐筆顯示，>=5 則聚合顯示
+// 格式化錯誤訊息：若同一錯誤數量 < 5 則逐筆列出，否則聚合顯示
 function formatErrorMessage(results) {
   let msg = "【錯誤訊息】\n";
   for (let brand in results) {
