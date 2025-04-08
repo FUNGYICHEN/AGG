@@ -4,7 +4,7 @@ import path from 'path';
 
 // 因為 Node v16+ 並未內建 __dirname，必須自行處理（例如使用 import.meta.url）
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
-const LOG_FILE = path.join(__dirname, 'test.log');
+const LOG_FILE = path.join(__dirname, '..', 'test.log');
 
 // 讀取 log 檔
 async function readLogFile(filePath) {
