@@ -1,6 +1,9 @@
-// aggregate.js
-const fs = require('fs');
-const path = require('path');
+// aggregate.js (改用 ES module 語法)
+import fs from 'fs';
+import path from 'path';
+
+// 因為 Node v16+ 並未內建 __dirname，必須自行處理（例如使用 import.meta.url）
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const LOG_FILE = path.join(__dirname, 'test.log');
 
 // 讀取 log 檔
@@ -14,10 +17,8 @@ function parseLog(logText) {
   const results = {};
   const successRegex = /^(?<brand>\w+)(\s*(?:-|URL))?\s*測試：所有 agent 測試成功，正常取得遊戲 URL/;
   const errorRegex = /^(?:(?<brand>\w+)(?:\s*-\s*)?)?Agent:\s*(?<agent>\d+),\s*GameID:\s*(?<gameid>\d+).*HTTP錯誤：狀態碼\s*(?<status>\d{3}|5XX)/;
-  
   for (const line of lines) {
     if (!line.trim()) continue;
-    
     let m = line.match(successRegex);
     if (m) {
       let brand = m.groups.brand || '未知品牌';
@@ -25,7 +26,6 @@ function parseLog(logText) {
       results[brand].success = line.trim();
       continue;
     }
-
     m = line.match(errorRegex);
     if (m) {
       let brand = m.groups.brand || '未知品牌';
@@ -41,7 +41,7 @@ function parseLog(logText) {
   return results;
 }
 
-// 格式化成功訊息：只列出成功的品牌訊息
+// 格式化成功訊息：僅列出成功的品牌訊息
 function formatSuccessMessage(results) {
   let msg = "【成功訊息】\n";
   for (let brand in results) {
@@ -52,8 +52,7 @@ function formatSuccessMessage(results) {
   return msg;
 }
 
-// 格式化錯誤訊息：
-// 如果相同錯誤數量 < 5，則逐筆顯示；若 >= 5，則聚合顯示
+// 格式化錯誤訊息：若同一錯誤數量 < 5 則逐筆顯示，>=5 則聚合顯示
 function formatErrorMessage(results) {
   let msg = "【錯誤訊息】\n";
   for (let brand in results) {
