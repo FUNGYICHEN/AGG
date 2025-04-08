@@ -1,8 +1,5 @@
-// aggregate.js
 import fs from 'fs';
 import path from 'path';
-
-// ES module 中無內建 __dirname，使用 import.meta.url 取得目前檔案所在目錄
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const LOG_FILE = path.join(__dirname, 'test.log');
 
