@@ -11,7 +11,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 4
+      "actualWorkers": 1
     },
     "preserveOutput": "always",
     "reporter": [
@@ -68,12 +68,12 @@
         {
           "title": "Game URL Tests",
           "file": "Agg_url.spec.js",
-          "line": 117,
+          "line": 130,
           "column": 6,
           "specs": [
             {
               "title": "Rectangle URL",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -85,175 +85,27 @@
                   "results": [
                     {
                       "workerIndex": 0,
-                      "status": "failed",
-                      "duration": 110125,
-                      "error": {
-                        "message": "Error: Rectangle URL: Agent: 10199, GameID: 90001 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90002 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90003 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90004 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90005 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90006 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90007 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90008 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90009 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90010 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90011 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90012 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90013 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90014 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90015 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90016 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90017 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90018 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90019 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90020 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90021 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90022 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90023 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90001 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90002 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90003 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90004 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90005 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90006 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90007 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90008 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90009 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90010 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90011 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90012 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90013 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90014 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90015 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90016 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90017 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90018 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90019 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90020 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90021 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90022 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90023 錯誤: HTTP錯誤：狀態碼 400",
-                        "stack": "Error: Rectangle URL: Agent: 10199, GameID: 90001 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90002 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90003 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90004 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90005 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90006 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90007 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90008 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90009 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90010 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90011 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90012 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90013 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90014 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90015 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90016 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90017 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90018 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90019 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90020 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90021 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90022 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90023 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90001 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90002 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90003 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90004 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90005 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90006 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90007 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90008 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90009 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90010 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90011 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90012 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90013 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90014 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90015 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90016 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90017 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90018 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90019 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90020 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90021 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90022 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90023 錯誤: HTTP錯誤：狀態碼 400\n    at validateUrls (C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Agg_url.spec.js:110:11)\n    at C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Agg_url.spec.js:152:5",
-                        "location": {
-                          "file": "C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Agg_url.spec.js",
-                          "column": 11,
-                          "line": 110
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 108 |\u001b[39m   }\n \u001b[90m 109 |\u001b[39m   \u001b[36mif\u001b[39m (errorMessages\u001b[33m.\u001b[39mlength \u001b[33m>\u001b[39m \u001b[35m0\u001b[39m) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 110 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`${testName}: ${errorMessages.join(\"\\n\")}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 111 |\u001b[39m   } \u001b[36melse\u001b[39m {\n \u001b[90m 112 |\u001b[39m     console\u001b[33m.\u001b[39mlog(\u001b[32m`${testName} 測試：所有 agent 測試成功，正常取得遊戲 URL`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 113 |\u001b[39m   }\u001b[0m"
-                      },
-                      "errors": [
+                      "status": "passed",
+                      "duration": 2319,
+                      "errors": [],
+                      "stdout": [
                         {
-                          "location": {
-                            "file": "C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Agg_url.spec.js",
-                            "column": 11,
-                            "line": 110
-                          },
-                          "message": "Error: Rectangle URL: Agent: 10199, GameID: 90001 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90002 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90003 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90004 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90005 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90006 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90007 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90008 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90009 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90010 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90011 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90012 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90013 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90014 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90015 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90016 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90017 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90018 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90019 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90020 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90021 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90022 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 90023 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90001 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90002 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90003 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90004 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90005 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90006 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90007 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90008 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90009 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90010 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90011 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90012 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90013 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90014 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90015 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90016 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90017 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90018 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90019 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90020 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90021 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90022 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 90023 錯誤: HTTP錯誤：狀態碼 400\n\n\u001b[0m \u001b[90m 108 |\u001b[39m   }\n \u001b[90m 109 |\u001b[39m   \u001b[36mif\u001b[39m (errorMessages\u001b[33m.\u001b[39mlength \u001b[33m>\u001b[39m \u001b[35m0\u001b[39m) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 110 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`${testName}: ${errorMessages.join(\"\\n\")}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 111 |\u001b[39m   } \u001b[36melse\u001b[39m {\n \u001b[90m 112 |\u001b[39m     console\u001b[33m.\u001b[39mlog(\u001b[32m`${testName} 測試：所有 agent 測試成功，正常取得遊戲 URL`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 113 |\u001b[39m   }\u001b[0m\n\u001b[2m    at validateUrls (C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Agg_url.spec.js:110:11)\u001b[22m\n\u001b[2m    at C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Agg_url.spec.js:152:5\u001b[22m"
+                          "text": "Rectangle URL 測試：所有 agent 測試成功，正常取得遊戲 URL\n"
                         }
                       ],
-                      "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2025-04-09T05:16:25.616Z",
-                      "attachments": [],
-                      "errorLocation": {
-                        "file": "C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Agg_url.spec.js",
-                        "column": 11,
-                        "line": 110
-                      }
+                      "startTime": "2025-04-09T08:15:16.307Z",
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "2e2d0d6f35afbf9ddfc7-f1847d88a885b6230cce",
               "file": "Agg_url.spec.js",
-              "line": 119,
-              "column": 3
-            },
-            {
-              "title": "Wcasino URL",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 0,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 1,
-                      "status": "passed",
-                      "duration": 53055,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "Wcasino URL 測試：所有 agent 測試成功，正常取得遊戲 URL\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-04-09T05:16:25.633Z",
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "2e2d0d6f35afbf9ddfc7-4221fe320488c2573d6a",
-              "file": "Agg_url.spec.js",
-              "line": 166,
-              "column": 3
-            },
-            {
-              "title": "Playson URL",
-              "ok": false,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 0,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 2,
-                      "status": "failed",
-                      "duration": 45184,
-                      "error": {
-                        "message": "Error: Playson URL: Agent: 10171, GameID: 24077 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11171, GameID: 24077 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10172, GameID: 24077 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11172, GameID: 24077 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20051 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20053 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20054 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20055 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20056 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20057 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20058 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20059 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24062 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24063 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24064 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24065 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24066 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24067 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24068 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24069 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24070 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24077 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20051 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20053 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20054 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20055 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20056 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20057 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20058 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20059 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24062 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24063 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24064 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24065 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24066 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24067 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24068 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24069 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24070 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24077 錯誤: HTTP錯誤：狀態碼 400",
-                        "stack": "Error: Playson URL: Agent: 10171, GameID: 24077 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11171, GameID: 24077 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10172, GameID: 24077 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11172, GameID: 24077 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20051 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20053 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20054 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20055 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20056 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20057 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20058 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20059 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24062 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24063 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24064 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24065 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24066 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24067 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24068 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24069 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24070 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24077 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20051 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20053 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20054 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20055 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20056 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20057 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20058 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20059 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24062 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24063 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24064 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24065 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24066 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24067 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24068 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24069 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24070 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24077 錯誤: HTTP錯誤：狀態碼 400\n    at validateUrls (C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Agg_url.spec.js:110:11)\n    at C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Agg_url.spec.js:262:5",
-                        "location": {
-                          "file": "C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Agg_url.spec.js",
-                          "column": 11,
-                          "line": 110
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 108 |\u001b[39m   }\n \u001b[90m 109 |\u001b[39m   \u001b[36mif\u001b[39m (errorMessages\u001b[33m.\u001b[39mlength \u001b[33m>\u001b[39m \u001b[35m0\u001b[39m) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 110 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`${testName}: ${errorMessages.join(\"\\n\")}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 111 |\u001b[39m   } \u001b[36melse\u001b[39m {\n \u001b[90m 112 |\u001b[39m     console\u001b[33m.\u001b[39mlog(\u001b[32m`${testName} 測試：所有 agent 測試成功，正常取得遊戲 URL`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 113 |\u001b[39m   }\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Agg_url.spec.js",
-                            "column": 11,
-                            "line": 110
-                          },
-                          "message": "Error: Playson URL: Agent: 10171, GameID: 24077 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11171, GameID: 24077 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10172, GameID: 24077 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11172, GameID: 24077 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20051 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20053 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20054 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20055 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20056 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20057 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20058 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 20059 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24062 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24063 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24064 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24065 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24066 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24067 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24068 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24069 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24070 錯誤: HTTP錯誤：狀態碼 400\nAgent: 10199, GameID: 24077 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20051 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20053 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20054 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20055 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20056 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20057 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20058 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 20059 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24062 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24063 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24064 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24065 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24066 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24067 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24068 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24069 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24070 錯誤: HTTP錯誤：狀態碼 400\nAgent: 11199, GameID: 24077 錯誤: HTTP錯誤：狀態碼 400\n\n\u001b[0m \u001b[90m 108 |\u001b[39m   }\n \u001b[90m 109 |\u001b[39m   \u001b[36mif\u001b[39m (errorMessages\u001b[33m.\u001b[39mlength \u001b[33m>\u001b[39m \u001b[35m0\u001b[39m) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 110 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(\u001b[32m`${testName}: ${errorMessages.join(\"\\n\")}`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 111 |\u001b[39m   } \u001b[36melse\u001b[39m {\n \u001b[90m 112 |\u001b[39m     console\u001b[33m.\u001b[39mlog(\u001b[32m`${testName} 測試：所有 agent 測試成功，正常取得遊戲 URL`\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m 113 |\u001b[39m   }\u001b[0m\n\u001b[2m    at validateUrls (C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Agg_url.spec.js:110:11)\u001b[22m\n\u001b[2m    at C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Agg_url.spec.js:262:5\u001b[22m"
-                        }
-                      ],
-                      "stdout": [],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-04-09T05:16:25.621Z",
-                      "attachments": [],
-                      "errorLocation": {
-                        "file": "C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Agg_url.spec.js",
-                        "column": 11,
-                        "line": 110
-                      }
-                    }
-                  ],
-                  "status": "unexpected"
-                }
-              ],
-              "id": "2e2d0d6f35afbf9ddfc7-7df515cea7422f5f3b0e",
-              "file": "Agg_url.spec.js",
-              "line": 232,
-              "column": 3
-            },
-            {
-              "title": "Galaxsys URL",
-              "ok": true,
-              "tags": [],
-              "tests": [
-                {
-                  "timeout": 0,
-                  "annotations": [],
-                  "expectedStatus": "passed",
-                  "projectId": "chromium",
-                  "projectName": "chromium",
-                  "results": [
-                    {
-                      "workerIndex": 3,
-                      "status": "passed",
-                      "duration": 87026,
-                      "errors": [],
-                      "stdout": [
-                        {
-                          "text": "Galaxsys URL 測試：所有 agent 測試成功，正常取得遊戲 URL\n"
-                        }
-                      ],
-                      "stderr": [],
-                      "retry": 0,
-                      "startTime": "2025-04-09T05:16:25.629Z",
-                      "attachments": []
-                    }
-                  ],
-                  "status": "expected"
-                }
-              ],
-              "id": "2e2d0d6f35afbf9ddfc7-07ec22913b718f32353d",
-              "file": "Agg_url.spec.js",
-              "line": 276,
-              "column": 3
+              "line": 132,
+              "column": 8
             }
           ]
         }
@@ -262,11 +114,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2025-04-09T05:16:25.035Z",
-    "duration": 110756.635,
-    "expected": 2,
+    "startTime": "2025-04-09T08:15:15.765Z",
+    "duration": 2899.283,
+    "expected": 1,
     "skipped": 0,
-    "unexpected": 2,
+    "unexpected": 0,
     "flaky": 0
   }
 }

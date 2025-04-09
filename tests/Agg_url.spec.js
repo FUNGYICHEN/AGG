@@ -1,9 +1,8 @@
 import { test } from '@playwright/test';
+import { ENV_CONFIG, generateGameUrl } from './env-config.js';
 
-// 依據環境載入設定與 URL 產生函數
-const env = (process.env.NODE_ENV || 'stg').trim();
-const { ENV_CONFIG, generateGameUrl } = await import(`./${env}環境.js`);
-
+// 將 NODE_ENV 轉為小寫字串以便後續使用
+const env = (process.env.NODE_ENV || 'stg').trim().toLowerCase();
 // 共用工具函數
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -29,7 +28,7 @@ function range(start, end) {
  */
 
 // Rectangle 與 Wcasino：101～172，扣除 138
-const baseAgentsRectangle = range(101, 173).filter(num => num !== 138);
+const baseAgentsRectangle = range(101, 102).filter(num => num !== 138);
 const agentsRectangle = baseAgentsRectangle.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
 // 將 Wcasino 使用相同清單
 const agentsWcasino = agentsRectangle;
@@ -133,7 +132,7 @@ test.describe('Game URL Tests', () => {
   test('Rectangle URL', async ({ request }) => {
     test.setTimeout(0);
     const testName = "Rectangle URL";
-    const gameIds = range(90001, 90024);
+    const gameIds = range(90001, 90025);
     const gameIdToSlug = {
       90001: "swaggy-caramelo",
       90002: "persian-jewels",

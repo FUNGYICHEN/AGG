@@ -4,6 +4,7 @@ import axios from "axios";
 const TELEGRAM_BOT_TOKEN = "7881684321:AAFGknNFikAsRyb1OVaALUby_xPwdRg4Elw";
 const TELEGRAM_CHAT_ID = "-4707429750";
 
+// 發送 Telegram 訊息
 async function sendTelegramMessage(message) {
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
     console.error("Telegram 憑證未正確設定！");
@@ -24,6 +25,7 @@ async function sendTelegramMessage(message) {
   }
 }
 
+// 讀取 JSON 報告
 function readJsonReport(reportPath) {
   try {
     const data = fs.readFileSync(reportPath, "utf-8");
@@ -34,6 +36,7 @@ function readJsonReport(reportPath) {
   }
 }
 
+// 遞迴遍歷 suites，收集所有成功與錯誤訊息
 function traverseSuites(suites) {
   let successMessages = [];
   let errorMessages = [];
@@ -77,6 +80,7 @@ function traverseSuites(suites) {
   return { successMessages, errorMessages };
 }
 
+// 從一行錯誤訊息中解析品牌、Agent、GameID 與 HTTP錯誤資訊
 function parseErrorLine(line) {
   let brand = "";
   const brandMatch = line.match(/^Error:\s*([^\s]+)\s*URL:/);
@@ -97,6 +101,7 @@ function parseErrorLine(line) {
   return null;
 }
 
+// 聚合錯誤訊息：同一品牌、Agent 與 HTTP錯誤視為同一組（收集所有不同的 GameID）
 function aggregateErrorMessages(errorMessages) {
   const errorMap = new Map();
   let currentBrand = "";
@@ -129,11 +134,15 @@ function aggregateErrorMessages(errorMessages) {
   return aggregatedErrors;
 }
 
+// 根據成功與錯誤訊息組裝最終要發送的 Telegram 訊息內容
 function buildTelegramMessages({ successMessages, errorMessages }) {
+  // 使用環境變數 NODE_ENV，若未設定則顯示 unknown
   const env = process.env.NODE_ENV ? process.env.NODE_ENV.toLowerCase() : "unknown";
   let successText = `【成功訊息】${env}\n`;
   if (successMessages.length > 0) {
-    successMessages.forEach((msg) => (successText += msg + "\n"));
+    successMessages.forEach((msg) => {
+      successText += msg + "\n";
+    });
   } else {
     successText += "無成功訊息\n";
   }
@@ -145,13 +154,12 @@ function buildTelegramMessages({ successMessages, errorMessages }) {
       if (env === "prod" && err.brand) {
         prefix = `(${err.brand})`;
       }
+      // 若錯誤筆數小於 5，則列出所有 gameId；如果只有單筆則列出單一 gameId
       if (err.count < 5) {
         if (err.count === 1) {
-          errorText += `${prefix}Agent: ${err.agent}, ${err.errorDetail}\n`;
+          errorText += `${prefix}Agent: ${err.agent}, GameID: ${err.gameIds[0]}, ${err.errorDetail}\n`;
         } else {
-          errorText += `${prefix}Agent: ${err.agent}, GameID: ${err.gameIds.join(
-            ", "
-          )}, ${err.errorDetail}\n`;
+          errorText += `${prefix}Agent: ${err.agent}, GameID: ${err.gameIds.join(", ")}, ${err.errorDetail}\n`;
         }
       } else {
         errorText += `${prefix}Agent: ${err.agent}, ${err.errorDetail} (共 ${err.count} 個)\n`;

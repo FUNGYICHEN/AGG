@@ -1,7 +1,7 @@
-import crypto from 'crypto';
+import crypto from "crypto";
 
-export const ENV_CONFIG = {
-  // STG 環境參數
+// STG 環境的設定
+const stgConfig = {
   login_url: "https://stagingop.ggyyonline.com/login",
   expected_Wcasino: "https://tst.wcasino9.com/direct/login",
   expected_galaxsys: "https://partnerapi-gli.stg-digi.com/Games/Launch/",
@@ -17,16 +17,49 @@ export const ENV_CONFIG = {
   is_direct: true,
   // 固定錢包類型為單一錢包
   agent_switch: "1",
-  // 下注帳號前綴，由環境變數設定，預設為 "QAtest_1120A11"
-  accountPrefix: process.env.ACCOUNT_PREFIX || 'QAtest_1120A14',
+  // 下注帳號前綴（STG 預設）
+  accountPrefix: process.env.ACCOUNT_PREFIX || "QAtest_1120A14",
   keys: {
     "1": "fbe5cce9103974817840c5b53575d6c1",
   },
 };
 
+// Prod 環境的設定
+const prodConfig = {
+  login_url: "https://op.qbfqgfgzzgf.com/login",
+  expected_Wcasino: "https://www.wcasino9.com/direct/login",
+  expected_galaxsys: "https://launchdigi.net//Games/Launch/",
+  expected_Rectangle: "https://rc.rg-lgna.com/",
+  expected_Playson: "https://launch1-sg-asia.wowgamenew.com/gm/",
+  error_image_prefix: "Content/images/failed/",
+  timestamp: "1726734234",
+  base_ip: "100.1.2.3",
+  app_url: "https://agguatop.ggyyonline.com",
+  exit_url: "https://google.com",
+  language_type: "zh_cn",
+  platform: 0,
+  is_direct: true,
+  // 固定錢包類型為單一錢包
+  agent_switch: "3",
+  // 下注帳號前綴（Prod 預設）
+  accountPrefix: process.env.ACCOUNT_PREFIX || "QAtest_1120A11",
+  keys: {
+    "1": "fbe5cce9103974817840c5b53575d6c1",
+    "2": "c3bf2511fbd0fc35d5ab2eb989106a92",
+    "3": "e474788e8a614823aeb98e15c47b52c0", // prod secret key
+  },
+};
+
+// 根據 NODE_ENV 的值決定使用哪一組設定
+export const ENV_CONFIG =
+  process.env.NODE_ENV &&
+  process.env.NODE_ENV.trim().toLowerCase() === "prod"
+    ? prodConfig
+    : stgConfig;
+
 /**
  * 根據傳入的 agent 與 game_id 產生遊戲 URL。
- * 此函式處理資料組合、計算 API 請求。
+ * 此函式負責組合資料、計算認證 (md5) 並呼叫 API。
  */
 export async function generateGameUrl(request, agent, game_id) {
   const {
@@ -42,8 +75,8 @@ export async function generateGameUrl(request, agent, game_id) {
     keys,
     accountPrefix,
   } = ENV_CONFIG;
-  
-  // 使用 accountPrefix 組合下注帳號
+
+  // 產生下注帳號（依照環境設定不同）
   const ACCOUNT = `${accountPrefix}${agent}${game_id}`;
   const data = {
     account: ACCOUNT,
@@ -60,9 +93,10 @@ export async function generateGameUrl(request, agent, game_id) {
 
   const data_string = JSON.stringify(data);
   const keyUsed = keys[agent_switch];
-  const hashed_data = crypto.createHash('md5')
-    .update(data_string + keyUsed, 'utf8')
-    .digest('hex');
+  const hashed_data = crypto
+    .createHash("md5")
+    .update(data_string + keyUsed, "utf8")
+    .digest("hex");
 
   const headers = {
     "Authorization": hashed_data,
@@ -103,27 +137,34 @@ export async function generateGameUrl(request, agent, game_id) {
 }
 
 /**
- * 呼叫 STG 錢包 API 為指定帳號增加餘額
+ * 呼叫錢包 API 為指定帳號增加餘額。
+ * 依環境不同，deposit URL 也可能不同
  */
 export async function depositMoney(request, account, agent, money) {
-  const deposit_url = "https://stagingop.ggyyonline.com/doTransferDepositTask";
+  // 根據 NODE_ENV 決定 deposit URL
+  const deposit_url =
+    process.env.NODE_ENV &&
+    process.env.NODE_ENV.trim().toLowerCase() === "prod"
+      ? "https://op.qbfqgfgzzgf.com/doTransferDepositTask"
+      : "https://stagingop.ggyyonline.com/doTransferDepositTask";
   const timestamp = Math.floor(Date.now() / 1000).toString();
   const orderId = crypto.randomUUID();
 
   const body = {
-    account: account,
+    account,
     agent: String(agent),
-    orderId: orderId,
-    money: money,
-    timestamp: timestamp,
+    orderId,
+    money,
+    timestamp,
   };
 
   const raw = JSON.stringify(body);
   const { agent_switch, keys } = ENV_CONFIG;
   const keyUsed = keys[agent_switch];
-  const depositAuth = crypto.createHash('md5')
-    .update(raw + keyUsed, 'utf8')
-    .digest('hex');
+  const depositAuth = crypto
+    .createHash("md5")
+    .update(raw + keyUsed, "utf8")
+    .digest("hex");
 
   const headers = {
     "Authorization": depositAuth,
