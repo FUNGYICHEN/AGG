@@ -3,7 +3,7 @@ import axios from "axios";
 
 const TELEGRAM_BOT_TOKEN = "7881684321:AAFGknNFikAsRyb1OVaALUby_xPwdRg4Elw";
 const TELEGRAM_CHAT_ID = "-4707429750";
-const MAX_MESSAGE_LENGTH = 4000; // 安全上限，不直接使用 4096
+const MAX_MESSAGE_LENGTH = 4000; // 安全上限
 
 // 發送 Telegram 訊息（失敗時印出詳細回應）
 async function sendTelegramMessage(message) {
@@ -42,9 +42,7 @@ function splitMessage(text, maxLength = MAX_MESSAGE_LENGTH) {
       currentChunk += currentChunk ? "\n" + line : line;
     }
   }
-  if (currentChunk) {
-    chunks.push(currentChunk);
-  }
+  if (currentChunk) chunks.push(currentChunk);
   return chunks;
 }
 
@@ -59,7 +57,7 @@ function readJsonReport(reportPath) {
   }
 }
 
-// 遞迴遍歷整個 JSON 物件，抽取 success 與 error 訊息（所有含 error.message 與 stdout 內包含“測試成功”的訊息）
+// 遞迴遍歷整個 JSON 物件，抽取 success 與 error 訊息（包含所有 error.message 與 stdout 中含 "測試成功" 的訊息）
 function recursiveExtractMessages(obj, messages = { success: [], error: [] }) {
   if (obj && typeof obj === "object") {
     if (obj.error && typeof obj.error.message === "string") {
@@ -92,9 +90,9 @@ function recursiveExtractMessages(obj, messages = { success: [], error: [] }) {
 
 /**
  * 解析單行錯誤訊息：
- * 1. 若有 "Error: <Brand> URL:" 前綴則取出品牌資訊；
- * 2. 接著解析 "Agent: <agent>, GameID: <gameId> <errorDetail>"
- * 3. 將 errorDetail 以 "->" 切分，僅保留前半段作為 errorMain 用來聚合。
+ * 1. 若存在 "Error: <Brand> URL:" 的前綴，則取出品牌資訊。
+ * 2. 之後解析格式: "Agent: <agent>, GameID: <gameId>[,] <errorDetail>"
+ * 3. 移除 errorDetail 前可能存在的 "錯誤:" 字樣，並以 "->" 分隔，只取前半段作為 errorMain 供聚合使用。
  */
 function parseErrorLine(line) {
   let brand = "";
@@ -103,30 +101,35 @@ function parseErrorLine(line) {
     brand = brandMatch[1].trim();
     line = line.replace(/^Error:\s*[^\s]+\s*URL:\s*/, "");
   }
-  const regex = /Agent:\s*(\d+),\s*GameID:\s*(\d+)\s*(.+)/;
+  const regex = /Agent:\s*(\d+),\s*GameID:\s*(\d+)(?:,\s*)?(.+)/;
   const match = line.match(regex);
   if (match) {
     let errorDetail = match[3].trim();
-    // 只取 "->" 前面的部分作為聚合依據
+    errorDetail = errorDetail.replace(/^錯誤:\s*/, '');
     const parts = errorDetail.split("->");
     let errorMain = parts[0].trim();
     return {
       brand,
       agent: match[1].trim(),
       gameId: match[2].trim(),
-      errorMain, // 用來聚合錯誤的主要部分（忽略 URL）
-      fullError: errorDetail // 原始完整錯誤訊息
+      errorMain,
+      fullError: errorDetail
     };
   }
   return null;
 }
 
-// 將錯誤訊息聚合：相同品牌、Agent 與 errorMain 的錯誤會合併，收集所有不同的 gameId
-function aggregateErrorMessages(errorMessages) {
-  const errorMap = new Map();
+/**
+ * 聚合錯誤訊息：
+ * 1. 以 (brand, agent, errorMain) 為 key，聚合同一 agent 的錯誤。若該 group 涉及 gameIds 過多 (>=5)，則不列出 gameId。
+ * 2. 同時以 (brand, gameId, errorMain) 為 key，聚合跨 agent 針對同一 gameId 的錯誤（若該 gameId 出錯的 agent 數 >=5，則以 GameID 為主）。
+ */
+function aggregateErrors(errorMessages) {
+  const agentMap = new Map(); // key: brand|agent|errorMain
+  const gameIdMap = new Map(); // key: brand|gameId|errorMain
+
   let currentBrand = "";
   errorMessages.forEach(line => {
-    // 若有品牌前綴則取出（例如 "Error: Rectangle URL:"）
     const brandMatch = line.match(/^Error:\s*([^\s]+)\s*URL:/);
     if (brandMatch) {
       currentBrand = brandMatch[1].trim();
@@ -134,39 +137,50 @@ function aggregateErrorMessages(errorMessages) {
     }
     const parsed = parseErrorLine(line);
     if (parsed) {
-      // 補上 brand 資訊
       if (!parsed.brand && currentBrand) {
         parsed.brand = currentBrand;
       }
-      const key = `${parsed.brand}|${parsed.agent}|${parsed.errorMain}`;
-      if (errorMap.has(key)) {
-        let item = errorMap.get(key);
+      // 聚合依照 agent
+      const agentKey = `${parsed.brand}|${parsed.agent}|${parsed.errorMain}`;
+      if (agentMap.has(agentKey)) {
+        const item = agentMap.get(agentKey);
         item.count++;
         if (!item.gameIds.includes(parsed.gameId)) {
           item.gameIds.push(parsed.gameId);
         }
-        errorMap.set(key, item);
+        agentMap.set(agentKey, item);
       } else {
-        errorMap.set(key, { ...parsed, gameIds: [parsed.gameId], count: 1 });
+        agentMap.set(agentKey, { ...parsed, gameIds: [parsed.gameId], count: 1 });
+      }
+      // 聚合依照 gameId
+      const gameKey = `${parsed.brand}|${parsed.gameId}|${parsed.errorMain}`;
+      if (gameIdMap.has(gameKey)) {
+        const item = gameIdMap.get(gameKey);
+        item.count++;
+        if (!item.agents.includes(parsed.agent)) {
+          item.agents.push(parsed.agent);
+        }
+        gameIdMap.set(gameKey, item);
+      } else {
+        gameIdMap.set(gameKey, { brand: parsed.brand, gameId: parsed.gameId, errorMain: parsed.errorMain, agents: [parsed.agent], count: 1 });
       }
     } else {
-      // 若無法解析，則以原始文字存入
+      // 若無法解析，直接納入 raw 分組
       const key = `raw|${line}`;
-      if (errorMap.has(key)) {
-        let item = errorMap.get(key);
+      if (agentMap.has(key)) {
+        const item = agentMap.get(key);
         item.count++;
-        errorMap.set(key, item);
+        agentMap.set(key, item);
       } else {
-        errorMap.set(key, { raw: line, count: 1 });
+        agentMap.set(key, { raw: line, count: 1 });
       }
     }
   });
-  const aggregatedErrors = [];
-  errorMap.forEach(value => aggregatedErrors.push(value));
-  return aggregatedErrors;
+
+  return { agentErrors: Array.from(agentMap.values()), gameIdErrors: Array.from(gameIdMap.values()) };
 }
 
-// 組裝最終要發送的 Telegram 訊息內容，包含成功與聚合後的錯誤訊息
+// 組裝最終要發送的訊息內容
 function buildTelegramMessages({ success, error }) {
   const env = process.env.NODE_ENV ? process.env.NODE_ENV.toLowerCase() : "unknown";
   let successText = `【成功訊息】${env}\n`;
@@ -177,10 +191,13 @@ function buildTelegramMessages({ success, error }) {
   } else {
     successText += "無成功訊息\n";
   }
+
   let errorText = `【錯誤訊息】${env}\n`;
   if (error.length > 0) {
-    const aggregatedErrors = aggregateErrorMessages(error);
-    aggregatedErrors.forEach(err => {
+    const { agentErrors, gameIdErrors } = aggregateErrors(error);
+
+    // 輸出 agent 族群聚合：若 gameIds 數 >= 5 則不列出 gameId
+    agentErrors.forEach(err => {
       if (err.raw) {
         errorText += `${err.raw} (共 ${err.count} 筆)\n`;
       } else {
@@ -188,11 +205,22 @@ function buildTelegramMessages({ success, error }) {
         if (env === "prod" && err.brand) {
           prefix = `(${err.brand})`;
         }
-        if (err.count === 1) {
-          errorText += `${prefix} Agent: ${err.agent}, GameID: ${err.gameId}, ${err.errorMain}\n`;
+        if (err.gameIds.length >= 5) {
+          errorText += `${prefix} Agent: ${err.agent}, ${err.errorMain} (共 ${err.count} 筆錯誤)\n`;
         } else {
           errorText += `${prefix} Agent: ${err.agent}, GameID: ${err.gameIds.join(", ")}, ${err.errorMain} (共 ${err.count} 筆錯誤)\n`;
         }
+      }
+    });
+
+    // 輸出 gameId 聚合：當同一 gameId 出錯的 agent 達到 5 或以上（門檻可調整），就以 gameId 為主
+    gameIdErrors.forEach(err => {
+      if (err.agents.length >= 5) {
+        let prefix = "";
+        if (env === "prod" && err.brand) {
+          prefix = `(${err.brand})`;
+        }
+        errorText += `${prefix} GameID: ${err.gameId}, ${err.errorMain} (共 ${err.count} 筆錯誤)\n`;
       }
     });
   } else {
