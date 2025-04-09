@@ -1,111 +1,145 @@
 const fs = require('fs');
 const axios = require('axios');
 
-// 從環境變量讀取 Telegram 配置
+// 从环境变量获取配置
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
-function analyzeResults(results) {
-  const suites = {};
+// 错误分组函数
+function groupErrors(errors) {
+  const errorMap = new Map();
   
-  results.forEach(suite => {
-    const suiteName = suite.suite;
-    suites[suiteName] = {
-      status: suite.specs.every(spec => spec.ok) ? 'passed' : 'failed',
-      specs: suite.specs.map(spec => ({
-        title: spec.title,
-        status: spec.ok ? 'passed' : 'failed',
-        errors: spec.tests.flatMap(test => 
-          test.results.filter(r => r.status === 'failed').map(r => r.error?.message)
-        ).filter(Boolean)
-      }))
-    };
-  });
-  
-  return {
-    startTime: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
-    suites
-  };
-}
-
-function generateReport(results) {
-  let report = `*測試環境*: ${results.environment.toUpperCase()}\n`;
-  report += `*測試時間*: ${new Date(results.startTime).toLocaleString()}\n\n`;
-  
-  const passedSuites = [];
-  const failedSuites = [];
-  
-  // 分類測試套件
-  Object.entries(results.suites).forEach(([name, suite]) => {
-    if (suite.status === 'passed') {
-      passedSuites.push(name);
-    } else {
-      const errors = {};
-      suite.specs.filter(spec => spec.status === 'failed').forEach(spec => {
-        spec.errors.forEach(error => {
-          const key = error.split('\n')[0]; // 取第一行作為錯誤摘要
-          errors[key] = (errors[key] || 0) + 1;
+  errors.forEach(error => {
+    // 提取关键信息：Agent和GameID
+    const match = error.match(/Agent: (\d+), GameID: (\d+).*?(\d{3})/);
+    if (match) {
+      const key = `${match[1]}-${match[2]}`; // Agent-GameID作为唯一标识
+      const statusCode = match[3];
+      
+      if (errorMap.has(key)) {
+        errorMap.get(key).count++;
+      } else {
+        errorMap.set(key, {
+          agent: match[1],
+          gameId: match[2],
+          statusCode,
+          count: 1,
+          example: error.replace(/錯誤 \(after retries\):|錯誤:/, '').trim()
         });
-      });
-      failedSuites.push({ name, errors });
+      }
     }
   });
   
-  // 添加成功訊息
-  if (passedSuites.length > 0) {
-    report += '*✅ 成功測試*\n';
-    report += passedSuites.map(name => `• ${name}`).join('\n') + '\n\n';
-  }
-  
-  // 添加失敗訊息
-  if (failedSuites.length > 0) {
-    report += '*❌ 失敗測試*\n';
-    failedSuites.forEach(suite => {
-      report += `*${suite.name}*:\n`;
-      Object.entries(suite.errors).forEach(([error, count]) => {
-        report += `  - ${error}${count > 1 ? ` (共 ${count} 次)` : ''}\n`;
-      });
-    });
-  }
-  
-  // 添加摘要
-  report += `\n*測試摘要*: ${passedSuites.length} 通過, ${failedSuites.length} 失敗`;
-  
-  return report;
+  return Array.from(errorMap.values());
 }
 
 async function sendTelegramMessage(message) {
+  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+    console.error('Telegram 凭据未配置！');
+    return;
+  }
+
   try {
-    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-    await axios.post(url, {
+    await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
       chat_id: TELEGRAM_CHAT_ID,
       text: message,
       parse_mode: 'Markdown',
       disable_web_page_preview: true
     });
-    console.log('Telegram 通知已發送');
   } catch (error) {
-    console.error('發送 Telegram 通知失敗:', error.message);
+    console.error('发送 Telegram 通知失败:', error.message);
   }
 }
 
-// 主執行函數
+// 主函数
 (async () => {
   try {
-    const rawResults = JSON.parse(fs.readFileSync('test-results.json', 'utf-8'));
-    const analyzedResults = analyzeResults(rawResults.suites);
-    const report = generateReport(analyzedResults);
+    const results = JSON.parse(fs.readFileSync('test-results.json', 'utf-8'));
     
-    console.log(report); // 輸出到 Jenkins 日誌
-    
-    if (TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID) {
-      await sendTelegramMessage(report);
-    } else {
-      console.warn('未配置 Telegram 憑證，跳過通知發送');
+    // 分析结果
+    const report = {
+      env: process.env.NODE_ENV || 'development',
+      time: new Date().toLocaleString(),
+      passed: [],
+      failed: []
+    };
+
+    // 处理每个测试套件
+    results.suites.forEach(suite => {
+      suite.specs.forEach(spec => {
+        if (spec.ok) {
+          // 成功测试
+          const passedMsg = spec.tests[0].results[0].stdout.find(s => s.text.includes('測試成功'));
+          if (passedMsg) {
+            report.passed.push(passedMsg.text.trim());
+          }
+        } else {
+          // 失败测试
+          const errors = spec.tests.flatMap(test => 
+            test.results.flatMap(result => 
+              result.errors.map(err => err.message)
+                .concat(result.stderr.map(s => s.text))
+            )
+          );
+          
+          const grouped = groupErrors(errors);
+          report.failed.push({
+            name: spec.title,
+            errors: grouped
+          });
+        }
+      });
+    });
+
+    // 生成报告文本
+    let message = `*[测试报告] ${report.env.toUpperCase()}*\n`;
+    message += `⏱ 时间: ${report.time}\n\n`;
+
+    // 成功测试
+    if (report.passed.length > 0) {
+      message += `✅ *成功测试* (${report.passed.length})\n`;
+      message += report.passed.join('\n') + '\n\n';
     }
+
+    // 失败测试
+    if (report.failed.length > 0) {
+      message += `❌ *失败测试* (${report.failed.length})\n`;
+      report.failed.forEach(item => {
+        message += `*${item.name}*\n`;
+        
+        // 按错误类型分组显示
+        const errorGroups = {};
+        item.errors.forEach(err => {
+          const key = `${err.statusCode}`;
+          if (!errorGroups[key]) {
+            errorGroups[key] = [];
+          }
+          errorGroups[key].push(err);
+        });
+        
+        Object.entries(errorGroups).forEach(([statusCode, errors]) => {
+          message += `  - HTTP ${statusCode} 错误:\n`;
+          errors.slice(0, 5).forEach(err => { // 最多显示5个示例
+            message += `    • Agent ${err.agent}, Game ${err.gameId}`;
+            if (err.count > 1) message += ` (共 ${err.count} 次)`;
+            message += '\n';
+          });
+          if (errors.length > 5) message += `    • ...及其他 ${errors.length - 5} 个\n`;
+        });
+        message += '\n';
+      });
+    }
+
+    // 添加摘要
+    const totalTests = report.passed.length + report.failed.length;
+    message += `📊 *摘要*: ${report.passed.length}/${totalTests} 通过 (${Math.round(report.passed.length/totalTests*100)}%)`;
+
+    console.log('=== 测试报告 ===');
+    console.log(message);
+    
+    // 发送通知
+    await sendTelegramMessage(message);
   } catch (error) {
-    console.error('處理測試結果時出錯:', error);
-    process.exit(1);
+    console.error('处理测试结果时出错:', error);
   }
 })();
