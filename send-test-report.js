@@ -146,3 +146,4 @@ function buildTelegramMessages(aggregated) {
     console.error('處理報告並發送 Telegram 訊息時發生錯誤：', error.message);
   }
 })();
+
