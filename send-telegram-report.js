@@ -5,7 +5,7 @@ import * as cheerio from 'cheerio';
 import FormData from 'form-data';
 
 // 直接使用提供的 token 與 chat_id（測試用，實際環境建議使用環境變數注入方式）
-const TELEGRAM_BOT_TOKEN = "W7881684321:AAFGknNFikAsRyb1OVaALUby_xPwdRg4Elw";
+const TELEGRAM_BOT_TOKEN = "7881684321:AAFGknNFikAsRyb1OVaALUby_xPwdRg4Elw";
 const TELEGRAM_CHAT_ID = "-4707429750";
 
 async function sendTelegramMessage(message) {
