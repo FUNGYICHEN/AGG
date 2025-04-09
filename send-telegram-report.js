@@ -1,7 +1,8 @@
-const fs = require('fs');
-const axios = require('axios');
-const cheerio = require('cheerio');
-const FormData = require('form-data');
+import fs from 'fs';
+import axios from 'axios';
+import cheerio from 'cheerio';
+// FormData 可從 'form-data' 模組導入，確保該模組支持 ES Module
+import FormData from 'form-data';
 
 // 直接使用提供的 token 與 chat_id（測試用，實際環境建議使用環境變數注入方式）
 const TELEGRAM_BOT_TOKEN = "W7881684321:AAFGknNFikAsRyb1OVaALUby_xPwdRg4Elw";
