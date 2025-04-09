@@ -23,7 +23,7 @@ test('Rectangle_上半', async ({ browser, request }) => {
   // 建立 agent 清單
   const agents_111 = Array.from({ length: 11172 - 11101 + 1 }, (_, i) => 11101 + i)
     .filter(agent => agent !== 11138);
-  const agents_101 = Array.from({ length: 10172 - 10111 + 1 }, (_, i) => 10111 + i);
+  const agents_101 = Array.from({ length: 10172 - 10101 + 1 }, (_, i) => 10101 + i);
 
   // 合併兩個清單
   const agents = [...agents_111, ...agents_101];

@@ -20,15 +20,39 @@ async function executeWithRetry(fn, retries = 2, delay = 300) {
   throw lastError;
 }
 
-function generateAgents(baseAgents) {
-  return baseAgents.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
-}
-
 function range(start, end) {
   return Array.from({ length: end - start }, (_, i) => start + i);
 }
 
-// 驗證函數：根據傳入 mapping 檢查從 URL 提取的 slug 是否正確 (Rectangle)
+/**
+ * 各品牌的 agent 清單：
+ */
+
+// Rectangle 與 Wcasino：101～172，扣除 138
+const baseAgentsRectangle = range(101, 173).filter(num => num !== 138);
+const agentsRectangle = baseAgentsRectangle.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
+// 將 Wcasino 使用相同清單
+const agentsWcasino = agentsRectangle;
+
+// Galaxsys：101～172，排除 109, 123, 129, 131, 138, 160, 163, 164, 165, 166
+const baseAgentsGalaxsys = range(101, 173).filter(num =>
+  ![109, 123, 129, 131, 138, 160, 163, 164, 165, 166].includes(num)
+);
+const agentsGalaxsys = baseAgentsGalaxsys.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
+
+// Playson：根據您提供的明確數列
+const baseAgentsPlayson = [
+  101,102,103,104,105,106,107,108,109,110,
+  111,112,113,114,115,116,118,119,120,121,
+  122,123,124,125,126,127,128,129,130,131,
+  132,133,134,135,136,137,139,140,141,142,
+  143,144,145,146,147,148,149,150,151,152,
+  153,154,155,156,157,158,159,161,162,165,
+  167,168,169,170,171,172
+];
+const agentsPlayson = baseAgentsPlayson.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
+
+// 驗證函數
 function extractSlugRectangle(url, gameId, mapping) {
   let remainder = url.substring(ENV_CONFIG.expected_Rectangle.length);
   if (remainder.startsWith('/')) remainder = remainder.substring(1);
@@ -39,7 +63,6 @@ function extractSlugRectangle(url, gameId, mapping) {
   return null;
 }
 
-// 驗證函數：針對 Wcasino，從 URL 查詢參數 gid 檢查是否正確
 function validateWcasinoUrl(url, gameId, mapping) {
   try {
     const parsedUrl = new URL(url);
@@ -53,7 +76,6 @@ function validateWcasinoUrl(url, gameId, mapping) {
   return null;
 }
 
-// 驗證函數：針對 Playson，從 URL 查詢參數 gameName 檢查是否正確
 function validatePlaysonUrl(url, gameId, mapping) {
   try {
     const parsedUrl = new URL(url);
@@ -67,7 +89,6 @@ function validatePlaysonUrl(url, gameId, mapping) {
   return null;
 }
 
-// 驗證函數：針對 Galaxsys，從 URL 查詢參數 gid 檢查是否正確
 function validateGalaxsysUrl(url, gameId, mapping) {
   try {
     const parsedUrl = new URL(url);
@@ -81,7 +102,6 @@ function validateGalaxsysUrl(url, gameId, mapping) {
   return null;
 }
 
-// 通用 URL 驗證函數
 async function validateUrls({ request, agents, gameIds, expectedPrefix, mapping, validateFn, testName, sleepTime = 300, useRetry = false }) {
   let errorMessages = [];
   for (const agent of agents) {
@@ -113,14 +133,12 @@ async function validateUrls({ request, agents, gameIds, expectedPrefix, mapping,
   }
 }
 
-// 統一將所有測試列在 describe 區塊內
+// 測試區塊
 test.describe('Game URL Tests', () => {
 
   test('Rectangle URL', async ({ request }) => {
     test.setTimeout(0);
     const testName = "Rectangle URL";
-    const baseAgents = [171, 172, 199];
-    const agents = generateAgents(baseAgents);
     const gameIds = range(90001, 90024);
     const gameIdToSlug = {
       90001: "swaggy-caramelo",
@@ -146,12 +164,11 @@ test.describe('Game URL Tests', () => {
       90021: "realm-of-thunder",
       90022: "black-assassin",
       90023: "smash-fury",
-      // 若有需要，90024 不列入測試範圍
     };
 
     await validateUrls({
       request,
-      agents,
+      agents: agentsRectangle,
       gameIds,
       expectedPrefix: ENV_CONFIG.expected_Rectangle,
       mapping: gameIdToSlug,
@@ -166,13 +183,11 @@ test.describe('Game URL Tests', () => {
   test('Wcasino URL', async ({ request }) => {
     test.setTimeout(0);
     const testName = "Wcasino URL";
-    const baseAgents = [165, 167];
-    const agents = generateAgents(baseAgents);
     const gameIds = [
       60001, 60002, 60003, 60004, 60005, 60006, 60007, 60008, 60009,
       60010, 60011, 60012, 60015, 60016, 60017, 60018, 60020, 60021, 60024
     ];
-    // 根據環境決定 mapping
+    // 使用與 Rectangle 相同的 agent 清單
     const gameIdToGid = env === 'prod' ? {
       60001: "2993",
       60002: "2994",
@@ -217,7 +232,7 @@ test.describe('Game URL Tests', () => {
 
     await validateUrls({
       request,
-      agents,
+      agents: agentsWcasino,
       gameIds,
       expectedPrefix: ENV_CONFIG.expected_Wcasino,
       mapping: gameIdToGid,
@@ -232,11 +247,9 @@ test.describe('Game URL Tests', () => {
   test('Playson URL', async ({ request }) => {
     test.setTimeout(0);
     const testName = "Playson URL";
-    const baseAgents = [171, 172, 199];
-    const agents = generateAgents(baseAgents);
     const gameIds = [
       20051, 20053, 20054, 20055, 20056, 20057, 20058, 20059,
-      24062, 24063, 24064, 24065, 24066, 24067, 24068, 24069, 24070, 24077
+      24062, 24063, 24064, 24065, 24066, 24067, 24068, 24069, 24070
     ];
     const gameIdToSlug = {
       20051: "pls_energy_joker_hold_and_win",
@@ -256,12 +269,12 @@ test.describe('Game URL Tests', () => {
       24068: "lucky_penny",
       24069: "hot_fire_fruits",
       24070: "3_pots_of_egypt",
-      // 若有 24077 的需求，可自行在 mapping 中補上
+      // 如有需要，24077 可自行補上對應值
     };
 
     await validateUrls({
       request,
-      agents,
+      agents: agentsPlayson,
       gameIds,
       expectedPrefix: ENV_CONFIG.expected_Playson,
       mapping: gameIdToSlug,
@@ -276,10 +289,7 @@ test.describe('Game URL Tests', () => {
   test('Galaxsys URL', async ({ request }) => {
     test.setTimeout(0);
     const testName = "Galaxsys URL";
-    const baseAgents = [162, 165];
-    const agents = generateAgents(baseAgents);
     const gameIds = range(70001, 70037);
-    // 根據環境與 login_url 決定 mapping
     const gameIdToGid = ENV_CONFIG.login_url.includes("op.qbfqgfgzzgf.com") ? {
       70001: "20786",
       70002: "2014",
@@ -358,7 +368,7 @@ test.describe('Game URL Tests', () => {
 
     await validateUrls({
       request,
-      agents,
+      agents: agentsGalaxsys,
       gameIds,
       expectedPrefix: ENV_CONFIG.expected_galaxsys,
       mapping: gameIdToGid,
@@ -370,4 +380,3 @@ test.describe('Game URL Tests', () => {
   });
 
 });
-
