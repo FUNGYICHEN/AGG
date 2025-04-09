@@ -1,13 +1,13 @@
 import fs from 'fs';
 import axios from 'axios';
-import * as cheerio from 'cheerio';
-// FormData 可從 'form-data' 模組導入，確保該模組支持 ES Module
-import FormData from 'form-data';
 
-// 直接使用提供的 token 與 chat_id（測試用，實際環境建議使用環境變數注入方式）
+// 直接使用硬編碼的 token 與 chat_id（建議正式環境使用環境變數注入）
 const TELEGRAM_BOT_TOKEN = "7881684321:AAFGknNFikAsRyb1OVaALUby_xPwdRg4Elw";
 const TELEGRAM_CHAT_ID = "-4707429750";
 
+/**
+ * 發送 Telegram 訊息
+ */
 async function sendTelegramMessage(message) {
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
     console.error('Telegram 憑證未正確設定！');
@@ -27,131 +27,143 @@ async function sendTelegramMessage(message) {
   }
 }
 
-function readHtmlReport(reportPath) {
+/**
+ * 從 JSON 檔案中讀取並解析報告資料
+ */
+function readJsonReport(reportPath) {
   try {
-    const html = fs.readFileSync(reportPath, 'utf-8');
-    const $ = cheerio.load(html);
-    return $('body').text();
+    const data = fs.readFileSync(reportPath, 'utf-8');
+    const jsonData = JSON.parse(data);
+    return jsonData;
   } catch (error) {
-    console.error('讀取 HTML 報告失敗：', error.message);
+    console.error("讀取 JSON 報告失敗：", error.message);
     return null;
   }
 }
 
-function extractLines(reportText) {
-  return reportText.split(/\r?\n/).map(line => line.trim()).filter(line => line.length > 0);
-}
-
-function parseErrorLine(line) {
-  const regex = /^(.*?)[:：]\s*Agent:\s*(\d+),\s*GameID:\s*(\d+).*?(HTTP錯誤：狀態碼\s*\d+)/;
-  const match = line.match(regex);
-  if (match) {
-    return {
-      suite: match[1].trim(),
-      agent: match[2].trim(),
-      gameId: match[3].trim(),
-      errorDetail: match[4].trim()
-    };
+/**
+ * 從 Playwright JSON 報告中抽取 stdout 訊息。
+ * Playwright JSON reporter 結構通常為：
+ * { suites: [ { specs: [ { tests: [ { results: [ { stdout: [ { text } ], stderr: [ { text } ] } ] } ] } ] }, ... ],
+ *   stats: {...} }
+ */
+function extractMessagesFromJsonReport(reportJson){
+  let successMessages = [];
+  let errorMessages = [];
+  
+  if(reportJson.suites && Array.isArray(reportJson.suites)){
+    reportJson.suites.forEach(suite => {
+      if(suite.specs && Array.isArray(suite.specs)){
+        suite.specs.forEach(spec => {
+          if(spec.tests && Array.isArray(spec.tests)){
+            spec.tests.forEach(test => {
+              if(test.results && Array.isArray(test.results)){
+                test.results.forEach(result => {
+                  if(result.stdout && Array.isArray(result.stdout)){
+                    result.stdout.forEach(item => {
+                      if(item.text){
+                        const line = item.text.trim();
+                        if(line.length > 0){
+                          // 根據你用來輸出訊息的關鍵字過濾，例如「測試成功」或「HTTP錯誤」
+                          if(line.includes("測試成功")) {
+                            successMessages.push(line);
+                          } else if(line.includes("HTTP錯誤")) {
+                            errorMessages.push(line);
+                          }
+                        }
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
+    });
   }
-  return null;
+  return { successMessages, errorMessages };
 }
 
-function aggregateReport(lines) {
-  const successMessages = [];
+/**
+ * 聚合錯誤訊息：若相同的 agent 與 gameId 重複出現，則合併計數。
+ */
+function aggregateErrorMessages(errorMessages){
   const errorMap = new Map();
-
-  lines.forEach(line => {
-    if (line.includes('測試成功')) {
-      successMessages.push(line);
-    }
-    if (line.includes('錯誤') && line.includes('HTTP錯誤')) {
-      const parsed = parseErrorLine(line);
-      if (parsed) {
-        const key = `${parsed.suite}|${parsed.agent}|${parsed.gameId}|${parsed.errorDetail}`;
-        if (errorMap.has(key)) {
-          let existing = errorMap.get(key);
-          existing.count++;
-          errorMap.set(key, existing);
-        } else {
-          errorMap.set(key, {
-            suite: parsed.suite,
-            agent: parsed.agent,
-            gameId: parsed.gameId,
-            errorDetail: parsed.errorDetail,
-            count: 1
-          });
-        }
+  // 假設錯誤訊息格式類似 "Agent: 10199, GameID: 90001 ... HTTP錯誤：狀態碼 400"
+  const regex = /Agent:\s*(\d+),\s*GameID:\s*(\d+).*?(HTTP錯誤：狀態碼\s*\d+)/;
+  errorMessages.forEach(line=>{
+    const match = line.match(regex);
+    if(match){
+      const agent = match[1].trim();
+      const gameId = match[2].trim();
+      const errorDetail = match[3].trim();
+      const key = `${agent}|${gameId}|${errorDetail}`;
+      if(errorMap.has(key)){
+        let item = errorMap.get(key);
+        item.count++;
+        errorMap.set(key, item);
+      } else{
+        errorMap.set(key, { agent, gameId, errorDetail, count: 1 });
       }
     }
   });
-
-  const errorsBySuite = {};
+  let aggregatedErrors = [];
   errorMap.forEach((value) => {
-    if (!errorsBySuite[value.suite]) {
-      errorsBySuite[value.suite] = [];
-    }
-    errorsBySuite[value.suite].push(value);
+    aggregatedErrors.push(value);
   });
-
-  return { successMessages, errorsBySuite };
+  return aggregatedErrors;
 }
 
-function buildTelegramMessages(aggregated) {
+/**
+ * 組裝要發送的訊息內容
+ */
+function buildTelegramMessages({ successMessages, errorMessages }) {
   let successText = '【成功訊息】\n';
-  if (aggregated.successMessages.length > 0) {
-    aggregated.successMessages.forEach(msg => {
-      successText += msg + '\n';
+  if(successMessages.length > 0){
+    successMessages.forEach(msg => {
+      successText += msg + "\n";
     });
   } else {
-    successText += '無成功訊息\n';
+    successText += "無成功訊息\n";
   }
-
+  
   let errorText = '【錯誤訊息】\n';
-  const errorsBySuite = aggregated.errorsBySuite;
-  if (Object.keys(errorsBySuite).length === 0) {
-    errorText += '無錯誤訊息\n';
+  if(errorMessages.length > 0){
+    const aggregatedErrors = aggregateErrorMessages(errorMessages);
+    aggregatedErrors.forEach(err => {
+      errorText += `Agent: ${err.agent}, GameID: ${err.gameId} ${err.errorDetail}`;
+      if(err.count > 1) errorText += ` (共 ${err.count} 個)`;
+      errorText += "\n";
+    });
   } else {
-    for (const suite in errorsBySuite) {
-      errorText += `${suite} 錯誤：\n`;
-      errorsBySuite[suite].forEach(err => {
-        let line = `  Agent: ${err.agent}, GameID: ${err.gameId} ${err.errorDetail}`;
-        if (err.count > 1) {
-          line += ` (共 ${err.count} 個)`;
-        }
-        errorText += line + '\n';
-      });
-      errorText += '\n';
-    }
+    errorText += "無錯誤訊息\n";
   }
   return { successText, errorText };
 }
 
 (async () => {
   try {
-    const reportPath = './playwright-report/index.html';
-    console.log("【Debug】讀取報告路徑：" + reportPath);
-    const reportText = readHtmlReport(reportPath);
-    if (!reportText) {
-      console.error('無法讀取報告內容，跳過 Telegram 發送');
+    // 調整路徑到 report.json（根據你的 reporter 設定，這個檔案會出現在專案根目錄）
+    const reportPath = "./report.json";
+    console.log("【Debug】讀取 JSON 報告路徑：" + reportPath);
+    const reportJson = readJsonReport(reportPath);
+    if(!reportJson){
+      console.error("無法讀取 JSON 報告內容，跳過 Telegram 發送");
       return;
     }
-    console.log("【Debug】完整報告文字：\n" + reportText);
-    const lines = extractLines(reportText);
-    console.log("【Debug】提取行數：" + lines.length);
-    // 過濾出包含「測試成功」和「HTTP錯誤」的行
-    const filteredLines = lines.filter(line => line.includes('測試成功') || (line.includes('錯誤') && line.includes('HTTP錯誤')));
+    const { successMessages, errorMessages } = extractMessagesFromJsonReport(reportJson);
+    console.log("【Debug】成功訊息數量：" + successMessages.length);
+    console.log("【Debug】錯誤訊息數量：" + errorMessages.length);
     
-    console.log("【Debug】篩選後行數：" + filteredLines.length);
-    const aggregated = aggregateReport(filteredLines);
-    const { successText, errorText } = buildTelegramMessages(aggregated);
-
-    console.log("【Debug】成功訊息內容：\n" + successText);
-    console.log("【Debug】錯誤訊息內容：\n" + errorText);
-
+    const { successText, errorText } = buildTelegramMessages({ successMessages, errorMessages });
+    console.log("【Debug】組合成功訊息內容：\n" + successText);
+    console.log("【Debug】組合錯誤訊息內容：\n" + errorText);
+    
     await sendTelegramMessage(successText);
     await sendTelegramMessage(errorText);
-
+    
   } catch (error) {
-    console.error('處理報告並發送 Telegram 訊息時發生錯誤：', error.message);
+    console.error("處理 JSON 報告並發送 Telegram 訊息時發生錯誤：", error.message);
   }
 })();
