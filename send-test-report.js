@@ -3,15 +3,16 @@ const axios = require('axios');
 const cheerio = require('cheerio');
 const FormData = require('form-data');
 
-// 從環境變數取得 Telegram 憑證（Jenkins Credentials 注入）
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+// 直接使用提供的 token 與 chat_id（測試用，實際環境建議使用環境變數注入方式）
+const TELEGRAM_BOT_TOKEN = "W7881684321:AAFGknNFikAsRyb1OVaALUby_xPwdRg4Elw";
+const TELEGRAM_CHAT_ID = "-4707429750";
 
 async function sendTelegramMessage(message) {
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
     console.error('Telegram 憑證未正確設定！');
     return;
   }
+  console.log("【Debug】即將發送 Telegram 訊息內容：\n" + message);
   try {
     const response = await axios.post(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
       chat_id: TELEGRAM_CHAT_ID,
@@ -19,7 +20,7 @@ async function sendTelegramMessage(message) {
       parse_mode: 'Markdown',
       disable_web_page_preview: true
     });
-    console.log('Telegram 訊息已發送：', response.data);
+    console.log('【Debug】Telegram 回傳訊息：', response.data);
   } catch (error) {
     console.error('發送 Telegram 訊息失敗：', error.message);
   }
@@ -127,17 +128,24 @@ function buildTelegramMessages(aggregated) {
 (async () => {
   try {
     const reportPath = './playwright-report/index.html';
+    console.log("【Debug】讀取報告路徑：" + reportPath);
     const reportText = readHtmlReport(reportPath);
     if (!reportText) {
       console.error('無法讀取報告內容，跳過 Telegram 發送');
       return;
     }
+    console.log("【Debug】完整報告文字：\n" + reportText);
     const lines = extractLines(reportText);
+    console.log("【Debug】提取行數：" + lines.length);
     // 過濾出包含「測試成功」和「HTTP錯誤」的行
     const filteredLines = lines.filter(line => line.includes('測試成功') || (line.includes('錯誤') && line.includes('HTTP錯誤')));
     
+    console.log("【Debug】篩選後行數：" + filteredLines.length);
     const aggregated = aggregateReport(filteredLines);
     const { successText, errorText } = buildTelegramMessages(aggregated);
+
+    console.log("【Debug】成功訊息內容：\n" + successText);
+    console.log("【Debug】錯誤訊息內容：\n" + errorText);
 
     await sendTelegramMessage(successText);
     await sendTelegramMessage(errorText);
@@ -146,4 +154,3 @@ function buildTelegramMessages(aggregated) {
     console.error('處理報告並發送 Telegram 訊息時發生錯誤：', error.message);
   }
 })();
-
