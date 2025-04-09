@@ -12,8 +12,11 @@ export default defineConfig({
   forbidOnly: false,
   retries: 0,
   workers: 4,
-  reporter: 'html',  // 生成 HTML 測試報告
-  
+  // 同時使用 JSON 與 HTML reporter
+  reporter: [
+    ['json', { outputFile: 'report.json' }],
+    ['html', { outputFolder: 'playwright-report', open: 'never' }]
+  ],
   use: {
     headless: HEADLESS,
     trace: 'on-first-retry',
@@ -25,3 +28,4 @@ export default defineConfig({
     },
   ],
 });
+
