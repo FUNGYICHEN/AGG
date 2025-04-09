@@ -28,7 +28,7 @@ function range(start, end) {
  */
 
 // Rectangle 與 Wcasino：101～172，扣除 138
-const baseAgentsRectangle = range(101, 173).filter(num => num !== 138);
+const baseAgentsRectangle = (101,173).filter(num => num !== 138);
 const agentsRectangle = baseAgentsRectangle.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
 // 將 Wcasino 使用相同清單
 const agentsWcasino = agentsRectangle;
@@ -129,12 +129,12 @@ async function validateUrls({ request, agents, gameIds, expectedPrefix, mapping,
 // 測試區塊
 test.describe('Game URL Tests', () => {
 
-  test('Rectangle URL', async ({ request }) => {
+  test.only('Rectangle URL', async ({ request }) => {
     test.setTimeout(0);
     const testName = "Rectangle URL";
     const gameIds = range(90001, 90024);
     const gameIdToSlug = {
-      90001: "swaggy-caramelo",
+      90001: "gtrgtrhtrhtr-caramelo",
       90002: "persian-jewels",
       90003: "lucky-leprechaun-loot",
       90004: "lucky-duck",
