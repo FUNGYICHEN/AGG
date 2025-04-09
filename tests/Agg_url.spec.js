@@ -1,7 +1,7 @@
 import { test } from '@playwright/test';
 
 // 依據環境載入設定與 URL 產生函數
-const env = process.env.NODE_ENV || 'stg';
+const env = (process.env.NODE_ENV || 'stg').trim();
 const { ENV_CONFIG, generateGameUrl } = await import(`./${env}環境.js`);
 
 // 共用工具函數
