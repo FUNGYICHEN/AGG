@@ -28,7 +28,7 @@ function range(start, end) {
  */
 
 // Rectangle 與 Wcasino：101～172，扣除 138
-const baseAgentsRectangle = range(101, 102).filter(num => num !== 138);
+const baseAgentsRectangle = range(101, 173).filter(num => num !== 138);
 const agentsRectangle = baseAgentsRectangle.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
 // 將 Wcasino 使用相同清單
 const agentsWcasino = agentsRectangle;
