@@ -41,15 +41,9 @@ const baseAgentsGalaxsys = range(101, 173).filter(num =>
 const agentsGalaxsys = baseAgentsGalaxsys.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
 
 // Playson：根據您提供的明確數列
-const baseAgentsPlayson = [
-  101,102,103,104,105,106,107,108,109,110,
-  111,112,113,114,115,116,118,119,120,121,
-  122,123,124,125,126,127,128,129,130,131,
-  132,133,134,135,136,137,139,140,141,142,
-  143,144,145,146,147,148,149,150,151,152,
-  153,154,155,156,157,158,159,161,162,165,
-  167,168,169,170,171,172
-];
+const baseAgentsPlayson = range(101, 173).filter(num =>
+  ![117, 138, 160, 163, 164, 166].includes(num)
+);
 const agentsPlayson = baseAgentsPlayson.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
 
 // 驗證函數
