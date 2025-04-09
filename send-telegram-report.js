@@ -1,6 +1,6 @@
 import fs from 'fs';
 import axios from 'axios';
-import cheerio from 'cheerio';
+import * as cheerio from 'cheerio';
 // FormData 可從 'form-data' 模組導入，確保該模組支持 ES Module
 import FormData from 'form-data';
 
