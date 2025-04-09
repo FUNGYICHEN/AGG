@@ -3,8 +3,9 @@ import axios from "axios";
 
 const TELEGRAM_BOT_TOKEN = "7881684321:AAFGknNFikAsRyb1OVaALUby_xPwdRg4Elw";
 const TELEGRAM_CHAT_ID = "-4707429750";
+const MAX_MESSAGE_LENGTH = 4000; // 安全上限，不直接使用 4096
 
-// 發送 Telegram 訊息
+// 發送 Telegram 訊息（失敗時印出詳細回應）
 async function sendTelegramMessage(message) {
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
     console.error("Telegram 憑證未正確設定！");
@@ -16,13 +17,35 @@ async function sendTelegramMessage(message) {
       {
         chat_id: TELEGRAM_CHAT_ID,
         text: message,
-        parse_mode: "Markdown",
         disable_web_page_preview: true,
       }
     );
   } catch (error) {
-    console.error("發送 Telegram 訊息失敗：", error.message);
+    console.error(
+      "發送 Telegram 訊息失敗：",
+      error.response && error.response.data ? error.response.data : error.message
+    );
   }
+}
+
+// 將過長訊息分段（以換行作斷點）
+function splitMessage(text, maxLength = MAX_MESSAGE_LENGTH) {
+  if (text.length <= maxLength) return [text];
+  const lines = text.split("\n");
+  const chunks = [];
+  let currentChunk = "";
+  for (const line of lines) {
+    if (currentChunk.length + line.length + 1 > maxLength) {
+      chunks.push(currentChunk);
+      currentChunk = line;
+    } else {
+      currentChunk += currentChunk ? "\n" + line : line;
+    }
+  }
+  if (currentChunk) {
+    chunks.push(currentChunk);
+  }
+  return chunks;
 }
 
 // 讀取 JSON 報告
@@ -36,76 +59,74 @@ function readJsonReport(reportPath) {
   }
 }
 
-// 遞迴遍歷 suites，收集所有成功與錯誤訊息
-function traverseSuites(suites) {
-  let successMessages = [];
-  let errorMessages = [];
-  suites.forEach((suite) => {
-    if (suite.specs && suite.specs.length > 0) {
-      suite.specs.forEach((spec) => {
-        if (spec.tests && spec.tests.length > 0) {
-          spec.tests.forEach((test) => {
-            if (test.results && test.results.length > 0) {
-              test.results.forEach((result) => {
-                if (result.stdout && result.stdout.length > 0) {
-                  result.stdout.forEach((item) => {
-                    const text = (item.text || "").trim();
-                    if (text && text.includes("測試成功")) {
-                      successMessages.push(text);
-                    }
-                  });
-                }
-                if (result.error && result.error.message) {
-                  const errText = result.error.message.trim();
-                  if (errText && errText.includes("HTTP錯誤")) {
-                    const lines = errText
-                      .split(/\n/)
-                      .map((l) => l.trim())
-                      .filter((l) => l.length > 0);
-                    errorMessages.push(...lines);
-                  }
-                }
-              });
-            }
-          });
+// 遞迴遍歷整個 JSON 物件，抽取 success 與 error 訊息（所有含 error.message 與 stdout 內包含“測試成功”的訊息）
+function recursiveExtractMessages(obj, messages = { success: [], error: [] }) {
+  if (obj && typeof obj === "object") {
+    if (obj.error && typeof obj.error.message === "string") {
+      const errText = obj.error.message.trim();
+      if (errText) {
+        errText.split(/\n/).forEach(line => {
+          const trimmed = line.trim();
+          if (trimmed) messages.error.push(trimmed);
+        });
+      }
+    }
+    if (obj.stdout && Array.isArray(obj.stdout)) {
+      obj.stdout.forEach(item => {
+        const text = (item.text || "").trim();
+        if (text && text.includes("測試成功")) {
+          messages.success.push(text);
         }
       });
     }
-    if (suite.suites && suite.suites.length > 0) {
-      const child = traverseSuites(suite.suites);
-      successMessages = successMessages.concat(child.successMessages);
-      errorMessages = errorMessages.concat(child.errorMessages);
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        recursiveExtractMessages(obj[key], messages);
+      }
     }
-  });
-  return { successMessages, errorMessages };
+  } else if (Array.isArray(obj)) {
+    obj.forEach(item => recursiveExtractMessages(item, messages));
+  }
+  return messages;
 }
 
-// 從一行錯誤訊息中解析品牌、Agent、GameID 與 HTTP錯誤資訊
+/**
+ * 解析單行錯誤訊息：
+ * 1. 若有 "Error: <Brand> URL:" 前綴則取出品牌資訊；
+ * 2. 接著解析 "Agent: <agent>, GameID: <gameId> <errorDetail>"
+ * 3. 將 errorDetail 以 "->" 切分，僅保留前半段作為 errorMain 用來聚合。
+ */
 function parseErrorLine(line) {
   let brand = "";
-  const brandMatch = line.match(/^Error:\s*([^\s]+)\s*URL:/);
+  const brandMatch = line.match(/^Error:\s*([^\s]+)\s*URL:\s*/);
   if (brandMatch) {
     brand = brandMatch[1].trim();
     line = line.replace(/^Error:\s*[^\s]+\s*URL:\s*/, "");
   }
-  const regex = /Agent:\s*(\d+),\s*GameID:\s*(\d+).*?(HTTP錯誤：狀態碼\s*\d+)/;
+  const regex = /Agent:\s*(\d+),\s*GameID:\s*(\d+)\s*(.+)/;
   const match = line.match(regex);
   if (match) {
+    let errorDetail = match[3].trim();
+    // 只取 "->" 前面的部分作為聚合依據
+    const parts = errorDetail.split("->");
+    let errorMain = parts[0].trim();
     return {
       brand,
       agent: match[1].trim(),
       gameId: match[2].trim(),
-      errorDetail: match[3].trim(),
+      errorMain, // 用來聚合錯誤的主要部分（忽略 URL）
+      fullError: errorDetail // 原始完整錯誤訊息
     };
   }
   return null;
 }
 
-// 聚合錯誤訊息：同一品牌、Agent 與 HTTP錯誤視為同一組（收集所有不同的 GameID）
+// 將錯誤訊息聚合：相同品牌、Agent 與 errorMain 的錯誤會合併，收集所有不同的 gameId
 function aggregateErrorMessages(errorMessages) {
   const errorMap = new Map();
   let currentBrand = "";
-  errorMessages.forEach((line) => {
+  errorMessages.forEach(line => {
+    // 若有品牌前綴則取出（例如 "Error: Rectangle URL:"）
     const brandMatch = line.match(/^Error:\s*([^\s]+)\s*URL:/);
     if (brandMatch) {
       currentBrand = brandMatch[1].trim();
@@ -113,10 +134,11 @@ function aggregateErrorMessages(errorMessages) {
     }
     const parsed = parseErrorLine(line);
     if (parsed) {
+      // 補上 brand 資訊
       if (!parsed.brand && currentBrand) {
         parsed.brand = currentBrand;
       }
-      const key = `${parsed.brand}|${parsed.agent}|${parsed.errorDetail}`;
+      const key = `${parsed.brand}|${parsed.agent}|${parsed.errorMain}`;
       if (errorMap.has(key)) {
         let item = errorMap.get(key);
         item.count++;
@@ -127,42 +149,50 @@ function aggregateErrorMessages(errorMessages) {
       } else {
         errorMap.set(key, { ...parsed, gameIds: [parsed.gameId], count: 1 });
       }
+    } else {
+      // 若無法解析，則以原始文字存入
+      const key = `raw|${line}`;
+      if (errorMap.has(key)) {
+        let item = errorMap.get(key);
+        item.count++;
+        errorMap.set(key, item);
+      } else {
+        errorMap.set(key, { raw: line, count: 1 });
+      }
     }
   });
-  let aggregatedErrors = [];
-  errorMap.forEach((value) => aggregatedErrors.push(value));
+  const aggregatedErrors = [];
+  errorMap.forEach(value => aggregatedErrors.push(value));
   return aggregatedErrors;
 }
 
-// 根據成功與錯誤訊息組裝最終要發送的 Telegram 訊息內容
-function buildTelegramMessages({ successMessages, errorMessages }) {
-  // 使用環境變數 NODE_ENV，若未設定則顯示 unknown
+// 組裝最終要發送的 Telegram 訊息內容，包含成功與聚合後的錯誤訊息
+function buildTelegramMessages({ success, error }) {
   const env = process.env.NODE_ENV ? process.env.NODE_ENV.toLowerCase() : "unknown";
   let successText = `【成功訊息】${env}\n`;
-  if (successMessages.length > 0) {
-    successMessages.forEach((msg) => {
+  if (success.length > 0) {
+    success.forEach(msg => {
       successText += msg + "\n";
     });
   } else {
     successText += "無成功訊息\n";
   }
   let errorText = `【錯誤訊息】${env}\n`;
-  if (errorMessages.length > 0) {
-    const aggregatedErrors = aggregateErrorMessages(errorMessages);
-    aggregatedErrors.forEach((err) => {
-      let prefix = "";
-      if (env === "prod" && err.brand) {
-        prefix = `(${err.brand})`;
-      }
-      // 若錯誤筆數小於 5，則列出所有 gameId；如果只有單筆則列出單一 gameId
-      if (err.count < 5) {
-        if (err.count === 1) {
-          errorText += `${prefix}Agent: ${err.agent}, GameID: ${err.gameIds[0]}, ${err.errorDetail}\n`;
-        } else {
-          errorText += `${prefix}Agent: ${err.agent}, GameID: ${err.gameIds.join(", ")}, ${err.errorDetail}\n`;
-        }
+  if (error.length > 0) {
+    const aggregatedErrors = aggregateErrorMessages(error);
+    aggregatedErrors.forEach(err => {
+      if (err.raw) {
+        errorText += `${err.raw} (共 ${err.count} 筆)\n`;
       } else {
-        errorText += `${prefix}Agent: ${err.agent}, ${err.errorDetail} (共 ${err.count} 個)\n`;
+        let prefix = "";
+        if (env === "prod" && err.brand) {
+          prefix = `(${err.brand})`;
+        }
+        if (err.count === 1) {
+          errorText += `${prefix} Agent: ${err.agent}, GameID: ${err.gameId}, ${err.errorMain}\n`;
+        } else {
+          errorText += `${prefix} Agent: ${err.agent}, GameID: ${err.gameIds.join(", ")}, ${err.errorMain} (共 ${err.count} 筆錯誤)\n`;
+        }
       }
     });
   } else {
@@ -175,8 +205,20 @@ function buildTelegramMessages({ successMessages, errorMessages }) {
   const reportPath = "./report.json";
   const reportJson = readJsonReport(reportPath);
   if (!reportJson) return;
-  const { successMessages, errorMessages } = traverseSuites(reportJson.suites || []);
-  const { successText, errorText } = buildTelegramMessages({ successMessages, errorMessages });
-  await sendTelegramMessage(successText);
-  await sendTelegramMessage(errorText);
+
+  const { success, error } = recursiveExtractMessages(reportJson);
+  const { successText, errorText } = buildTelegramMessages({ success, error });
+
+  console.log("預計傳送成功訊息:\n", successText);
+  console.log("預計傳送錯誤訊息:\n", errorText);
+
+  const successChunks = splitMessage(successText);
+  const errorChunks = splitMessage(errorText);
+
+  for (const chunk of successChunks) {
+    await sendTelegramMessage(chunk);
+  }
+  for (const chunk of errorChunks) {
+    await sendTelegramMessage(chunk);
+  }
 })();

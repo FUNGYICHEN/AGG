@@ -20,7 +20,7 @@ async function executeWithRetry(fn, retries = 2, delay = 300) {
 }
 
 function range(start, end) {
-  return Array.from({ length: end - start }, (_, i) => start + i);
+  return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 }
 
 /**
@@ -129,12 +129,12 @@ async function validateUrls({ request, agents, gameIds, expectedPrefix, mapping,
 // 測試區塊
 test.describe('Game URL Tests', () => {
 
-  test('Rectangle URL', async ({ request }) => {
+  test.only('Rectangle URL', async ({ request }) => {
     test.setTimeout(0);
     const testName = "Rectangle URL";
-    const gameIds = range(90001, 90025);
+    const gameIds = range(90001, 90024);
     const gameIdToSlug = {
-      90001: "swaggy-caramelo",
+      90001: "swaggy-ffgdfgbdbgfb",
       90002: "persian-jewels",
       90003: "lucky-leprechaun-loot",
       90004: "lucky-duck",
@@ -157,6 +157,7 @@ test.describe('Game URL Tests', () => {
       90021: "realm-of-thunder",
       90022: "black-assassin",
       90023: "smash-fury",
+      90024: "the-lucky-year"
     };
 
     await validateUrls({
