@@ -1,119 +1,111 @@
-import fs from 'fs/promises';
-import axios from 'axios';
-import path from 'path';  // 如需處理路徑
+const fs = require('fs');
+const axios = require('axios');
 
-/**
- * 解析測試日誌檔，回傳成功與錯誤訊息字串（按品牌分組並彙整錯誤）。
- * @param {string} filePath 日誌檔案的路徑
- * @returns {{ successMessage: string, errorMessage: string }}
- */
-async function parseLogFile(filePath) {
-  // 讀取整個日誌檔內容
-  const data = await fs.readFile(filePath, 'utf8');
-  const lines = data.split(/\r?\n/);
+// 從環境變量讀取 Telegram 配置
+const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 
-  const successLines = [];
-  const errorsByBrand = {};
-  let currentBrand = null;
-
-  for (const line of lines) {
-    // 如果目前在處理某品牌錯誤段落，但遇到不含 "HTTP錯誤" 的行，表示該品牌錯誤段結束
-    if (currentBrand && !line.includes('HTTP錯誤')) {
-      currentBrand = null;
-    }
-
-    // 收集成功訊息行（所有代理皆測試成功）
-    if (line.includes('所有 agent 測試成功')) {
-      successLines.push(line.trim());
-    }
-
-    // 分析錯誤訊息行
-    if (line.includes('HTTP錯誤')) {
-      if (line.startsWith('Error:')) {
-        // 解析帶有品牌名稱的錯誤摘要行 (例如 "Error: Playson URL: Agent: 10199, GameID: 24077 HTTP錯誤：狀態碼 400")
-        const match = line.match(/^Error:\s*([^:]+) URL:\s*Agent:\s*(\d+),\s*GameID:\s*(\d+)\s*(?:HTTP狀態碼錯誤:\s*)?HTTP錯誤：狀態碼\s*(\d+)/);
-        if (match) {
-          const [, brand, agent, gameId, code] = match;
-          currentBrand = brand.trim();
-          if (!errorsByBrand[currentBrand]) errorsByBrand[currentBrand] = {};
-          const errorKey = `Agent: ${agent}, GameID: ${gameId} HTTP錯誤：狀態碼 ${code}`;
-          errorsByBrand[currentBrand][errorKey] = (errorsByBrand[currentBrand][errorKey] || 0) + 1;
-        }
-      } else if (currentBrand && line.trim().startsWith('Agent:')) {
-        // 解析錯誤摘要中的後續行 (延續上一行的品牌錯誤資訊)
-        const match = line.match(/Agent:\s*(\d+),\s*GameID:\s*(\d+)\s*(?:HTTP狀態碼錯誤:\s*)?HTTP錯誤：狀態碼\s*(\d+)/);
-        if (match) {
-          const [, agent, gameId, code] = match;
-          if (!errorsByBrand[currentBrand]) errorsByBrand[currentBrand] = {};
-          const errorKey = `Agent: ${agent}, GameID: ${gameId} HTTP錯誤：狀態碼 ${code}`;
-          errorsByBrand[currentBrand][errorKey] = (errorsByBrand[currentBrand][errorKey] || 0) + 1;
-        }
-      } else if (!currentBrand && line.trim().startsWith('Agent:')) {
-        // 獨立的 Agent 錯誤行且尚未設定品牌（通常在錯誤摘要中已包含，這裡略過以避免重複）
-        continue;
-      }
-    }
-  }
-
-  // 組合【成功訊息】文字
-  let successMessage = `【成功訊息】\n`;
-  if (successLines.length > 0) {
-    successMessage += successLines.join('\n');
-  } else {
-    successMessage += '（無成功項目）';
-  }
-
-  // 組合【錯誤訊息】文字
-  let errorMessage = `【錯誤訊息】\n`;
-  if (Object.keys(errorsByBrand).length === 0) {
-    errorMessage += '（無錯誤項目）';
-  } else {
-    for (const brand in errorsByBrand) {
-      errorMessage += `${brand} URL 錯誤：\n`;
-      // 列出該品牌的所有錯誤明細（每項附帶發生次數）
-      for (const errorKey in errorsByBrand[brand]) {
-        const count = errorsByBrand[brand][errorKey];
-        errorMessage += `  ${errorKey} (共 ${count} 個)\n`;
-      }
-    }
-    errorMessage = errorMessage.trim();  // 移除最後多餘的換行
-  }
-
-  return { successMessage, errorMessage };
-}
-
-/**
- * 使用 Telegram Bot API 發送訊息到指定聊天。
- * @param {string} botToken 機器人存取權杖
- * @param {string|number} chatId 目標聊天的 ID
- * @param {string} text 欲傳送的文字內容
- */
-async function sendTelegramMessage(botToken, chatId, text) {
-  const url = `https://api.telegram.org/bot${botToken}/sendMessage`;
-  // 發送 POST 請求給 Telegram Bot API
-  await axios.post(url, {
-    chat_id: chatId,
-    text: text
+function analyzeResults(results) {
+  const suites = {};
+  
+  results.forEach(suite => {
+    const suiteName = suite.suite;
+    suites[suiteName] = {
+      status: suite.specs.every(spec => spec.ok) ? 'passed' : 'failed',
+      specs: suite.specs.map(spec => ({
+        title: spec.title,
+        status: spec.ok ? 'passed' : 'failed',
+        errors: spec.tests.flatMap(test => 
+          test.results.filter(r => r.status === 'failed').map(r => r.error?.message)
+        ).filter(Boolean)
+      }))
+    };
   });
+  
+  return {
+    startTime: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    suites
+  };
 }
 
-// 主執行流程：讀取日誌、解析內容並傳送 Telegram 通知
+function generateReport(results) {
+  let report = `*測試環境*: ${results.environment.toUpperCase()}\n`;
+  report += `*測試時間*: ${new Date(results.startTime).toLocaleString()}\n\n`;
+  
+  const passedSuites = [];
+  const failedSuites = [];
+  
+  // 分類測試套件
+  Object.entries(results.suites).forEach(([name, suite]) => {
+    if (suite.status === 'passed') {
+      passedSuites.push(name);
+    } else {
+      const errors = {};
+      suite.specs.filter(spec => spec.status === 'failed').forEach(spec => {
+        spec.errors.forEach(error => {
+          const key = error.split('\n')[0]; // 取第一行作為錯誤摘要
+          errors[key] = (errors[key] || 0) + 1;
+        });
+      });
+      failedSuites.push({ name, errors });
+    }
+  });
+  
+  // 添加成功訊息
+  if (passedSuites.length > 0) {
+    report += '*✅ 成功測試*\n';
+    report += passedSuites.map(name => `• ${name}`).join('\n') + '\n\n';
+  }
+  
+  // 添加失敗訊息
+  if (failedSuites.length > 0) {
+    report += '*❌ 失敗測試*\n';
+    failedSuites.forEach(suite => {
+      report += `*${suite.name}*:\n`;
+      Object.entries(suite.errors).forEach(([error, count]) => {
+        report += `  - ${error}${count > 1 ? ` (共 ${count} 次)` : ''}\n`;
+      });
+    });
+  }
+  
+  // 添加摘要
+  report += `\n*測試摘要*: ${passedSuites.length} 通過, ${failedSuites.length} 失敗`;
+  
+  return report;
+}
+
+async function sendTelegramMessage(message) {
+  try {
+    const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+    await axios.post(url, {
+      chat_id: TELEGRAM_CHAT_ID,
+      text: message,
+      parse_mode: 'Markdown',
+      disable_web_page_preview: true
+    });
+    console.log('Telegram 通知已發送');
+  } catch (error) {
+    console.error('發送 Telegram 通知失敗:', error.message);
+  }
+}
+
+// 主執行函數
 (async () => {
   try {
-    // 設定待分析的日誌檔路徑（預設為當前工作目錄下的 test.log）
-    const filePath = path.join(process.cwd(), 'test.log');
-    const { successMessage, errorMessage } = await parseLogFile(filePath);
-
-    // 設定 Telegram Bot 憑證與聊天室 ID（請填入實際值）
-    const botToken = 'W7881684321:AAFGknNFikAsRyb1OVaALUby_xPwdRg4Elw';    // 例如 '123456789:ABCDefGhIJKlmNoPQRstuVwxyz'
-    const chatId   = '-4707429750';                 // 目標 Telegram Chat 的 ID
-
-    // 傳送成功與錯誤摘要訊息至 Telegram
-    const finalMessage = `${successMessage}\n\n${errorMessage}`;
-    await sendTelegramMessage(botToken, chatId, finalMessage);
-
-    console.log('✅ 已分析日誌並透過 Telegram 發送測試報告');
-  } catch (err) {
-    console.error('腳本執行發生錯誤：', err);
+    const rawResults = JSON.parse(fs.readFileSync('test-results.json', 'utf-8'));
+    const analyzedResults = analyzeResults(rawResults.suites);
+    const report = generateReport(analyzedResults);
+    
+    console.log(report); // 輸出到 Jenkins 日誌
+    
+    if (TELEGRAM_BOT_TOKEN && TELEGRAM_CHAT_ID) {
+      await sendTelegramMessage(report);
+    } else {
+      console.warn('未配置 Telegram 憑證，跳過通知發送');
+    }
+  } catch (error) {
+    console.error('處理測試結果時出錯:', error);
+    process.exit(1);
   }
 })();
