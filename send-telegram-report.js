@@ -1,7 +1,7 @@
-import fs from 'fs';
-import axios from 'axios';
+import fs from "fs";
+import axios from "axios";
 
-// 直接使用硬編碼的 token 與 chat_id（正式環境建議使用環境變數注入方式）
+// 請確保正式環境不要硬編碼 Token 與 Chat ID，此處僅示範用
 const TELEGRAM_BOT_TOKEN = "7881684321:AAFGknNFikAsRyb1OVaALUby_xPwdRg4Elw";
 const TELEGRAM_CHAT_ID = "-4707429750";
 
@@ -44,8 +44,10 @@ function readJsonReport(reportPath) {
 }
 
 /**
- * 遞迴遍歷 suites，收集 stdout 與 error 訊息
- * 如果 error.message 為多行字串，則以換行拆分為多筆
+ * 遞迴遍歷 suites，收集所有成功訊息和錯誤訊息
+ * 對每個測試結果：
+ *  - 如果 stdout 中包含 "測試成功"，則加入成功訊息。
+ *  - 如果 error.message 包含 "HTTP錯誤"，則拆分多行後加入錯誤訊息陣列。
  */
 function traverseSuites(suites) {
   let successMessages = [];
@@ -57,7 +59,6 @@ function traverseSuites(suites) {
           spec.tests.forEach((test) => {
             if (test.results && test.results.length > 0) {
               test.results.forEach((result) => {
-                // 收集 stdout 中包含 "測試成功" 的訊息
                 if (result.stdout && result.stdout.length > 0) {
                   result.stdout.forEach((item) => {
                     const text = (item.text || "").trim();
@@ -66,12 +67,13 @@ function traverseSuites(suites) {
                     }
                   });
                 }
-                // 收集 error.message 中包含 "HTTP錯誤" 的訊息
                 if (result.error && result.error.message) {
                   const errText = result.error.message.trim();
                   if (errText && errText.includes("HTTP錯誤")) {
-                    // 拆分多行處理
-                    const lines = errText.split(/\n/).map(l => l.trim()).filter(l => l.length > 0);
+                    const lines = errText
+                      .split(/\n/)
+                      .map((l) => l.trim())
+                      .filter((l) => l.length > 0);
                     errorMessages.push(...lines);
                   }
                 }
@@ -81,7 +83,6 @@ function traverseSuites(suites) {
         }
       });
     }
-    // 遞迴處理子 suites
     if (suite.suites && suite.suites.length > 0) {
       const child = traverseSuites(suite.suites);
       successMessages = successMessages.concat(child.successMessages);
@@ -92,61 +93,65 @@ function traverseSuites(suites) {
 }
 
 /**
- * 解析單行錯誤訊息，嘗試抓取品牌、Agent 與 HTTP錯誤訊息
- * 若該行以 "Error:" 開頭，抓取第一個詞作為品牌
- * 例如："Error: Rectangle URL: Agent: 10199, GameID: 90001 錯誤: HTTP錯誤：狀態碼 400"
+ * 解析單行錯誤訊息，嘗試取得品牌、Agent、GameID 與 HTTP錯誤訊息
+ * 假設格式類似：
+ * "Error: Rectangle URL: Agent: 10199, GameID: 90001 錯誤: HTTP錯誤：狀態碼 400"
  */
 function parseErrorLine(line) {
   let brand = "";
-  // 嘗試捕捉 "Error: <Brand> URL:" 的格式
+  // 嘗試從行首抓取品牌，格式："Error: <Brand> URL:"
   const brandMatch = line.match(/^Error:\s*([^\s]+)\s*URL:/);
   if (brandMatch) {
     brand = brandMatch[1].trim();
     // 移除前綴部分
     line = line.replace(/^Error:\s*[^\s]+\s*URL:\s*/, "");
   }
-  // 使用 regex 抓取 Agent 與 HTTP錯誤訊息（不考慮 GameID）
-  const regex = /Agent:\s*(\d+),\s*GameID:\s*\d+.*?(HTTP錯誤：狀態碼\s*\d+)/;
+  const regex = /Agent:\s*(\d+),\s*GameID:\s*(\d+).*?(HTTP錯誤：狀態碼\s*\d+)/;
   const match = line.match(regex);
   if (match) {
     return {
       brand,
       agent: match[1].trim(),
-      errorDetail: match[2].trim(),
+      gameId: match[2].trim(),
+      errorDetail: match[3].trim(),
     };
   }
   return null;
 }
 
 /**
- * 將錯誤訊息依據品牌、Agent 與錯誤訊息聚合
+ * 聚合錯誤訊息：
+ * 根據品牌、Agent 與 HTTP錯誤作為聚合鍵進行合併，
+ * 同時收集所有出現的 gameId（若有不同）。
  */
 function aggregateErrorMessages(errorMessages) {
   const errorMap = new Map();
-  // currentBrand 用於記錄前面解析到的品牌（若後續行未帶品牌，則沿用前面的）
   let currentBrand = "";
   errorMessages.forEach((line) => {
-    // 檢查是否有品牌前綴
+    // 如果該行以 "Error:" 開頭，就更新 currentBrand
     const brandMatch = line.match(/^Error:\s*([^\s]+)\s*URL:/);
     if (brandMatch) {
       currentBrand = brandMatch[1].trim();
-      // 去除前綴部分
       line = line.replace(/^Error:\s*[^\s]+\s*URL:\s*/, "");
     }
     const parsed = parseErrorLine(line);
     if (parsed) {
-      // 如果解析後品牌為空，則使用目前記錄的 currentBrand
+      // 若該行未帶品牌，則沿用 currentBrand
       if (!parsed.brand && currentBrand) {
         parsed.brand = currentBrand;
       }
-      // 聚合依據：品牌, Agent, 與 HTTP錯誤訊息（忽略 GameID）
+      // 聚合鍵：品牌 | Agent | HTTP錯誤訊息
       const key = `${parsed.brand}|${parsed.agent}|${parsed.errorDetail}`;
       if (errorMap.has(key)) {
         let item = errorMap.get(key);
         item.count++;
+        // 收集不同的 gameId（如果尚未收錄）
+        if (!item.gameIds.includes(parsed.gameId)) {
+          item.gameIds.push(parsed.gameId);
+        }
         errorMap.set(key, item);
       } else {
-        errorMap.set(key, { ...parsed, count: 1 });
+        errorMap.set(key, { ...parsed, gameIds: [parsed.gameId], count: 1 });
       }
     }
   });
@@ -158,10 +163,15 @@ function aggregateErrorMessages(errorMessages) {
 }
 
 /**
- * 組裝 Telegram 發送訊息內容
+ * 組裝要發送的訊息內容
+ * - 成功訊息與錯誤訊息最上方會顯示運行環境 (prod 或 stg)
+ * - 對於錯誤訊息：
+ *    * 若 count < 5，則對於單筆（count === 1）只顯示 "Agent: X, HTTP錯誤：狀態碼 YYY"；若有多筆（count 介於 2 至 4），則附加列出所有 gameId
+ *    * 若 count >= 5，則僅顯示聚合訊息及總數
  */
 function buildTelegramMessages({ successMessages, errorMessages }) {
-  let successText = "【成功訊息】\n";
+  const env = process.env.NODE_ENV ? process.env.NODE_ENV.toLowerCase() : "unknown";
+  let successText = `【成功訊息】${env}\n`;
   if (successMessages.length > 0) {
     successMessages.forEach((msg) => {
       successText += msg + "\n";
@@ -169,21 +179,25 @@ function buildTelegramMessages({ successMessages, errorMessages }) {
   } else {
     successText += "無成功訊息\n";
   }
-  let errorText = "【錯誤訊息】\n";
+
+  let errorText = `【錯誤訊息】${env}\n`;
   if (errorMessages.length > 0) {
     const aggregatedErrors = aggregateErrorMessages(errorMessages);
     aggregatedErrors.forEach((err) => {
       let prefix = "";
-      if (
-        process.env.NODE_ENV &&
-        process.env.NODE_ENV.toLowerCase() === "prod" &&
-        err.brand
-      ) {
+      if (env === "prod" && err.brand) {
         prefix = `(${err.brand})`;
       }
-      errorText += `${prefix}Agent: ${err.agent}, ${err.errorDetail}`;
-      if (err.count > 1) errorText += ` (共 ${err.count} 個)`;
-      errorText += "\n";
+      if (err.count < 5) {
+        // 若只有單一筆，則直接顯示不帶 gameID；若多筆 (2~4)，則列出 gameIDs
+        if (err.count === 1) {
+          errorText += `${prefix}Agent: ${err.agent}, ${err.errorDetail}\n`;
+        } else {
+          errorText += `${prefix}Agent: ${err.agent}, GameID: ${err.gameIds.join(", ")}, ${err.errorDetail}\n`;
+        }
+      } else {
+        errorText += `${prefix}Agent: ${err.agent}, ${err.errorDetail} (共 ${err.count} 個)\n`;
+      }
     });
   } else {
     errorText += "無錯誤訊息\n";
