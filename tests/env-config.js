@@ -7,6 +7,8 @@ const stgConfig = {
   expected_galaxsys: "https://partnerapi-gli.stg-digi.com/Games/Launch/",
   expected_Rectangle: "https://g.sandbox.rectangle-games.com",
   expected_Playson: "https://static-stage.rowzone.tech/",
+  expected_GFG: "https://stagegameweb.geodwfeowkg.com/",
+
   error_image_prefix: "Content/images/failed/",
   timestamp: "1726734234",
   base_ip: "100.1.2.3",
@@ -31,6 +33,7 @@ const prodConfig = {
   expected_galaxsys: "https://launchdigi.net//Games/Launch/",
   expected_Rectangle: "https://rc.rg-lgna.com/",
   expected_Playson: "https://launch1-sg-asia.wowgamenew.com/gm/",
+  expected_GFG: "https://gameweb.geodwfeowkg.com/",
   error_image_prefix: "Content/images/failed/",
   timestamp: "1726734234",
   base_ip: "100.1.2.3",

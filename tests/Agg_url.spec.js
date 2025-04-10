@@ -28,22 +28,28 @@ function range(start, end) {
  */
 
 // Rectangle 與 Wcasino：101～172，扣除 138
-const baseAgentsRectangle = range(101, 173).filter(num => num !== 138);
+const baseAgentsRectangle = range(101, 102).filter(num => num !== 138);
 const agentsRectangle = baseAgentsRectangle.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
 // 將 Wcasino 使用相同清單
 const agentsWcasino = agentsRectangle;
 
 // Galaxsys：101～172，排除 109, 123, 129, 131, 138, 160, 163, 164, 165, 166
-const baseAgentsGalaxsys = range(101, 173).filter(num =>
+const baseAgentsGalaxsys = range(101, 172).filter(num =>
   ![109, 123, 129, 131, 138, 160, 163, 164, 165, 166].includes(num)
 );
 const agentsGalaxsys = baseAgentsGalaxsys.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
 
 // Playson：根據您提供的明確數列
-const baseAgentsPlayson = range(101, 173).filter(num =>
+const baseAgentsPlayson = range(101, 172).filter(num =>
   ![117, 138, 160, 163, 164, 166].includes(num)
 );
 const agentsPlayson = baseAgentsPlayson.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
+
+// GFG：根據您提供的明確數列
+// const baseAgentsGFG = range(101, 172).filter(num =>
+//   ![117, 138, 160, 163, 164, 166].includes(num)
+// );
+// const agentsGFG = baseAgentsGFG.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
 
 // 驗證函數
 function extractSlugRectangle(url, gameId, mapping) {
@@ -94,6 +100,19 @@ function validateGalaxsysUrl(url, gameId, mapping) {
   }
   return null;
 }
+
+// function validateGFGUrl(url, gameId, mapping) {
+//   try {
+//     const parsedUrl = new URL(url);
+//     const actualGid = parsedUrl.searchParams.get('gid');
+//     if (actualGid !== mapping[gameId]) {
+//       return `URL 的 gid 不正確 (expected: ${mapping[gameId]}, got: ${actualGid}) -> ${url}`;
+//     }
+//   } catch (e) {
+//     return `URL 解析錯誤: ${e.message} -> ${url}`;
+//   }
+//   return null;
+// }
 
 async function validateUrls({ request, agents, gameIds, expectedPrefix, mapping, validateFn, testName, sleepTime = 300, useRetry = false }) {
   let errorMessages = [];
@@ -284,7 +303,7 @@ test.describe('Game URL Tests', () => {
     test.setTimeout(0);
     const testName = "Galaxsys URL";
     const gameIds = range(70001, 70037);
-    const gameIdToGid = ENV_CONFIG.login_url.includes("op.qbfqgfgzzgf.com") ? {
+    const gameIdToGid = env === 'prod' ? {
       70001: "20786",
       70002: "2014",
       70003: "5935",
@@ -374,3 +393,62 @@ test.describe('Game URL Tests', () => {
   });
 
 });
+
+
+
+// test('GFG URL', async ({ request }) => {
+//   test.setTimeout(0);
+//   const testName = "GFG URL";
+//   const gameIds = range(70001, 70037);
+//   const gameIdToSlug = {
+//     70001: "20786",
+//     70002: "2014",
+//     70003: "5935",
+//     70004: "2010",
+//     70005: "15543",
+//     70006: "19",
+//     70007: "15542",
+//     70008: "10512",
+//     70009: "6492",
+//     70010: "5339",
+//     70011: "5236",
+//     70012: "11289",
+//     70013: "27201",
+//     70014: "32724",
+//     70015: "34139",
+//     70016: "34184",
+//     70017: "32725",
+//     70018: "34829",
+//     70019: "34554",
+//     70020: "35760",
+//     70021: "35838",
+//     70022: "36024",
+//     70023: "35956",
+//     70024: "32727",
+//     70025: "37237",
+//     70026: "37238",
+//     70027: "38081",
+//     70028: "37992",
+//     70029: "39769",
+//     70030: "39386",
+//     70031: "42202",
+//     70032: "37236",
+//     70033: "41446",
+//     70034: "45245",
+//     70035: "42205",
+//     70036: "47509"
+  
+//   };
+
+//   await validateUrls({
+//     request,
+//     agents: agentsGFG,
+//     gameIds,
+//     expectedPrefix: ENV_CONFIG.expected_GFG,
+//     mapping: gameIdToGid,
+//     validateFn: validateGFGUrl,
+//     testName,
+//     sleepTime: 500,
+//     useRetry: false
+//   });
+// });
