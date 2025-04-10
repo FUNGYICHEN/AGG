@@ -33,7 +33,7 @@ const agentsRectangle = baseAgentsRectangle.flatMap(a => [parseInt("10" + a), pa
 // 將 Wcasino 使用相同清單
 
 // Wcasino：101～172，排除不允許的數字
-const baseAgentsWcasino = range(101, 172).filter(num => ![123, 138, 154, 155, 160, 163, 164, 166].includes(num));
+const baseAgentsWcasino = range(101, 172).filter(num => ![109,123, 138, 154, 155, 160, 163, 164, 166].includes(num));
 const agentsWcasino = baseAgentsWcasino.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
 
 // Galaxsys：101～172，排除 109, 123, 129, 131, 138, 160, 163, 164, 165, 166
