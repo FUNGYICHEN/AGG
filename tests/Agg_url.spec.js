@@ -28,7 +28,7 @@ function range(start, end) {
  */
 
 // Rectangle 與 Wcasino：101～172，扣除 138
-const baseAgentsRectangle = range(101, 102).filter(num => num !== 138);
+const baseAgentsRectangle = range(101, 172).filter(num => num !== 138);
 const agentsRectangle = baseAgentsRectangle.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
 // 將 Wcasino 使用相同清單
 const agentsWcasino = agentsRectangle;
@@ -45,11 +45,6 @@ const baseAgentsPlayson = range(101, 172).filter(num =>
 );
 const agentsPlayson = baseAgentsPlayson.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
 
-// GFG：根據您提供的明確數列
-// const baseAgentsGFG = range(101, 172).filter(num =>
-//   ![117, 138, 160, 163, 164, 166].includes(num)
-// );
-// const agentsGFG = baseAgentsGFG.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
 
 // 驗證函數
 function extractSlugRectangle(url, gameId, mapping) {
@@ -148,7 +143,7 @@ async function validateUrls({ request, agents, gameIds, expectedPrefix, mapping,
 // 測試區塊
 test.describe('Game URL Tests', () => {
 
-  test.only('Rectangle URL', async ({ request }) => {
+  test('Rectangle URL', async ({ request }) => {
     test.setTimeout(0);
     const testName = "Rectangle URL";
     const gameIds = range(90001, 90024);
