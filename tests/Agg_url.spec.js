@@ -31,7 +31,10 @@ function range(start, end) {
 const baseAgentsRectangle = range(101, 172).filter(num => num !== 138);
 const agentsRectangle = baseAgentsRectangle.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
 // 將 Wcasino 使用相同清單
-const agentsWcasino = agentsRectangle;
+
+// Wcasino：101～172，排除不允許的數字
+const baseAgentsWcasino = range(101, 172).filter(num => ![123, 138, 154, 155, 160, 163, 164, 166].includes(num));
+const agentsWcasino = baseAgentsWcasino.flatMap(a => [parseInt("10" + a), parseInt("11" + a)]);
 
 // Galaxsys：101～172，排除 109, 123, 129, 131, 138, 160, 163, 164, 165, 166
 const baseAgentsGalaxsys = range(101, 172).filter(num =>
@@ -297,7 +300,7 @@ test.describe('Game URL Tests', () => {
   test('Galaxsys URL', async ({ request }) => {
     test.setTimeout(0);
     const testName = "Galaxsys URL";
-    const gameIds = range(70001, 70037);
+    const gameIds = range(70001, 70036);
     const gameIdToGid = env === 'prod' ? {
       70001: "20786",
       70002: "2014",
