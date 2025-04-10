@@ -58,14 +58,8 @@
   "suites": [],
   "errors": [
     {
-      "message": "TypeError: (101 , 173).filter is not a function",
-      "stack": "TypeError: (101 , 173).filter is not a function\n    at C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Agg_url.spec.js:31:39",
-      "location": {
-        "file": "C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Agg_url.spec.js",
-        "column": 39,
-        "line": 31
-      },
-      "snippet": "\u001b[90m   at \u001b[39mAgg_url.spec.js:31\n\n\u001b[0m \u001b[90m 29 |\u001b[39m\n \u001b[90m 30 |\u001b[39m \u001b[90m// Rectangle 與 Wcasino：101～172，扣除 138\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 31 |\u001b[39m \u001b[36mconst\u001b[39m baseAgentsRectangle \u001b[33m=\u001b[39m (\u001b[35m101\u001b[39m\u001b[33m,\u001b[39m\u001b[35m173\u001b[39m)\u001b[33m.\u001b[39mfilter(num \u001b[33m=>\u001b[39m num \u001b[33m!==\u001b[39m \u001b[35m138\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 32 |\u001b[39m \u001b[36mconst\u001b[39m agentsRectangle \u001b[33m=\u001b[39m baseAgentsRectangle\u001b[33m.\u001b[39mflatMap(a \u001b[33m=>\u001b[39m [parseInt(\u001b[32m\"10\"\u001b[39m \u001b[33m+\u001b[39m a)\u001b[33m,\u001b[39m parseInt(\u001b[32m\"11\"\u001b[39m \u001b[33m+\u001b[39m a)])\u001b[33m;\u001b[39m\n \u001b[90m 33 |\u001b[39m \u001b[90m// 將 Wcasino 使用相同清單\u001b[39m\n \u001b[90m 34 |\u001b[39m \u001b[36mconst\u001b[39m agentsWcasino \u001b[33m=\u001b[39m agentsRectangle\u001b[33m;\u001b[39m\u001b[0m"
+      "message": "Error: Cannot find module 'C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\stg環境.js' imported from C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Rectangle.spec.js",
+      "stack": "Error: Cannot find module 'C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\stg環境.js' imported from C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Rectangle.spec.js"
     },
     {
       "message": "Error: No tests found.\nMake sure that arguments are regular expressions matching test files.\nYou may need to escape symbols like \"$\" or \"*\" and quote the arguments.",
@@ -73,8 +67,8 @@
     }
   ],
   "stats": {
-    "startTime": "2025-04-10T00:41:45.421Z",
-    "duration": 182.649,
+    "startTime": "2025-04-10T01:56:12.623Z",
+    "duration": 194.96699999999998,
     "expected": 0,
     "skipped": 0,
     "unexpected": 0,

@@ -1,7 +1,5 @@
 import { test } from '@playwright/test';
-
-const env = process.env.NODE_ENV || 'stg';
-const { ENV_CONFIG, generateGameUrl,depositMoney } = await import(`./${env}環境.js`);
+import { ENV_CONFIG, generateGameUrl,depositMoney} from './env-config.js';
 
 // 輔助函式：產生 [start, end) 的數字陣列
 function range(start, end) {
@@ -12,7 +10,7 @@ function range(start, end) {
   return arr;
 }
 test.describe.configure({ mode: 'serial' });
-test('Rectangle_上半', async ({ browser, request }) => {
+test.only('Rectangle_上半', async ({ browser, request }) => {
   test.setTimeout(0);
   const { expected_Rectangle, accountPrefix } = ENV_CONFIG;
 
@@ -21,9 +19,9 @@ test('Rectangle_上半', async ({ browser, request }) => {
     .filter(id => ![90012, 90013, 90014, 90015, 90016].includes(id));
 
   // 建立 agent 清單
-  const agents_111 = Array.from({ length: 11172 - 11101 + 1 }, (_, i) => 11101 + i)
+  const agents_111 = Array.from({ length: 11102 - 11101 + 1 }, (_, i) => 11101 + i)
     .filter(agent => agent !== 11138);
-  const agents_101 = Array.from({ length: 10172 - 10101 + 1 }, (_, i) => 10101 + i);
+  const agents_101 = Array.from({ length: 10102 - 10101 + 1 }, (_, i) => 10101 + i);
 
   // 合併兩個清單
   const agents = [...agents_111, ...agents_101];
