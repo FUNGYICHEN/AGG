@@ -97,7 +97,6 @@ function recursiveExtractMessages(obj, messages = { success: [], error: [] }) {
  * 接著用正則解析 Agent 與 GameID 與錯誤細節，僅取 "->" 之前的部份作為 errorMain。
  */
 function parseErrorLine(line) {
-  // 利用正則同時處理可能以 "Error: <TestName> URL:" 或 "<TestName> URL:" 開頭的格式
   let brand = "";
   const brandMatch = line.match(/^(?:Error:\s*)?([^\s]+)\s+URL:\s*/);
   if (brandMatch) {
@@ -132,7 +131,6 @@ function aggregateErrors(errorMessages) {
   const gameIdMap = new Map(); // 依 gameId 聚合
   let currentBrand = "";
   errorMessages.forEach(line => {
-    // 嘗試從每行開頭提取測試名稱（當作品牌資訊）：
     const brandMatch = line.match(/^(?:Error:\s*)?([^\s]+)\s+URL:\s*/);
     if (brandMatch) {
       currentBrand = brandMatch[1].trim();
@@ -174,7 +172,6 @@ function aggregateErrors(errorMessages) {
         });
       }
     } else {
-      // 若無法解析，直接納入 raw 分組
       const key = `raw|${line}`;
       if (agentMap.has(key)) {
         const item = agentMap.get(key);
@@ -209,29 +206,23 @@ function buildTelegramMessages({ success, error }) {
   let errorText = `【錯誤訊息】${env}\n`;
   if (error.length > 0) {
     const { agentErrors, gameIdErrors } = aggregateErrors(error);
-    // 建立集合，記錄跨 agent 聚合中達到門檻的 gameId 錯誤，格式為 "brand|gameId|errorMain"
     const globalGameErrorSet = new Set();
     gameIdErrors.forEach(err => {
       if (err.agents.length >= GLOBAL_GAMEID_THRESHOLD) {
         globalGameErrorSet.add(`${err.brand}|${err.gameId}|${err.errorMain}`);
       }
     });
-    
-    // 輸出 agent 層級結果，過濾掉屬於 global 聚合的 gameId
+
     agentErrors.forEach(err => {
       if (err.raw) {
         errorText += `${err.raw} (共 ${err.count} 筆錯誤)\n`;
       } else {
-        let prefix = "";
-        if (env === "prod" && err.brand) {
-          prefix = `(${err.brand}) `;
-        }
-        // 過濾掉屬於 global 聚合的 gameId
+        // 無論哪個環境只要有品牌就顯示
+        let prefix = err.brand ? `(${err.brand}) ` : "";
         const filteredGameIds = err.gameIds.filter(gid => {
           return !globalGameErrorSet.has(`${err.brand}|${gid}|${err.errorMain}`);
         });
         if (filteredGameIds.length === 0) {
-          // 如果該 agent 的所有 gameId均已被 global 聚合，則不輸出 agent 資訊
           return;
         }
         if (filteredGameIds.length >= 5) {
@@ -242,13 +233,9 @@ function buildTelegramMessages({ success, error }) {
       }
     });
     
-    // 輸出 global（跨 agent）以 gameId 為主的聚合結果
     gameIdErrors.forEach(err => {
       if (err.agents.length >= GLOBAL_GAMEID_THRESHOLD) {
-        let prefix = "";
-        if (env === "prod" && err.brand) {
-          prefix = `(${err.brand}) `;
-        }
+        let prefix = err.brand ? `(${err.brand}) ` : "";
         errorText += `${prefix}GameID: ${err.gameId}, ${err.errorMain} (共 ${err.count} 筆錯誤)\n`;
       }
     });
@@ -262,16 +249,12 @@ function buildTelegramMessages({ success, error }) {
   const reportPath = "./report.json";
   const reportJson = readJsonReport(reportPath);
   if (!reportJson) return;
-
   const { success, error } = recursiveExtractMessages(reportJson);
   const { successText, errorText } = buildTelegramMessages({ success, error });
-
   console.log("預計傳送成功訊息:\n", successText);
   console.log("預計傳送錯誤訊息:\n", errorText);
-
   const successChunks = splitMessage(successText);
   const errorChunks = splitMessage(errorText);
-
   for (const chunk of successChunks) {
     await sendTelegramMessage(chunk);
   }
