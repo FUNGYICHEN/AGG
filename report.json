@@ -10,7 +10,9 @@
     "grep": {},
     "grepInvert": null,
     "maxFailures": 0,
-    "metadata": {},
+    "metadata": {
+      "actualWorkers": 1
+    },
     "preserveOutput": "always",
     "reporter": [
       [
@@ -55,23 +57,650 @@
     "workers": 4,
     "webServer": null
   },
-  "suites": [],
-  "errors": [
+  "suites": [
     {
-      "message": "Error: Cannot find module 'C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\stg環境.js' imported from C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Rectangle.spec.js",
-      "stack": "Error: Cannot find module 'C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\stg環境.js' imported from C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Rectangle.spec.js"
-    },
-    {
-      "message": "Error: No tests found.\nMake sure that arguments are regular expressions matching test files.\nYou may need to escape symbols like \"$\" or \"*\" and quote the arguments.",
-      "stack": "Error: No tests found.\nMake sure that arguments are regular expressions matching test files.\nYou may need to escape symbols like \"$\" or \"*\" and quote the arguments."
+      "title": "Rectangle.spec.js",
+      "file": "Rectangle.spec.js",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "Rectangle_上半",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 0,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "chromium",
+              "projectName": "chromium",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "status": "failed",
+                  "duration": 3578722,
+                  "error": {
+                    "message": "Error: Agent: 10102, GameID: 90017 spin API 回應狀態碼為 500. API 回傳: {\"message\":\"Error processing your request.\\n\\nPlease contact your provider's customer support for assistance.\\n\\nRequest ID: 46ea75352801d28e\\nError Code: 3000\",\"code\":3000,\"requestId\":\"46ea75352801d28e\",\"cause\":\"com.linecorp.armeria.client.InvalidHttpResponseException: status: 400 Bad Request (expect: the success class (2xx). response: DefaultAggregatedHttpResponse{headers=[:status=400, date=Thu, 10 Apr 2025 02:51:26 GMT, content-type=application/json, traceparent=00-3c0ce54f5462a7854e3a2402880d8fcc-49827c168e1b2fbc-01, content-length=67], content={67B, text={\\\"message\\\":\\\"toke}} - {\\\"message\\\":\\\"token not match\\\",\\\"error\\\":\\\"token not match\\\",\\\"code\\\":1300}\"}\nAgent: 10102, GameID: 90017 retry spin API 回應狀態碼為 500. API 回傳: {\"message\":\"Error processing your request.\\n\\nPlease contact your provider's customer support for assistance.\\n\\nRequest ID: 5274066d60253660\\nError Code: 3000\",\"code\":3000,\"requestId\":\"5274066d60253660\",\"cause\":\"com.linecorp.armeria.client.InvalidHttpResponseException: status: 400 Bad Request (expect: the success class (2xx). response: DefaultAggregatedHttpResponse{headers=[:status=400, date=Thu, 10 Apr 2025 02:51:33 GMT, content-type=application/json, traceparent=00-a8c7abae0e8f161cccb85a64902bc419-1c8457069e7436a0-01, content-length=67], content={67B, text={\\\"message\\\":\\\"toke}} - {\\\"message\\\":\\\"token not match\\\",\\\"error\\\":\\\"token not match\\\",\\\"code\\\":1300}\"}",
+                    "stack": "Error: Agent: 10102, GameID: 90017 spin API 回應狀態碼為 500. API 回傳: {\"message\":\"Error processing your request.\\n\\nPlease contact your provider's customer support for assistance.\\n\\nRequest ID: 46ea75352801d28e\\nError Code: 3000\",\"code\":3000,\"requestId\":\"46ea75352801d28e\",\"cause\":\"com.linecorp.armeria.client.InvalidHttpResponseException: status: 400 Bad Request (expect: the success class (2xx). response: DefaultAggregatedHttpResponse{headers=[:status=400, date=Thu, 10 Apr 2025 02:51:26 GMT, content-type=application/json, traceparent=00-3c0ce54f5462a7854e3a2402880d8fcc-49827c168e1b2fbc-01, content-length=67], content={67B, text={\\\"message\\\":\\\"toke}} - {\\\"message\\\":\\\"token not match\\\",\\\"error\\\":\\\"token not match\\\",\\\"code\\\":1300}\"}\nAgent: 10102, GameID: 90017 retry spin API 回應狀態碼為 500. API 回傳: {\"message\":\"Error processing your request.\\n\\nPlease contact your provider's customer support for assistance.\\n\\nRequest ID: 5274066d60253660\\nError Code: 3000\",\"code\":3000,\"requestId\":\"5274066d60253660\",\"cause\":\"com.linecorp.armeria.client.InvalidHttpResponseException: status: 400 Bad Request (expect: the success class (2xx). response: DefaultAggregatedHttpResponse{headers=[:status=400, date=Thu, 10 Apr 2025 02:51:33 GMT, content-type=application/json, traceparent=00-a8c7abae0e8f161cccb85a64902bc419-1c8457069e7436a0-01, content-length=67], content={67B, text={\\\"message\\\":\\\"toke}} - {\\\"message\\\":\\\"token not match\\\",\\\"error\\\":\\\"token not match\\\",\\\"code\\\":1300}\"}\n    at C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Rectangle.spec.js:173:11",
+                    "location": {
+                      "file": "C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Rectangle.spec.js",
+                      "column": 11,
+                      "line": 173
+                    },
+                    "snippet": "\u001b[0m \u001b[90m 171 |\u001b[39m\n \u001b[90m 172 |\u001b[39m   \u001b[36mif\u001b[39m (errorMessages\u001b[33m.\u001b[39mlength \u001b[33m>\u001b[39m \u001b[35m0\u001b[39m) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 173 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(errorMessages\u001b[33m.\u001b[39mjoin(\u001b[32m\"\\n\"\u001b[39m))\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 174 |\u001b[39m   }\n \u001b[90m 175 |\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 176 |\u001b[39m\u001b[0m"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Rectangle.spec.js",
+                        "column": 11,
+                        "line": 173
+                      },
+                      "message": "Error: Agent: 10102, GameID: 90017 spin API 回應狀態碼為 500. API 回傳: {\"message\":\"Error processing your request.\\n\\nPlease contact your provider's customer support for assistance.\\n\\nRequest ID: 46ea75352801d28e\\nError Code: 3000\",\"code\":3000,\"requestId\":\"46ea75352801d28e\",\"cause\":\"com.linecorp.armeria.client.InvalidHttpResponseException: status: 400 Bad Request (expect: the success class (2xx). response: DefaultAggregatedHttpResponse{headers=[:status=400, date=Thu, 10 Apr 2025 02:51:26 GMT, content-type=application/json, traceparent=00-3c0ce54f5462a7854e3a2402880d8fcc-49827c168e1b2fbc-01, content-length=67], content={67B, text={\\\"message\\\":\\\"toke}} - {\\\"message\\\":\\\"token not match\\\",\\\"error\\\":\\\"token not match\\\",\\\"code\\\":1300}\"}\nAgent: 10102, GameID: 90017 retry spin API 回應狀態碼為 500. API 回傳: {\"message\":\"Error processing your request.\\n\\nPlease contact your provider's customer support for assistance.\\n\\nRequest ID: 5274066d60253660\\nError Code: 3000\",\"code\":3000,\"requestId\":\"5274066d60253660\",\"cause\":\"com.linecorp.armeria.client.InvalidHttpResponseException: status: 400 Bad Request (expect: the success class (2xx). response: DefaultAggregatedHttpResponse{headers=[:status=400, date=Thu, 10 Apr 2025 02:51:33 GMT, content-type=application/json, traceparent=00-a8c7abae0e8f161cccb85a64902bc419-1c8457069e7436a0-01, content-length=67], content={67B, text={\\\"message\\\":\\\"toke}} - {\\\"message\\\":\\\"token not match\\\",\\\"error\\\":\\\"token not match\\\",\\\"code\\\":1300}\"}\n\n\u001b[0m \u001b[90m 171 |\u001b[39m\n \u001b[90m 172 |\u001b[39m   \u001b[36mif\u001b[39m (errorMessages\u001b[33m.\u001b[39mlength \u001b[33m>\u001b[39m \u001b[35m0\u001b[39m) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 173 |\u001b[39m     \u001b[36mthrow\u001b[39m \u001b[36mnew\u001b[39m \u001b[33mError\u001b[39m(errorMessages\u001b[33m.\u001b[39mjoin(\u001b[32m\"\\n\"\u001b[39m))\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m           \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 174 |\u001b[39m   }\n \u001b[90m 175 |\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 176 |\u001b[39m\u001b[0m\n\u001b[2m    at C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Rectangle.spec.js:173:11\u001b[22m"
+                    }
+                  ],
+                  "stdout": [
+                    {
+                      "text": "Agent: 11101, GameID: 90001 使用下注帳號: QAtest_1120A141110190001\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744250243617,\"data\":{\"money\":10000,\"orderId\":\"83daf1e2-31ad-4109-b351-b68c74e83e48\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90001 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90002 使用下注帳號: QAtest_1120A141110190002\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744250290598,\"data\":{\"money\":10000,\"orderId\":\"150d7d11-8fe1-44fa-ad40-864ba5537556\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90002 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90003 使用下注帳號: QAtest_1120A141110190003\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744250336373,\"data\":{\"money\":10000,\"orderId\":\"3b2b923f-02c2-49a5-9a2f-c56a1bb8cf39\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90003 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90004 使用下注帳號: QAtest_1120A141110190004\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744250383486,\"data\":{\"money\":10000,\"orderId\":\"64541b89-6493-403c-bf97-0df2b5308505\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90004 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90005 使用下注帳號: QAtest_1120A141110190005\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744250429802,\"data\":{\"money\":10000,\"orderId\":\"2dfc7cd1-a803-44ec-9c76-c800bd740810\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90005 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90006 使用下注帳號: QAtest_1120A141110190006\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744250476952,\"data\":{\"money\":10000,\"orderId\":\"a6af95f8-22d4-4190-b0ff-8b62634c48db\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90006 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90007 使用下注帳號: QAtest_1120A141110190007\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744250523677,\"data\":{\"money\":10000,\"orderId\":\"7ecc1a93-2640-4ec7-ae5c-0631608a6cfe\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90007 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90008 使用下注帳號: QAtest_1120A141110190008\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744250569355,\"data\":{\"money\":10000,\"orderId\":\"8e36fa6c-2567-4789-ab08-8a42fade1922\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90008 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90009 使用下注帳號: QAtest_1120A141110190009\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744250616062,\"data\":{\"money\":10000,\"orderId\":\"b4ccdf91-e2f1-4411-ac01-ccc12389e702\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90009 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90010 使用下注帳號: QAtest_1120A141110190010\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744250662886,\"data\":{\"money\":10000,\"orderId\":\"ea587a72-1bab-4309-b345-225274f7c5ec\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90010 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90011 使用下注帳號: QAtest_1120A141110190011\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744250709425,\"data\":{\"money\":10000,\"orderId\":\"bb626991-a8bb-4125-b871-ee12d88f5aa2\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90011 未在第一次等待到 spin API response\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90011 retry spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90017 使用下注帳號: QAtest_1120A141110190017\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744250778287,\"data\":{\"money\":10000,\"orderId\":\"bd7cc8c1-ded0-45b7-b426-b57c3bc1ae58\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90017 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90018 使用下注帳號: QAtest_1120A141110190018\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744250825170,\"data\":{\"money\":10000,\"orderId\":\"478c2db2-3438-4656-85a9-cd61340f5e60\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90018 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90019 使用下注帳號: QAtest_1120A141110190019\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744250871669,\"data\":{\"money\":10000,\"orderId\":\"e883b4cc-2663-4217-8346-386a3667953e\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90019 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90020 使用下注帳號: QAtest_1120A141110190020\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744250918706,\"data\":{\"money\":10000,\"orderId\":\"9defd4d8-33a1-48f9-b984-fc98b485b6c5\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90020 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90021 使用下注帳號: QAtest_1120A141110190021\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744250965608,\"data\":{\"money\":10000,\"orderId\":\"f34d53ca-8c0f-49c7-8d7e-45482f3def40\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90021 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90022 使用下注帳號: QAtest_1120A141110190022\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251011940,\"data\":{\"money\":10000,\"orderId\":\"c62a9016-f13c-4cf2-b7e6-ba82f184bd7e\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90022 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90023 使用下注帳號: QAtest_1120A141110190023\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251058448,\"data\":{\"money\":10000,\"orderId\":\"8b7d8673-c251-49cc-b051-35ac3bbfcc12\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90023 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90024 使用下注帳號: QAtest_1120A141110190024\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251105123,\"data\":{\"money\":10000,\"orderId\":\"c57db282-a86e-45ef-aa96-1f7330f338bf\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11101, GameID: 90024 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90001 使用下注帳號: QAtest_1120A141110290001\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251151441,\"data\":{\"money\":10000,\"orderId\":\"10e729a2-a121-4f1f-84a9-475d2d93f7d2\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90001 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90002 使用下注帳號: QAtest_1120A141110290002\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251196913,\"data\":{\"money\":10000,\"orderId\":\"497737bc-bebc-4f92-8676-e2d5ad778879\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90002 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90003 使用下注帳號: QAtest_1120A141110290003\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251243588,\"data\":{\"money\":10000,\"orderId\":\"6768cfea-3b86-4297-bdb3-7249127a3339\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90003 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90004 使用下注帳號: QAtest_1120A141110290004\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251290542,\"data\":{\"money\":10000,\"orderId\":\"9754ece1-9ac2-40ff-b27b-4d311c9739e3\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90004 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90005 使用下注帳號: QAtest_1120A141110290005\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251336794,\"data\":{\"money\":10000,\"orderId\":\"8170a745-473c-46ff-81bc-8167a6b77db6\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90005 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90006 使用下注帳號: QAtest_1120A141110290006\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251383433,\"data\":{\"money\":10000,\"orderId\":\"0778a349-4de8-4f87-910c-9a70de2bb002\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90006 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90007 使用下注帳號: QAtest_1120A141110290007\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251429974,\"data\":{\"money\":10000,\"orderId\":\"a3cc4977-43f1-42ee-8019-bf7eec4ef1e7\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90007 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90008 使用下注帳號: QAtest_1120A141110290008\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251476448,\"data\":{\"money\":10000,\"orderId\":\"40a20e6d-b52d-4fe5-9df6-26732f3596a7\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90008 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90009 使用下注帳號: QAtest_1120A141110290009\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251522913,\"data\":{\"money\":10000,\"orderId\":\"782b9b0c-e021-4a63-bef7-7fc171851f1e\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90009 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90010 使用下注帳號: QAtest_1120A141110290010\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251569589,\"data\":{\"money\":10000,\"orderId\":\"ca738ed3-7d07-443b-bbdb-4aeda920cc83\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90010 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90011 使用下注帳號: QAtest_1120A141110290011\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251616278,\"data\":{\"money\":10000,\"orderId\":\"eaf857e6-3eb1-4999-a63e-1c4694b4aad3\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90011 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90017 使用下注帳號: QAtest_1120A141110290017\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251662899,\"data\":{\"money\":10000,\"orderId\":\"cd09d82c-31df-41ea-9d25-2148f658d67c\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90017 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90018 使用下注帳號: QAtest_1120A141110290018\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251709684,\"data\":{\"money\":10000,\"orderId\":\"abcea098-b532-43e3-994f-8e7aa19802bf\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90018 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90019 使用下注帳號: QAtest_1120A141110290019\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251756537,\"data\":{\"money\":10000,\"orderId\":\"fd9e4f7f-244a-4a1b-80a3-fe3e2cde1919\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90019 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90020 使用下注帳號: QAtest_1120A141110290020\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251802966,\"data\":{\"money\":10000,\"orderId\":\"4cea2d2d-e783-4fca-bd80-4f2756816578\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90020 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90021 使用下注帳號: QAtest_1120A141110290021\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251850138,\"data\":{\"money\":10000,\"orderId\":\"47ff9c4d-4815-4f4c-baa1-25cf60485300\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90021 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90022 使用下注帳號: QAtest_1120A141110290022\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251896914,\"data\":{\"money\":10000,\"orderId\":\"442aeb6e-d6be-47f7-be46-0fc53477dad9\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90022 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90023 使用下注帳號: QAtest_1120A141110290023\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251942681,\"data\":{\"money\":10000,\"orderId\":\"cd3e7c80-b5e0-4e74-a278-8d603791cfb0\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90023 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90024 使用下注帳號: QAtest_1120A141110290024\n"
+                    },
+                    {
+                      "text": "Deposit API 回應： {\"code\":0,\"timestamp\":1744251989618,\"data\":{\"money\":10000,\"orderId\":\"c643cb4d-6036-4b00-b32e-acafca496cea\"},\"msg\":\"\"}\n"
+                    },
+                    {
+                      "text": "Agent: 11102, GameID: 90024 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90001 使用下注帳號: QAtest_1120A141010190001\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90001 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90002 使用下注帳號: QAtest_1120A141010190002\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90002 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90003 使用下注帳號: QAtest_1120A141010190003\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90003 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90004 使用下注帳號: QAtest_1120A141010190004\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90004 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90005 使用下注帳號: QAtest_1120A141010190005\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90005 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90006 使用下注帳號: QAtest_1120A141010190006\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90006 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90007 使用下注帳號: QAtest_1120A141010190007\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90007 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90008 使用下注帳號: QAtest_1120A141010190008\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90008 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90009 使用下注帳號: QAtest_1120A141010190009\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90009 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90010 使用下注帳號: QAtest_1120A141010190010\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90010 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90011 使用下注帳號: QAtest_1120A141010190011\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90011 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90017 使用下注帳號: QAtest_1120A141010190017\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90017 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90018 使用下注帳號: QAtest_1120A141010190018\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90018 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90019 使用下注帳號: QAtest_1120A141010190019\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90019 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90020 使用下注帳號: QAtest_1120A141010190020\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90020 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90021 使用下注帳號: QAtest_1120A141010190021\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90021 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90022 使用下注帳號: QAtest_1120A141010190022\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90022 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90023 使用下注帳號: QAtest_1120A141010190023\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90023 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90024 使用下注帳號: QAtest_1120A141010190024\n"
+                    },
+                    {
+                      "text": "Agent: 10101, GameID: 90024 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90001 使用下注帳號: QAtest_1120A141010290001\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90001 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90002 使用下注帳號: QAtest_1120A141010290002\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90002 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90003 使用下注帳號: QAtest_1120A141010290003\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90003 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90004 使用下注帳號: QAtest_1120A141010290004\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90004 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90005 使用下注帳號: QAtest_1120A141010290005\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90005 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90006 使用下注帳號: QAtest_1120A141010290006\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90006 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90007 使用下注帳號: QAtest_1120A141010290007\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90007 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90008 使用下注帳號: QAtest_1120A141010290008\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90008 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90009 使用下注帳號: QAtest_1120A141010290009\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90009 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90010 使用下注帳號: QAtest_1120A141010290010\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90010 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90011 使用下注帳號: QAtest_1120A141010290011\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90011 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90017 使用下注帳號: QAtest_1120A141010290017\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90018 使用下注帳號: QAtest_1120A141010290018\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90018 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90019 使用下注帳號: QAtest_1120A141010290019\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90019 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90020 使用下注帳號: QAtest_1120A141010290020\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90020 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90021 使用下注帳號: QAtest_1120A141010290021\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90021 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90022 使用下注帳號: QAtest_1120A141010290022\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90022 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90023 使用下注帳號: QAtest_1120A141010290023\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90023 spin API 回應狀態碼驗證成功 (201)\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90024 使用下注帳號: QAtest_1120A141010290024\n"
+                    },
+                    {
+                      "text": "Agent: 10102, GameID: 90024 spin API 回應狀態碼驗證成功 (201)\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2025-04-10T01:57:23.952Z",
+                  "attachments": [],
+                  "errorLocation": {
+                    "file": "C:\\Users\\as268\\OneDrive\\Desktop\\my-playwright-project\\tests\\Rectangle.spec.js",
+                    "column": 11,
+                    "line": 173
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "b2052582521587e6d632-cdc6d1fd69ba11dde146",
+          "file": "Rectangle.spec.js",
+          "line": 13,
+          "column": 6
+        }
+      ]
     }
   ],
+  "errors": [],
   "stats": {
-    "startTime": "2025-04-10T01:56:12.623Z",
-    "duration": 194.96699999999998,
+    "startTime": "2025-04-10T01:57:23.170Z",
+    "duration": 3579712.3200000003,
     "expected": 0,
     "skipped": 0,
-    "unexpected": 0,
+    "unexpected": 1,
     "flaky": 0
   }
 }
