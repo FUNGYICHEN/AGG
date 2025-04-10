@@ -134,7 +134,7 @@ test.describe('Game URL Tests', () => {
     const testName = "Rectangle URL";
     const gameIds = range(90001, 90024);
     const gameIdToSlug = {
-      90001: "gtrgtrhtrhtr-caramelo",
+      90001: "swaggy-caramelo",
       90002: "persian-jewels",
       90003: "lucky-leprechaun-loot",
       90004: "lucky-duck",
